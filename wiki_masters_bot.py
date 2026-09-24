@@ -284,3 +284,112 @@ class CardDeckHandler:
         random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
 
         logger.info("Card opening sequence completed successfully")
+
+# ============================================================================
+# WIKI MASTERS BOT - MAIN ORCHESTRATOR
+# ============================================================================
+
+class WikiMastersBot:
+    """Main orchestrator for the Wiki Masters automation bot."""
+
+    def __init__(self):
+        """Initialize all components."""
+        logger.info("=" * 60)
+        logger.info("Wiki Masters Automation Bot Starting...")
+        logger.info("=" * 60)
+
+        self.browser_manager = None
+        self.driver = None
+        self.login_handler = LoginHandler()
+        self.card_handler = CardDeckHandler()
+
+    def run(self):
+        """
+        Main execution loop.
+
+        Flow:
+        1. Initialize browser and login
+        2. Loop forever:
+           a. Check pack availability
+           b. If available: execute sequence, loop immediately
+           c. If not available: wait 11-15 minutes, loop
+        """
+        try:
+            # Initialize browser
+            self.browser_manager = BrowserManager()
+            self.driver = self.browser_manager.get_driver()
+
+            # Login once at startup
+            self.login_handler.login(self.driver)
+
+            logger.info("Entering main automation loop...")
+            logger.info("Press Ctrl+C to stop the bot")
+
+            # Main infinite loop
+            while True:
+                # Check if packs are available
+                packs_unavailable = self.card_handler.check_availability(self.driver)
+
+                if packs_unavailable:
+                    # No packs - wait 11-15 minutes
+                    wait_minutes = random.uniform(
+                        WAIT_WHEN_NO_PACKS_MIN / 60,
+                        WAIT_WHEN_NO_PACKS_MAX / 60
+                    )
+                    logger.info(f"No packs available - waiting {wait_minutes:.2f} minutes...")
+                    time.sleep(wait_minutes * 60)
+                    logger.info("Wait completed - checking again...")
+                else:
+                    # Packs available - execute sequence
+                    self.card_handler.execute_card_sequence(self.driver)
+                    logger.info("Sequence completed - checking again immediately...")
+
+        except KeyboardInterrupt:
+            # User pressed Ctrl+C - graceful shutdown
+            logger.info("Keyboard interrupt received (Ctrl+C)")
+            self.shutdown()
+
+        except Exception as e:
+            # Unexpected error - log and shutdown
+            logger.error("Unexpected error occurred", exc_info=True)
+            self.shutdown(error=e)
+
+    def shutdown(self, error=None):
+        """
+        Clean up resources and exit.
+
+        Args:
+            error: Exception object if shutdown due to error, None for clean shutdown
+        """
+        logger.info("Initiating shutdown...")
+
+        # Take screenshot if there was an error
+        if error and self.driver:
+            try:
+                screenshot_path = "error_screenshot.png"
+                self.driver.save_screenshot(screenshot_path)
+                logger.info(f"Error screenshot saved to {screenshot_path}")
+            except Exception as screenshot_error:
+                logger.warning(f"Could not save screenshot: {screenshot_error}")
+
+        # Close browser
+        if self.browser_manager:
+            self.browser_manager.quit()
+
+        logger.info("=" * 60)
+        if error:
+            logger.error("Bot stopped due to error")
+            logger.info("=" * 60)
+            sys.exit(1)
+        else:
+            logger.info("Bot stopped successfully")
+            logger.info("=" * 60)
+            sys.exit(0)
+
+# ============================================================================
+# MAIN ENTRY POINT
+# ============================================================================
+
+if __name__ == "__main__":
+    bot = WikiMastersBot()
+    bot.run()
