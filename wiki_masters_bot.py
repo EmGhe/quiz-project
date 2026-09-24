@@ -202,3 +202,85 @@ class LoginHandler:
             logger.info("Login successful - reached pulls page")
         else:
             raise Exception(f"Login failed - unexpected URL: {current_url}")
+
+# ============================================================================
+# CARD DECK HANDLER
+# ============================================================================
+
+class CardDeckHandler:
+    """Handles card pack availability checking and opening sequence."""
+
+    def check_availability(self, driver):
+        """
+        Check if card packs are available.
+
+        Returns:
+            True if packs are NOT available (message "0 / 10 paquets disponibles" found)
+            False if packs ARE available (message not found)
+        """
+        logger.debug("Checking pack availability...")
+
+        try:
+            # Look for the "0 / 10 paquets disponibles" message
+            elements = driver.find_elements(
+                By.XPATH,
+                "//*[contains(text(), '0 / 10') and contains(text(), 'paquets disponibles')]"
+            )
+
+            if elements:
+                logger.info("No packs available (0 / 10 paquets disponibles)")
+                return True  # Packs NOT available
+            else:
+                logger.info("Packs available - ready to open")
+                return False  # Packs ARE available
+
+        except Exception as e:
+            logger.warning(f"Error checking availability: {e}")
+            # Assume packs are available if we can't determine
+            return False
+
+    def execute_card_sequence(self, driver):
+        """
+        Execute the card opening sequence.
+
+        Steps:
+        1. Click "Ouvrir" button
+        2. Click right arrow button 4 times
+        3. Click "continuer" button
+        """
+        logger.info("Starting card opening sequence...")
+        wait = WebDriverWait(driver, EXPLICIT_WAIT_TIMEOUT)
+
+        # Step 1: Click "Ouvrir" button
+        logger.debug("Looking for 'Ouvrir' button...")
+        ouvrir_btn = wait.until(
+            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'Ouvrir')]"))
+        )
+        ouvrir_btn.click()
+        logger.debug("Clicked 'Ouvrir' button")
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Step 2: Click right arrow 4 times
+        logger.debug("Clicking right arrow 4 times...")
+        for i in range(4):
+            # Find arrow button by SVG polyline points
+            arrow_btn = wait.until(
+                EC.element_to_be_clickable((
+                    By.XPATH,
+                    "//button[.//svg//polyline[@points='9 18 15 12 9 6']]"
+                ))
+            )
+            arrow_btn.click()
+            logger.debug(f"Clicked right arrow {i + 1}/4")
+            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Step 3: Click "continuer" button
+        logger.debug("Looking for 'continuer' button...")
+        continuer_btn = wait.until(
+            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'continuer')]"))
+        )
+        continuer_btn.click()
+        logger.debug("Clicked 'continuer' button")
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        logger.info("Card opening sequence completed successfully")
