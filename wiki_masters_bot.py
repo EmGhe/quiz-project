@@ -91,3 +91,44 @@ def random_delay(min_seconds, max_seconds):
     delay = random.uniform(min_seconds, max_seconds)
     logger.debug(f"Waiting {delay:.2f} seconds...")
     time.sleep(delay)
+
+# ============================================================================
+# BROWSER MANAGER
+# ============================================================================
+
+class BrowserManager:
+    """Manages Chrome WebDriver lifecycle and configuration."""
+
+    def __init__(self):
+        """Initialize Chrome WebDriver with headless configuration."""
+        logger.info("Initializing Chrome WebDriver...")
+
+        # Configure Chrome options
+        chrome_options = webdriver.ChromeOptions()
+
+        if HEADLESS_MODE:
+            chrome_options.add_argument('--headless')
+            logger.debug("Headless mode enabled")
+
+        # Stability and compatibility options
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument(f'--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}')
+
+        # Initialize WebDriver with auto-managed ChromeDriver
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+
+        logger.info("Chrome WebDriver initialized successfully")
+
+    def get_driver(self):
+        """Return the WebDriver instance."""
+        return self.driver
+
+    def quit(self):
+        """Close browser and clean up resources."""
+        if self.driver:
+            logger.info("Closing browser...")
+            self.driver.quit()
+            logger.debug("Browser closed successfully")
