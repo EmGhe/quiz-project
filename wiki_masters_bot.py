@@ -132,3 +132,73 @@ class BrowserManager:
             logger.info("Closing browser...")
             self.driver.quit()
             logger.debug("Browser closed successfully")
+
+# ============================================================================
+# LOGIN HANDLER
+# ============================================================================
+
+class LoginHandler:
+    """Handles authentication flow for wiki-masters.com."""
+
+    def login(self, driver):
+        """
+        Execute the login flow.
+
+        Steps:
+        1. Navigate to signup page
+        2. Click "se connecter" button
+        3. Enter email and password
+        4. Submit form
+        5. Verify navigation to /pulls page
+        """
+        logger.info("Starting login process...")
+
+        # Navigate to signup page
+        logger.debug(f"Navigating to {SIGNUP_URL}")
+        driver.get(SIGNUP_URL)
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Click "Se connecter" button
+        logger.debug("Looking for 'Se connecter' button...")
+        wait = WebDriverWait(driver, EXPLICIT_WAIT_TIMEOUT)
+        se_connecter_btn = wait.until(
+            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'Se connecter')]"))
+        )
+        se_connecter_btn.click()
+        logger.debug("Clicked 'Se connecter' button")
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Enter email
+        logger.debug("Entering email...")
+        email_field = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email'], input[name*='email' i], input[id*='email' i]"))
+        )
+        email_field.clear()
+        email_field.send_keys(EMAIL)
+        logger.debug("Email entered")
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Enter password
+        logger.debug("Entering password...")
+        password_field = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password']"))
+        )
+        password_field.clear()
+        password_field.send_keys(PASSWORD)
+        logger.debug("Password entered")
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Submit form
+        logger.debug("Submitting login form...")
+        password_field.submit()
+        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+        # Verify we reached the pulls page
+        logger.debug("Verifying login success...")
+        wait.until(EC.url_contains("/pulls"))
+
+        current_url = driver.current_url
+        if "/pulls" in current_url:
+            logger.info("Login successful - reached pulls page")
+        else:
+            raise Exception(f"Login failed - unexpected URL: {current_url}")
