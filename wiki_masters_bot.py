@@ -342,7 +342,10 @@ class WikiMastersBot:
                 else:
                     # Packs available - execute sequence
                     self.card_handler.execute_card_sequence(self.driver)
-                    logger.info("Sequence completed - checking again immediately...")
+                    logger.info("Sequence completed - returning to pulls page...")
+                    self.driver.get(PULLS_URL)
+                    random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                    logger.info("Ready to check again...")
 
         except KeyboardInterrupt:
             # User pressed Ctrl+C - graceful shutdown
