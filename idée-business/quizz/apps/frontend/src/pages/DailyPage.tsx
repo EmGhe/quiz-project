@@ -94,7 +94,9 @@ export default function DailyPage() {
     if (!daily) return;
     const currentQuestion = daily.questions[currentQuestionIndex];
     const timeSpent = Date.now() - questionStartTime;
-    setQuestionTimes({ ...questionTimes, [currentQuestion.questionId]: timeSpent });
+    // Cap at 25000ms (25 seconds max per question)
+    const cappedTime = Math.min(timeSpent, 25000);
+    setQuestionTimes({ ...questionTimes, [currentQuestion.questionId]: cappedTime });
   };
 
   const handleTimeUp = () => {
@@ -127,11 +129,11 @@ export default function DailyPage() {
     // Record time for current question before submitting
     recordQuestionTime();
 
-    // Build submissions with actual recorded times
+    // Build submissions with actual recorded times (capped at 25000ms)
     const submissions: AnswerSubmission[] = daily.questions.map((q) => ({
       questionId: q.questionId,
       answer: answers[q.questionId] || '',
-      timeMs: questionTimes[q.questionId] || 25000, // Use recorded time or max (25s)
+      timeMs: Math.min(questionTimes[q.questionId] || 25000, 25000), // Cap at 25s max
     }));
 
     try {
