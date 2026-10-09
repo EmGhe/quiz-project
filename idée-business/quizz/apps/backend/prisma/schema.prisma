@@ -93,6 +93,7 @@ model Question {
   acceptedAnswers  AcceptedAnswer[]
   duplicates1      DetectedDuplicate[] @relation("Question1")
   duplicates2      DetectedDuplicate[] @relation("Question2")
+  dailyQuestions   DailyQuestion[]
 
   @@map("questions")
 }
@@ -150,6 +151,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  submissions DailySubmission[]
   streaks     UserStreak[]
 
   @@map("users")
@@ -168,4 +170,47 @@ model UserStreak {
 
   @@unique([userId])
   @@map("user_streaks")
+}
+
+model Daily {
+  id          String   @id @default(uuid())
+  dailyNumber Int      @unique
+  date        String   @unique // YYYY-MM-DD format, UTC
+  createdAt   DateTime @default(now())
+
+  questions   DailyQuestion[]
+  submissions DailySubmission[]
+
+  @@map("dailies")
+}
+
+model DailyQuestion {
+  id         String @id @default(uuid())
+  dailyId    String
+  questionId String
+  order      Int    // 1-10
+
+  daily    Daily    @relation(fields: [dailyId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([dailyId, order])
+  @@map("daily_questions")
+}
+
+model DailySubmission {
+  id                 String   @id @default(uuid())
+  userId             String
+  dailyId            String
+  score              Int
+  totalTime          Int      // milliseconds
+  correctCount       Int
+  answersData        Json     // [{questionId, answer, correct, timeMs, pointsEarned}]
+  submittedAt        DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  daily Daily @relation(fields: [dailyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dailyId])
+  @@index([dailyId, score])
+  @@map("daily_submissions")
 }
