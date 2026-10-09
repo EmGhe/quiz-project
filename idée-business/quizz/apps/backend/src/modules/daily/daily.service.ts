@@ -1,0 +1,310 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+@Injectable()
+export class DailyService {
+  constructor(private prisma: PrismaService) {}
+
+  private getTodayDateUTC(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async generateDailyIfNeeded() {
+    const today = this.getTodayDateUTC();
+    const existing = await this.prisma.daily.findUnique({
+      where: { date: today },
+    });
+
+    if (existing) return;
+
+    const lastDaily = await this.prisma.daily.findFirst({
+      orderBy: { dailyNumber: 'desc' },
+    });
+
+    const dailyNumber = (lastDaily?.dailyNumber || 0) + 1;
+
+    // Select 10 random published questions
+    const questions = await this.prisma.question.findMany({
+      where: { status: 'publie' },
+      include: { acceptedAnswers: true },
+      take: 100,
+    });
+
+    if (questions.length < 10) {
+      throw new Error('Not enough published questions for daily');
+    }
+
+    // Shuffle and take 10
+    const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, 10);
+
+    const daily = await this.prisma.daily.create({
+      data: {
+        dailyNumber,
+        date: today,
+        questions: {
+          create: shuffled.map((q, idx) => ({
+            questionId: q.id,
+            order: idx + 1,
+          })),
+        },
+      },
+    });
+
+    console.log(`✅ Generated Daily #${dailyNumber} for ${today}`);
+    return daily;
+  }
+
+  async getTodaysDaily(userId: string) {
+    const today = this.getTodayDateUTC();
+
+    let daily = await this.prisma.daily.findUnique({
+      where: { date: today },
+      include: {
+        questions: {
+          orderBy: { order: 'asc' },
+          include: {
+            question: {
+              include: { acceptedAnswers: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!daily) {
+      await this.generateDailyIfNeeded();
+      daily = await this.prisma.daily.findUnique({
+        where: { date: today },
+        include: {
+          questions: {
+            orderBy: { order: 'asc' },
+            include: {
+              question: {
+                include: { acceptedAnswers: true },
+              },
+            },
+          },
+        },
+      });
+
+      if (!daily) {
+        throw new Error('Failed to generate daily');
+      }
+    }
+
+    // Check if user already submitted
+    const submission = await this.prisma.dailySubmission.findUnique({
+      where: {
+        userId_dailyId: { userId, dailyId: daily.id },
+      },
+    });
+
+    return {
+      dailyNumber: daily.dailyNumber,
+      date: daily.date,
+      alreadyCompleted: !!submission,
+      submission: submission || null,
+      questions: daily.questions.map((dq) => ({
+        questionId: dq.question.id,
+        text: dq.question.text,
+        order: dq.order,
+        acceptedAnswers: dq.question.acceptedAnswers,
+      })),
+      serverTimestamp: Date.now(),
+    };
+  }
+
+  async submitDaily(userId: string, answers: Array<{questionId: string; answer: string; timeMs: number}>) {
+    const today = this.getTodayDateUTC();
+    const daily = await this.prisma.daily.findUnique({
+      where: { date: today },
+      include: {
+        questions: {
+          include: {
+            question: {
+              include: { acceptedAnswers: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!daily) {
+      throw new Error('No daily available');
+    }
+
+    // Check if already submitted
+    const existing = await this.prisma.dailySubmission.findUnique({
+      where: {
+        userId_dailyId: { userId, dailyId: daily.id },
+      },
+    });
+
+    if (existing) {
+      throw new Error('Daily already completed');
+    }
+
+    // Validate and score answers
+    const questionMap = new Map(
+      daily.questions.map((dq) => [dq.question.id, dq.question])
+    );
+
+    let totalScore = 0;
+    let correctCount = 0;
+    let consecutiveCorrect = 0;
+    const answersData = [];
+
+    for (const ans of answers) {
+      const question = questionMap.get(ans.questionId);
+      if (!question) continue;
+
+      // Validate time (max 25 seconds = 25000ms)
+      if (ans.timeMs > 25000 || ans.timeMs < 0) {
+        throw new Error(`Invalid time for question ${ans.questionId}`);
+      }
+
+      const acceptedAnswers = question.acceptedAnswers.map((a) =>
+        a.answer.toLowerCase().trim()
+      );
+      const userAnswer = ans.answer.toLowerCase().trim();
+      const correct = acceptedAnswers.includes(userAnswer);
+
+      let pointsEarned = 0;
+
+      if (correct) {
+        correctCount++;
+        consecutiveCorrect++;
+
+        // Base points: 100
+        let basePoints = 100;
+
+        // Speed bonus
+        if (ans.timeMs <= 3000) basePoints += 100;
+        else if (ans.timeMs <= 7000) basePoints += 90;
+        else if (ans.timeMs <= 11000) basePoints += 80;
+        else if (ans.timeMs <= 15000) basePoints += 70;
+        else if (ans.timeMs <= 19000) basePoints += 60;
+        else if (ans.timeMs <= 22000) basePoints += 50;
+        else basePoints += 40;
+
+        // Multiplier based on streak
+        let multiplier = 1.0;
+        if (consecutiveCorrect === 2) multiplier = 1.1;
+        else if (consecutiveCorrect === 3) multiplier = 1.2;
+        else if (consecutiveCorrect === 4) multiplier = 1.3;
+        else if (consecutiveCorrect >= 5) multiplier = 1.5;
+
+        pointsEarned = Math.floor(basePoints * multiplier);
+        totalScore += pointsEarned;
+      } else {
+        consecutiveCorrect = 0;
+      }
+
+      answersData.push({
+        questionId: ans.questionId,
+        answer: ans.answer,
+        correct,
+        timeMs: ans.timeMs,
+        pointsEarned,
+      });
+    }
+
+    const totalTime = answers.reduce((sum, a) => sum + a.timeMs, 0);
+
+    // Create submission
+    const submission = await this.prisma.dailySubmission.create({
+      data: {
+        userId,
+        dailyId: daily.id,
+        score: totalScore,
+        totalTime,
+        correctCount,
+        answersData,
+      },
+    });
+
+    // Update streak
+    await this.updateStreak(userId, today);
+
+    return {
+      submission,
+      dailyNumber: daily.dailyNumber,
+    };
+  }
+
+  private async updateStreak(userId: string, todayDate: string) {
+    const streak = await this.prisma.userStreak.findUnique({
+      where: { userId },
+    });
+
+    if (!streak) {
+      await this.prisma.userStreak.create({
+        data: {
+          userId,
+          currentStreak: 1,
+          longestStreak: 1,
+          lastDailyDate: todayDate,
+        },
+      });
+      return;
+    }
+
+    if (streak.lastDailyDate === todayDate) {
+      // Already updated today
+      return;
+    }
+
+    const lastDate = streak.lastDailyDate
+      ? new Date(streak.lastDailyDate)
+      : null;
+    const today = new Date(todayDate);
+
+    let newStreak = 1;
+
+    if (lastDate) {
+      const daysDiff = Math.floor(
+        (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysDiff === 1) {
+        // Consecutive day
+        newStreak = streak.currentStreak + 1;
+      }
+    }
+
+    const longestStreak = Math.max(streak.longestStreak, newStreak);
+
+    await this.prisma.userStreak.update({
+      where: { userId },
+      data: {
+        currentStreak: newStreak,
+        longestStreak,
+        lastDailyDate: todayDate,
+      },
+    });
+  }
+
+  async getLeaderboard(dailyId: string, limit: number = 100) {
+    const submissions = await this.prisma.dailySubmission.findMany({
+      where: { dailyId },
+      orderBy: [{ score: 'desc' }, { totalTime: 'asc' }],
+      take: limit,
+      include: {
+        user: {
+          select: { id: true, username: true },
+        },
+      },
+    });
+
+    return submissions.map((s, idx) => ({
+      rank: idx + 1,
+      userId: s.user.id,
+      username: s.user.username,
+      score: s.score,
+      totalTime: s.totalTime,
+      correctCount: s.correctCount,
+    }));
+  }
+}
