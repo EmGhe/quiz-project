@@ -19,7 +19,7 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 
 **Goal:** Core game loop that drives retention
 
-**Status:** 📋 Planned
+**Status:** ✅ Completed
 
 **Plan:** `docs/superpowers/plans/2026-10-09-mvp1-daily-challenge.md`
 
@@ -168,22 +168,42 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 ### Phase Sequencing
 
 ```
-MVP1 (2-3 weeks)
+MVP1 (2-3 weeks) - BASIC DESIGN
   ↓
   Test with users, measure retention
   ↓
-MVP2 (2-3 weeks)
+MVP2 (2-3 weeks) - BASIC DESIGN
   ↓
   Balance ELO, test matchmaking
+  Validate concept with real users
   ↓
-V2 (2-3 weeks)
+DESIGN SPRINT (2-3 weeks) ⭐ MAJOR INVESTMENT
+  ↓
+  UI/UX overhaul
+  Branding & identity
+  Animation & polish
+  Component library
+  ↓
+V2 (2-3 weeks) - WITH NEW DESIGN
   ↓
   Monitor Gold economy, adjust sinks/sources
   ↓
-V3 (3-4 weeks)
+V3 (3-4 weeks) - WITH NEW DESIGN
   ↓
   Full platform launch
 ```
+
+**Design Philosophy:**
+- **MVP1 & MVP2:** Functional prototype with basic Tailwind UI
+  - Goal: Validate game mechanics & retention
+  - Design investment: Minimal (use default Tailwind components)
+  
+- **Design Sprint:** Only after MVP1+MVP2 validation
+  - Goal: Create polished, branded experience
+  - Design investment: Major (dedicated design phase)
+  
+- **V2 & V3:** Build on new design system
+  - Goal: Consistent, professional UI across all features
 
 ### Parallel Work Opportunities
 
