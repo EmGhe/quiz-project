@@ -15,10 +15,30 @@ export default function DailyPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  const [timeLeft, setTimeLeft] = useState<number>(25);
+  const [questionTimes, setQuestionTimes] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadDaily();
   }, []);
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (!daily || daily.alreadyCompleted) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Time's up - auto move to next or submit
+          handleTimeUp();
+          return 25; // Reset for next question
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentQuestionIndex, daily]);
 
   const loadDaily = async () => {
     try {
@@ -45,30 +65,57 @@ export default function DailyPage() {
     setAnswers({ ...answers, [currentQuestion.questionId]: value });
   };
 
+  const recordQuestionTime = () => {
+    if (!daily) return;
+    const currentQuestion = daily.questions[currentQuestionIndex];
+    const timeSpent = Date.now() - questionStartTime;
+    setQuestionTimes({ ...questionTimes, [currentQuestion.questionId]: timeSpent });
+  };
+
+  const handleTimeUp = () => {
+    recordQuestionTime();
+    if (!daily) return;
+
+    if (currentQuestionIndex < daily.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setQuestionStartTime(Date.now());
+      setTimeLeft(25);
+    } else {
+      // Last question - auto submit
+      handleSubmit();
+    }
+  };
+
   const handleNext = () => {
+    recordQuestionTime();
     if (!daily) return;
     if (currentQuestionIndex < daily.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setQuestionStartTime(Date.now());
+      setTimeLeft(25);
     }
   };
 
   const handlePrevious = () => {
+    recordQuestionTime();
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
       setQuestionStartTime(Date.now());
+      setTimeLeft(25);
     }
   };
 
   const handleSubmit = async () => {
     if (!daily) return;
 
-    // TODO: Task 7 will add proper timing per question
-    // For now, use placeholder timing
+    // Record time for current question before submitting
+    recordQuestionTime();
+
+    // Build submissions with actual recorded times
     const submissions: AnswerSubmission[] = daily.questions.map((q) => ({
       questionId: q.questionId,
       answer: answers[q.questionId] || '',
-      timeMs: 5000, // Placeholder
+      timeMs: questionTimes[q.questionId] || 25000, // Use recorded time or max (25s)
     }));
 
     try {
@@ -189,6 +236,18 @@ export default function DailyPage() {
               className="bg-primary-600 h-2 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
+          </div>
+        </div>
+
+        {/* Timer Display */}
+        <div className="flex justify-center mb-4">
+          <div className={`
+            px-6 py-3 rounded-lg font-bold text-2xl
+            ${timeLeft <= 5 ? 'bg-red-100 text-red-700 animate-pulse' :
+              timeLeft <= 10 ? 'bg-orange-100 text-orange-700' :
+              'bg-blue-100 text-blue-700'}
+          `}>
+            ⏱️ {timeLeft}s
           </div>
         </div>
 
