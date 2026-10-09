@@ -160,6 +160,7 @@ export default function DailyPage() {
         dailyNumber={submissionResult.dailyNumber}
         totalQuestions={daily.questions.length}
         questions={daily.questions}
+        currentStreak={streak?.currentStreak || 0}
         onClose={() => {
           setShowResults(false);
           loadDaily();

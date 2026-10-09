@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { dailyApi } from '@/api/daily';
 import type { DailySubmission, DailyQuestion } from '@/types/daily';
+import ShareCard from './ShareCard';
 
 interface QuizResultsProps {
   submission: DailySubmission;
   dailyNumber: number;
   totalQuestions: number;
   questions: DailyQuestion[];
+  currentStreak: number;
   onClose: () => void;
 }
 
@@ -19,7 +21,7 @@ interface LeaderboardEntry {
   correctCount: number;
 }
 
-export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, onClose }: QuizResultsProps) {
+export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, currentStreak, onClose }: QuizResultsProps) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
@@ -185,8 +187,17 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
           )}
         </div>
 
+        {/* Share Card */}
+        <ShareCard
+          dailyNumber={dailyNumber}
+          score={submission.score}
+          correctCount={submission.correctCount}
+          totalQuestions={totalQuestions}
+          currentStreak={currentStreak}
+        />
+
         {/* Close Button */}
-        <div className="text-center">
+        <div className="text-center mt-6">
           <button
             onClick={onClose}
             className="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 font-medium"
