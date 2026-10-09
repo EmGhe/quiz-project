@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
+import DailyPage from '@/pages/DailyPage';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -32,7 +33,7 @@ function App() {
         />
         <Route
           path="/daily"
-          element={user ? <div>Daily Page (TODO)</div> : <Navigate to="/login" />}
+          element={user ? <DailyPage /> : <Navigate to="/login" />}
         />
         <Route path="/" element={<Navigate to="/daily" />} />
       </Routes>
