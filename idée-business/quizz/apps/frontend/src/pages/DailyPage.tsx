@@ -50,13 +50,12 @@ export default function DailyPage() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        const allAnswered = daily.questions.every((q) => answers[q.questionId]?.trim());
 
         if (currentQuestionIndex < daily.questions.length - 1) {
           // Not last question - go to next
           handleNext();
-        } else if (allAnswered) {
-          // Last question and all answered - submit
+        } else {
+          // Last question - submit
           handleSubmit();
         }
       }
@@ -117,15 +116,6 @@ export default function DailyPage() {
     if (!daily) return;
     if (currentQuestionIndex < daily.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setQuestionStartTime(Date.now());
-      setTimeLeft(25);
-    }
-  };
-
-  const handlePrevious = () => {
-    recordQuestionTime();
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
       setQuestionStartTime(Date.now());
       setTimeLeft(25);
     }
@@ -268,7 +258,6 @@ export default function DailyPage() {
   const currentQuestion = daily.questions[currentQuestionIndex];
   const currentAnswer = answers[currentQuestion.questionId] || '';
   const progress = ((currentQuestionIndex + 1) / daily.questions.length) * 100;
-  const allAnswered = daily.questions.every((q) => answers[q.questionId]?.trim());
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -371,19 +360,7 @@ export default function DailyPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center">
-          <button
-            onClick={handlePrevious}
-            disabled={currentQuestionIndex === 0}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-          >
-            ← Previous
-          </button>
-
-          <div className="text-gray-600">
-            {daily.questions.filter((q) => answers[q.questionId]?.trim()).length} / {daily.questions.length} answered
-          </div>
-
+        <div className="flex justify-end">
           {currentQuestionIndex < daily.questions.length - 1 ? (
             <button
               onClick={handleNext}
@@ -394,19 +371,12 @@ export default function DailyPage() {
           ) : (
             <button
               onClick={handleSubmit}
-              disabled={!allAnswered}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
             >
               Submit Quiz
             </button>
           )}
         </div>
-
-        {!allAnswered && currentQuestionIndex === daily.questions.length - 1 && (
-          <p className="text-center text-orange-600 mt-4">
-            Please answer all questions before submitting
-          </p>
-        )}
       </div>
     </div>
   );
