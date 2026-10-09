@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { dailyApi } from '@/api/daily';
-import type { Daily, AnswerSubmission } from '@/types/daily';
+import type { Daily, AnswerSubmission, SubmitDailyResponse } from '@/types/daily';
+import QuizResults from '@/components/QuizResults';
 
 export default function DailyPage() {
   const { user, logout } = useAuthStore();
@@ -17,6 +18,8 @@ export default function DailyPage() {
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [timeLeft, setTimeLeft] = useState<number>(25);
   const [questionTimes, setQuestionTimes] = useState<Record<string, number>>({});
+  const [showResults, setShowResults] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<SubmitDailyResponse | null>(null);
 
   useEffect(() => {
     loadDaily();
@@ -120,10 +123,8 @@ export default function DailyPage() {
 
     try {
       const result = await dailyApi.submit(submissions);
-      console.log('Submitted!', result);
-      // TODO: Task 8 will show results page
-      alert(`Quiz submitted! Score: ${result.submission.score}`);
-      loadDaily(); // Reload to show completion state
+      setSubmissionResult(result);
+      setShowResults(true);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to submit');
     }
@@ -134,6 +135,20 @@ export default function DailyPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl text-gray-600">Loading daily quiz...</div>
       </div>
+    );
+  }
+
+  if (showResults && submissionResult && daily) {
+    return (
+      <QuizResults
+        submission={submissionResult.submission}
+        dailyNumber={submissionResult.dailyNumber}
+        totalQuestions={daily.questions.length}
+        onClose={() => {
+          setShowResults(false);
+          loadDaily();
+        }}
+      />
     );
   }
 
