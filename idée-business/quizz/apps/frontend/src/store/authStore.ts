@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { authApi } from '@/api/auth';
-import type { User } from '@/types/user';
+import type { User, UserStreak } from '@/types/user';
 
 interface AuthStore {
   user: User | null;
+  streak: UserStreak | null;
   loading: boolean;
   setUser: (user: User | null) => void;
   login: (usernameOrEmail: string, password: string) => Promise<void>;
@@ -14,6 +15,7 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
+  streak: null,
   loading: true,
 
   setUser: (user) => set({ user, loading: false }),
@@ -30,15 +32,15 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   logout: async () => {
     await authApi.logout();
-    set({ user: null });
+    set({ user: null, streak: null });
   },
 
   checkAuth: async () => {
     try {
-      const user = await authApi.me();
-      set({ user, loading: false });
+      const data = await authApi.me();
+      set({ user: data.user, streak: data.streak, loading: false });
     } catch {
-      set({ user: null, loading: false });
+      set({ user: null, streak: null, loading: false });
     }
   },
 }));

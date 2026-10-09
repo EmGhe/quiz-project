@@ -3,3 +3,9 @@ export interface User {
   username: string;
   email: string;
 }
+
+export interface UserStreak {
+  currentStreak: number;
+  longestStreak: number;
+  lastDailyDate: string | null;
+}

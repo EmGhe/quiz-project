@@ -46,6 +46,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUser() userId: string) {
     const user = await this.authService.getUserById(userId);
-    return { user };
+    const streak = await this.authService.getUserStreak(userId);
+    return { user, streak };
   }
 }

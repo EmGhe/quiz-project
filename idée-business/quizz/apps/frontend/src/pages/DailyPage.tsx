@@ -6,7 +6,7 @@ import type { Daily, AnswerSubmission, SubmitDailyResponse } from '@/types/daily
 import QuizResults from '@/components/QuizResults';
 
 export default function DailyPage() {
-  const { user, logout } = useAuthStore();
+  const { user, streak, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const [daily, setDaily] = useState<Daily | null>(null);
@@ -175,7 +175,7 @@ export default function DailyPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto p-8">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-primary-600 mb-2">
@@ -191,6 +191,33 @@ export default function DailyPage() {
               </button>
             </div>
           </div>
+
+          {/* Streak Display */}
+          {streak && (
+            <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg shadow-md p-6 mb-6 text-white">
+              <div className="flex items-center justify-around">
+                <div className="text-center">
+                  <div className="text-5xl font-bold mb-2">
+                    🔥 {streak.currentStreak}
+                  </div>
+                  <p className="text-sm opacity-90">Current Streak</p>
+                  <p className="text-xs opacity-75 mt-1">
+                    {streak.currentStreak === 1 ? 'day' : 'days'}
+                  </p>
+                </div>
+                <div className="h-16 w-px bg-white opacity-30"></div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold mb-2">
+                    🏆 {streak.longestStreak}
+                  </div>
+                  <p className="text-sm opacity-90">Longest Streak</p>
+                  <p className="text-xs opacity-75 mt-1">
+                    {streak.longestStreak === 1 ? 'day' : 'days'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
             <h2 className="text-2xl font-bold text-green-800 mb-4">
@@ -223,7 +250,7 @@ export default function DailyPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto p-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-primary-600 mb-2">
@@ -239,6 +266,33 @@ export default function DailyPage() {
             </button>
           </div>
         </div>
+
+        {/* Streak Display */}
+        {streak && (
+          <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg shadow-md p-6 mb-6 text-white">
+            <div className="flex items-center justify-around">
+              <div className="text-center">
+                <div className="text-5xl font-bold mb-2">
+                  🔥 {streak.currentStreak}
+                </div>
+                <p className="text-sm opacity-90">Current Streak</p>
+                <p className="text-xs opacity-75 mt-1">
+                  {streak.currentStreak === 1 ? 'day' : 'days'}
+                </p>
+              </div>
+              <div className="h-16 w-px bg-white opacity-30"></div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-2">
+                  🏆 {streak.longestStreak}
+                </div>
+                <p className="text-sm opacity-90">Longest Streak</p>
+                <p className="text-xs opacity-75 mt-1">
+                  {streak.longestStreak === 1 ? 'day' : 'days'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Progress Bar */}
         <div className="mb-6">

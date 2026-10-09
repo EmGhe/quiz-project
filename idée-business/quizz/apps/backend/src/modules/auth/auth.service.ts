@@ -90,4 +90,17 @@ export class AuthService {
       select: { id: true, username: true, email: true, createdAt: true },
     });
   }
+
+  async getUserStreak(userId: string) {
+    const streak = await this.prisma.userStreak.findUnique({
+      where: { userId },
+      select: {
+        currentStreak: true,
+        longestStreak: true,
+        lastDailyDate: true,
+      },
+    });
+
+    return streak || { currentStreak: 0, longestStreak: 0, lastDailyDate: null };
+  }
 }
