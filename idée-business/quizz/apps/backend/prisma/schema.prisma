@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Source {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // 'wikidata', 'data_gouv', 'api', 'manuel'
+  url         String?
+  reliability Int?     // 1-5
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  facts Fact[]
+
+  @@map("sources")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  parentId    String?
+  icon        String?
+  createdAt   DateTime @default(now())
+
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryHierarchy")
+  facts     Fact[]
+  questions Question[]
+
+  @@map("categories")
+}
+
+model Fact {
+  id                   String   @id @default(uuid())
+  subject              String
+  property             String
+  object               String
+  sourceId             String
+  sourceReference      String?
+  lastVerification     DateTime @default(now())
+  categoryId           String?
+  tags                 String[]
+  geoRegion            String?  // 'france', 'europe', 'amerique_nord', 'reste_monde'
+  data                 Json?
+  interestScore        Int?     // 1-10
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  createdBy            String?
+
+  source    Source        @relation(fields: [sourceId], references: [id])
+  category  Category?     @relation(fields: [categoryId], references: [id])
+  questions Question[]
+  history   FactHistory[]
+
+  @@unique([subject, property, object])
+  @@map("faits")
+}
+
+model Question {
+  id                      String   @id @default(uuid())
+  factId                  String
+  text                    String   @unique
+  questionType            String   @default("texte") // 'texte', 'image', 'carte'
+  mediaUrl                String?
+  mediaType               String?
+  difficulty              String?  // 'facile', 'moyen', 'difficile'
+  difficultyScore         Int?     // 1-100
+  categoryId              String?
+  qualityScore            Int?     // 1-100
+  ambiguous               Boolean  @default(false)
+  displayCount            Int      @default(0)
+  correctAnswersCount     Int      @default(0)
+  incorrectAnswersCount   Int      @default(0)
+  successRate             Decimal? @db.Decimal(5, 2)
+  status                  String   @default("brouillon") // 'brouillon', 'valide', 'publie', 'archive'
+  validatedBy             String?
+  validatedAt             DateTime?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  fact             Fact              @relation(fields: [factId], references: [id])
+  category         Category?         @relation(fields: [categoryId], references: [id])
+  acceptedAnswers  AcceptedAnswer[]
+  duplicates1      DetectedDuplicate[] @relation("Question1")
+  duplicates2      DetectedDuplicate[] @relation("Question2")
+
+  @@map("questions")
+}
+
+model AcceptedAnswer {
+  id           String   @id @default(uuid())
+  questionId   String
+  answer       String
+  isPrimary    Boolean  @default(false)
+  variantType  String?  // 'exacte', 'accent', 'abreviation', 'orthographe'
+  createdAt    DateTime @default(now())
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("reponses_acceptees")
+}
+
+model DetectedDuplicate {
+  id                String    @id @default(uuid())
+  question1Id       String
+  question2Id       String
+  similarityScore   Decimal   @db.Decimal(5, 2)
+  duplicateType     String    // 'exact', 'reformulation', 'partiel'
+  resolved          Boolean   @default(false)
+  action            String?   // 'fusionnee', 'conservee', 'supprimee'
+  resolvedBy        String?
+  resolvedAt        DateTime?
+  createdAt         DateTime  @default(now())
+
+  question1 Question @relation("Question1", fields: [question1Id], references: [id], onDelete: Cascade)
+  question2 Question @relation("Question2", fields: [question2Id], references: [id], onDelete: Cascade)
+
+  @@map("doublons_detectes")
+}
+
+model FactHistory {
+  id         String   @id @default(uuid())
+  factId     String
+  oldObject  String?
+  newObject  String?
+  reason     String?
+  modifiedBy String?
+  modifiedAt DateTime @default(now())
+
+  fact Fact @relation(fields: [factId], references: [id], onDelete: Cascade)
+
+  @@map("historique_faits")
+}
