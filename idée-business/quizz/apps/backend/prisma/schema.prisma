@@ -141,3 +141,31 @@ model FactHistory {
 
   @@map("historique_faits")
 }
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  streaks     UserStreak[]
+
+  @@map("users")
+}
+
+model UserStreak {
+  id             String   @id @default(uuid())
+  userId         String
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastDailyDate  String?  // YYYY-MM-DD format, UTC
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("user_streaks")
+}
