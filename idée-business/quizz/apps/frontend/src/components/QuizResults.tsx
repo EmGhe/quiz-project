@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { dailyApi } from '@/api/daily';
-import type { DailySubmission } from '@/types/daily';
+import type { DailySubmission, DailyQuestion } from '@/types/daily';
 
 interface QuizResultsProps {
   submission: DailySubmission;
   dailyNumber: number;
   totalQuestions: number;
+  questions: DailyQuestion[];
   onClose: () => void;
 }
 
@@ -18,7 +19,7 @@ interface LeaderboardEntry {
   correctCount: number;
 }
 
-export default function QuizResults({ submission, dailyNumber, totalQuestions, onClose }: QuizResultsProps) {
+export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, onClose }: QuizResultsProps) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
@@ -40,6 +41,9 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, o
   const userRank = leaderboard.find((entry) => entry.userId === submission.userId);
   const accuracy = ((submission.correctCount / totalQuestions) * 100).toFixed(1);
   const avgTimePerQuestion = (submission.totalTime / totalQuestions / 1000).toFixed(1);
+
+  // Create map of questionId to question for easy lookup
+  const questionMap = new Map(questions.map(q => [q.questionId, q]));
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -79,32 +83,44 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, o
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold mb-4">Answer Breakdown</h2>
           <div className="space-y-3">
-            {submission.answersData.map((ans: any, idx: number) => (
-              <div
-                key={idx}
-                className={`p-4 rounded-lg border-2 ${
-                  ans.correct
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-red-50 border-red-200'
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <span className={`font-bold ${ans.correct ? 'text-green-700' : 'text-red-700'}`}>
-                      {ans.correct ? '✓' : '✗'}
-                    </span>
-                    <span className="ml-2 text-gray-700">Question {idx + 1}</span>
-                    <p className="text-gray-600 mt-1">Your answer: <span className="font-medium">{ans.answer || '(no answer)'}</span></p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">{(ans.timeMs / 1000).toFixed(1)}s</p>
-                    {ans.correct && (
-                      <p className="text-green-700 font-bold">+{ans.pointsEarned} pts</p>
-                    )}
+            {submission.answersData.map((ans: any, idx: number) => {
+              const question = questionMap.get(ans.questionId);
+              const correctAnswer = question?.acceptedAnswers?.[0]?.answer || 'N/A';
+
+              return (
+                <div
+                  key={idx}
+                  className={`p-4 rounded-lg border-2 ${
+                    ans.correct
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-red-50 border-red-200'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <span className={`font-bold ${ans.correct ? 'text-green-700' : 'text-red-700'}`}>
+                        {ans.correct ? '✓' : '✗'}
+                      </span>
+                      <span className="ml-2 text-gray-700">Question {idx + 1}</span>
+                      <p className="text-gray-600 mt-1">
+                        Your answer: <span className="font-medium">{ans.answer || '(no answer)'}</span>
+                      </p>
+                      {!ans.correct && (
+                        <p className="text-gray-700 mt-1">
+                          Correct answer: <span className="font-bold text-green-700">{correctAnswer}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500">{(ans.timeMs / 1000).toFixed(1)}s</p>
+                      {ans.correct && (
+                        <p className="text-green-700 font-bold">+{ans.pointsEarned} pts</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

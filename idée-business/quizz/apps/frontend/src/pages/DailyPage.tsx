@@ -43,6 +43,29 @@ export default function DailyPage() {
     return () => clearInterval(interval);
   }, [currentQuestionIndex, daily]);
 
+  // Enter key handler for navigation
+  useEffect(() => {
+    if (!daily || daily.alreadyCompleted || showResults) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const allAnswered = daily.questions.every((q) => answers[q.questionId]?.trim());
+
+        if (currentQuestionIndex < daily.questions.length - 1) {
+          // Not last question - go to next
+          handleNext();
+        } else if (allAnswered) {
+          // Last question and all answered - submit
+          handleSubmit();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentQuestionIndex, daily, answers, showResults]);
+
   const loadDaily = async () => {
     try {
       setLoading(true);
@@ -144,6 +167,7 @@ export default function DailyPage() {
         submission={submissionResult.submission}
         dailyNumber={submissionResult.dailyNumber}
         totalQuestions={daily.questions.length}
+        questions={daily.questions}
         onClose={() => {
           setShowResults(false);
           loadDaily();
