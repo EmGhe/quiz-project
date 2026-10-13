@@ -88,4 +88,23 @@ export class AdminController {
   async getCategories() {
     return this.adminService.getCategories();
   }
+
+  @Get('reported-questions')
+  async getReportedQuestions(
+    @Query('limit') limit?: string,
+    @Query('minReports') minReports?: string,
+  ) {
+    return this.adminService.getReportedQuestions({
+      limit: limit ? parseInt(limit) : 50,
+      minReports: minReports ? parseInt(minReports) : 1,
+    });
+  }
+
+  @Post('reported-questions/:questionId/resolve')
+  async resolveReport(
+    @Param('questionId') questionId: string,
+    @Body('action') action: 'dismiss' | 'archive' | 'fix',
+  ) {
+    return this.adminService.resolveReport(questionId, action);
+  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AnswerValidatorService } from './answer-validator.service';
+import { ReportQuestionDto } from './dto/report-question.dto';
 
 @Injectable()
 export class DailyService {
@@ -418,5 +419,41 @@ export class DailyService {
       totalTime: s.totalTime,
       correctCount: s.correctCount,
     }));
+  }
+
+  async reportQuestion(userId: string, dto: ReportQuestionDto) {
+    // Get or create question metadata
+    let metadata = await this.prisma.questionMetadata.findUnique({
+      where: { questionId: dto.questionId },
+    });
+
+    if (!metadata) {
+      metadata = await this.prisma.questionMetadata.create({
+        data: {
+          questionId: dto.questionId,
+          userReports: [],
+        },
+      });
+    }
+
+    // Add report to user_reports JSON
+    const reports = (metadata.userReports as any[]) || [];
+    reports.push({
+      userId,
+      reason: dto.reason,
+      comment: dto.comment || null,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Update metadata
+    await this.prisma.questionMetadata.update({
+      where: { questionId: dto.questionId },
+      data: {
+        userReports: reports,
+        reportCount: reports.length,
+      },
+    });
+
+    return { success: true, message: 'Question reported successfully' };
   }
 }

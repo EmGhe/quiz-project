@@ -225,4 +225,67 @@ export class AdminService {
       orderBy: { name: 'asc' },
     });
   }
+
+  /**
+   * Get reported questions
+   */
+  async getReportedQuestions(params: { limit: number; minReports: number }) {
+    const metadata = await this.prisma.questionMetadata.findMany({
+      where: {
+        reportCount: { gte: params.minReports },
+      },
+      orderBy: { reportCount: 'desc' },
+      take: params.limit,
+      include: {
+        question: {
+          include: {
+            category: true,
+          },
+        },
+      },
+    });
+
+    return metadata.map((m) => ({
+      questionId: m.questionId,
+      question: m.question.text,
+      category: m.question.category?.name,
+      reportCount: m.reportCount,
+      reports: m.userReports,
+      status: m.question.status,
+    }));
+  }
+
+  /**
+   * Resolve a reported question
+   */
+  async resolveReport(questionId: string, action: 'dismiss' | 'archive' | 'fix') {
+    if (action === 'dismiss') {
+      // Clear reports
+      await this.prisma.questionMetadata.update({
+        where: { questionId },
+        data: {
+          userReports: [],
+          reportCount: 0,
+        },
+      });
+    } else if (action === 'archive') {
+      // Archive question
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { status: 'archive' },
+      });
+
+      // Clear reports
+      await this.prisma.questionMetadata.update({
+        where: { questionId },
+        data: {
+          userReports: [],
+          reportCount: 0,
+        },
+      });
+    }
+    // 'fix' action: keep reports but mark as reviewed (handled manually)
+
+    return { success: true };
+  }
 }

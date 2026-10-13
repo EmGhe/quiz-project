@@ -3,6 +3,7 @@ import { DailyService } from './daily.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { SubmitDailyDto } from './dto/submit-daily.dto';
+import { ReportQuestionDto } from './dto/report-question.dto';
 
 @Controller('api/daily')
 @UseGuards(JwtAuthGuard)
@@ -35,5 +36,13 @@ export class DailyController {
 
     const leaderboard = await this.dailyService.getLeaderboard(daily.id);
     return { leaderboard };
+  }
+
+  @Post('report-question')
+  async reportQuestion(
+    @CurrentUser() userId: string,
+    @Body() dto: ReportQuestionDto,
+  ) {
+    return this.dailyService.reportQuestion(userId, dto);
   }
 }
