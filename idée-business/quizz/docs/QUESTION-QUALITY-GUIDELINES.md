@@ -183,6 +183,40 @@ Avant de générer des questions, vérifier :
 
 ---
 
+### 8. Double préfixe dans les questions descriptives ⚠️
+**Détecté en :** Phase 12 - Gastronomie
+
+**Exemples incorrects :**
+- ❌ "Quel plat Plat de riz crémeux cuit progressivement dans un bouillon ?"
+- ❌ "Quel pain Pain plat indien cuit au four tandoor ?"
+- Problème : Duplication du préfixe "Quel plat/pain" + point d'interrogation inutile
+
+**Solution :**
+- ✅ "Plat de riz crémeux cuit progressivement dans un bouillon"
+- ✅ "Pain plat indien cuit au four tandoor"
+- **Règle :** Pour les questions descriptives gastronomie, enlever le préfixe "Quel plat/pain/dessert" et le point d'interrogation final
+- Script de correction : `scripts/fixes/fix-gastronomie-syntax.ts`
+
+---
+
+### 9. Mauvaise catégorisation Film vs Livre ⚠️ CRITIQUE
+**Détecté en :** Phase 17-18 - Films/Livres résumés et auteurs
+
+**Exemples incorrects :**
+- ❌ "Quel livre raconte l'histoire..." dans catégorie "Cinéma - Films"
+- ❌ "Qui a écrit le livre..." dans catégorie "Cinéma - Films"
+- Problème : Questions de littérature placées dans la catégorie Cinéma
+
+**Solution :**
+- ✅ Questions "Quel livre..." → Littérature (Française ou Internationale)
+- ✅ Questions "Qui a écrit le livre..." → Littérature (Française ou Internationale)
+- ✅ Questions "Quel film..." → Cinéma - Films
+- ✅ Questions "Qui a réalisé..." → Cinéma - Réalisateurs
+- **Règle :** TOUJOURS catégoriser selon le TYPE de réponse attendue (livre → Littérature, film → Cinéma)
+- Script de correction : `scripts/fixes/move-books-to-literature.ts`
+
+---
+
 ## 🔄 Évolution du document
 
 Ce document est vivant. À chaque nouveau problème identifié sur les questions, l'ajouter ici avec :
@@ -192,5 +226,5 @@ Ce document est vivant. À chaque nouveau problème identifié sur les questions
 - Solution appliquée
 - Règle générale à suivre
 
-**Dernière mise à jour :** 2026-10-12  
-**Nombre de problèmes documentés :** 7 (problème 1 étendu avec Phase 9)
+**Dernière mise à jour :** 2026-10-13  
+**Nombre de problèmes documentés :** 9
