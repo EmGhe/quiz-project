@@ -124,6 +124,23 @@ export class DailyService {
       }
     }
 
+    // Get recently used questions from last 7 dailies to avoid repetition
+    const recentDailies = await this.prisma.daily.findMany({
+      take: 7,
+      orderBy: { dailyNumber: 'desc' },
+      include: {
+        questions: {
+          select: { questionId: true },
+        },
+      },
+    });
+
+    const recentlyUsedQuestionIds = new Set(
+      recentDailies.flatMap(d => d.questions.map(q => q.questionId))
+    );
+
+    console.log(`  🚫 Excluding ${recentlyUsedQuestionIds.size} recently used questions (last 7 dailies)`);
+
     // Select questions from each category
     for (const dist of distribution) {
       if (dist.allocatedQuestions === 0) continue;
@@ -133,15 +150,35 @@ export class DailyService {
           categoryId: dist.categoryId,
           status: 'publie',
           enabledForDaily: true,
+          // Exclude recently used questions
+          id: { notIn: Array.from(recentlyUsedQuestionIds) },
         },
         include: { acceptedAnswers: true },
       });
 
-      // Shuffle and take allocated amount
-      const shuffled = categoryQuestions.sort(() => Math.random() - 0.5);
-      selectedQuestions.push(...shuffled.slice(0, dist.allocatedQuestions));
+      // If not enough fresh questions, allow reusing some
+      if (categoryQuestions.length < dist.allocatedQuestions) {
+        console.log(`  ⚠️  ${dist.categoryName}: Not enough fresh questions (${categoryQuestions.length}/${dist.allocatedQuestions}), allowing some repeats`);
 
-      console.log(`  ${dist.categoryName}: ${dist.allocatedQuestions} questions (${dist.totalQuestions} available)`);
+        const allCategoryQuestions = await this.prisma.question.findMany({
+          where: {
+            categoryId: dist.categoryId,
+            status: 'publie',
+            enabledForDaily: true,
+          },
+          include: { acceptedAnswers: true },
+        });
+
+        // Shuffle and take allocated amount
+        const shuffled = allCategoryQuestions.sort(() => Math.random() - 0.5);
+        selectedQuestions.push(...shuffled.slice(0, dist.allocatedQuestions));
+      } else {
+        // Shuffle and take allocated amount
+        const shuffled = categoryQuestions.sort(() => Math.random() - 0.5);
+        selectedQuestions.push(...shuffled.slice(0, dist.allocatedQuestions));
+      }
+
+      console.log(`  ${dist.categoryName}: ${dist.allocatedQuestions} questions (${categoryQuestions.length} available after exclusion)`);
     }
 
     // Final shuffle to mix categories

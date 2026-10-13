@@ -288,4 +288,62 @@ export class AdminService {
 
     return { success: true };
   }
+
+  /**
+   * Update primary answer
+   */
+  async updatePrimaryAnswer(questionId: string, newAnswer: string) {
+    const primaryAnswer = await this.prisma.acceptedAnswer.findFirst({
+      where: { questionId, isPrimary: true },
+    });
+
+    if (!primaryAnswer) {
+      throw new Error('Primary answer not found');
+    }
+
+    return this.prisma.acceptedAnswer.update({
+      where: { id: primaryAnswer.id },
+      data: { answer: newAnswer },
+    });
+  }
+
+  /**
+   * Add distractor
+   */
+  async addDistractor(questionId: string, text: string, order?: number) {
+    const existingDistractors = await this.prisma.distractor.findMany({
+      where: { questionId },
+      orderBy: { order: 'desc' },
+    });
+
+    const nextOrder = order ?? (existingDistractors.length > 0 ? existingDistractors[0].order + 1 : 1);
+
+    return this.prisma.distractor.create({
+      data: {
+        questionId,
+        distractorText: text,
+        order: nextOrder,
+        plausibilityScore: 0.5,
+      },
+    });
+  }
+
+  /**
+   * Update distractor
+   */
+  async updateDistractor(distractorId: string, text: string) {
+    return this.prisma.distractor.update({
+      where: { id: distractorId },
+      data: { distractorText: text },
+    });
+  }
+
+  /**
+   * Delete distractor
+   */
+  async deleteDistractor(distractorId: string) {
+    return this.prisma.distractor.delete({
+      where: { id: distractorId },
+    });
+  }
 }

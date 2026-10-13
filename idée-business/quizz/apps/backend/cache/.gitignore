@@ -1,0 +1,6 @@
+# Ignore all cached images
+*.cache
+images/
+
+# Keep the directory structure
+!.gitignore

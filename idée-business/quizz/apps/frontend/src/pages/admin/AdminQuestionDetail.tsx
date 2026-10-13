@@ -9,6 +9,11 @@ export default function AdminQuestionDetail() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newVariant, setNewVariant] = useState('');
+  const [editingPrimaryAnswer, setEditingPrimaryAnswer] = useState(false);
+  const [primaryAnswerText, setPrimaryAnswerText] = useState('');
+  const [editingDistractorId, setEditingDistractorId] = useState<string | null>(null);
+  const [editingDistractorText, setEditingDistractorText] = useState('');
+  const [newDistractor, setNewDistractor] = useState('');
 
   useEffect(() => {
     if (id) loadQuestion();
@@ -64,6 +69,83 @@ export default function AdminQuestionDetail() {
     } catch (err) {
       console.error('Failed to delete variant:', err);
       alert('Failed to delete variant');
+    }
+  };
+
+  const startEditingPrimaryAnswer = (answer: string) => {
+    setEditingPrimaryAnswer(true);
+    setPrimaryAnswerText(answer);
+  };
+
+  const cancelEditingPrimaryAnswer = () => {
+    setEditingPrimaryAnswer(false);
+    setPrimaryAnswerText('');
+  };
+
+  const savePrimaryAnswer = async () => {
+    if (!primaryAnswerText.trim()) {
+      alert('Answer cannot be empty');
+      return;
+    }
+
+    try {
+      await adminApi.updatePrimaryAnswer(id!, primaryAnswerText.trim());
+      await loadQuestion();
+      cancelEditingPrimaryAnswer();
+    } catch (err) {
+      console.error('Failed to update primary answer:', err);
+      alert('Failed to update answer');
+    }
+  };
+
+  const startEditingDistractor = (distractorId: string, text: string) => {
+    setEditingDistractorId(distractorId);
+    setEditingDistractorText(text);
+  };
+
+  const cancelEditingDistractor = () => {
+    setEditingDistractorId(null);
+    setEditingDistractorText('');
+  };
+
+  const saveDistractor = async (distractorId: string) => {
+    if (!editingDistractorText.trim()) {
+      alert('Distractor cannot be empty');
+      return;
+    }
+
+    try {
+      await adminApi.updateDistractor(distractorId, editingDistractorText.trim());
+      await loadQuestion();
+      cancelEditingDistractor();
+    } catch (err) {
+      console.error('Failed to update distractor:', err);
+      alert('Failed to update distractor');
+    }
+  };
+
+  const handleDeleteDistractor = async (distractorId: string) => {
+    if (!confirm('Delete this distractor?')) return;
+
+    try {
+      await adminApi.deleteDistractor(distractorId);
+      await loadQuestion();
+    } catch (err) {
+      console.error('Failed to delete distractor:', err);
+      alert('Failed to delete distractor');
+    }
+  };
+
+  const handleAddDistractor = async () => {
+    if (!newDistractor.trim()) return;
+
+    try {
+      await adminApi.addDistractor(id!, newDistractor.trim());
+      setNewDistractor('');
+      await loadQuestion();
+    } catch (err) {
+      console.error('Failed to add distractor:', err);
+      alert('Failed to add distractor');
     }
   };
 
@@ -183,9 +265,54 @@ export default function AdminQuestionDetail() {
         {/* Correct Answer */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-lg font-bold mb-3">Correct Answer</h2>
-          <p className="text-xl font-semibold text-green-700">
-            {primaryAnswer?.answer || 'N/A'}
-          </p>
+          {editingPrimaryAnswer ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={primaryAnswerText}
+                onChange={(e) => setPrimaryAnswerText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') savePrimaryAnswer();
+                  if (e.key === 'Escape') cancelEditingPrimaryAnswer();
+                }}
+                autoFocus
+                className="flex-1 text-xl font-semibold text-green-700 border-2 border-primary-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+              <button
+                onClick={savePrimaryAnswer}
+                className="p-2 text-green-600 hover:bg-green-50 rounded"
+                title="Sauvegarder (Entrée)"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </button>
+              <button
+                onClick={cancelEditingPrimaryAnswer}
+                className="p-2 text-red-600 hover:bg-red-50 rounded"
+                title="Annuler (Escape)"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 group">
+              <p className="text-xl font-semibold text-green-700">
+                {primaryAnswer?.answer || 'N/A'}
+              </p>
+              <button
+                onClick={() => startEditingPrimaryAnswer(primaryAnswer?.answer || '')}
+                className="p-1 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Modifier la réponse"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Answer Variants */}
@@ -233,18 +360,97 @@ export default function AdminQuestionDetail() {
         {/* Distractors */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-lg font-bold mb-3">Distractors (QCM)</h2>
-          <div className="space-y-2">
+          <div className="space-y-2 mb-4">
             {question.distractors.length === 0 ? (
               <p className="text-gray-500 text-sm">No distractors</p>
             ) : (
               question.distractors.map((d: any, idx: number) => (
-                <div key={d.id} className="flex items-center gap-3 bg-gray-50 p-3 rounded">
-                  <span className="font-medium text-gray-700">{idx + 1}.</span>
-                  <span className="flex-1">{d.distractorText}</span>
-                  <span className="text-sm text-gray-500">Score: {d.plausibilityScore}</span>
+                <div key={d.id} className="bg-gray-50 p-3 rounded">
+                  {editingDistractorId === d.id ? (
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-700">{idx + 1}.</span>
+                      <input
+                        type="text"
+                        value={editingDistractorText}
+                        onChange={(e) => setEditingDistractorText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') saveDistractor(d.id);
+                          if (e.key === 'Escape') cancelEditingDistractor();
+                        }}
+                        onBlur={() => cancelEditingDistractor()}
+                        autoFocus
+                        className="flex-1 border-2 border-primary-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                      <button
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          saveDistractor(d.id);
+                        }}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded"
+                        title="Sauvegarder (Entrée)"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          cancelEditingDistractor();
+                        }}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded"
+                        title="Annuler (Escape)"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 group">
+                      <span className="font-medium text-gray-700">{idx + 1}.</span>
+                      <span className="flex-1">{d.distractorText}</span>
+                      <button
+                        onClick={() => startEditingDistractor(d.id, d.distractorText)}
+                        className="p-1 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Modifier"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteDistractor(d.id)}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Supprimer"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))
             )}
+          </div>
+
+          {/* Add New Distractor */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newDistractor}
+              onChange={(e) => setNewDistractor(e.target.value)}
+              placeholder="Add new distractor..."
+              className="flex-1 border border-gray-300 rounded-lg p-2"
+              onKeyPress={(e) => e.key === 'Enter' && handleAddDistractor()}
+            />
+            <button
+              onClick={handleAddDistractor}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            >
+              Add
+            </button>
           </div>
         </div>
 

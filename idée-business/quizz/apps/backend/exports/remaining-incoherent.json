@@ -1,0 +1,266 @@
+{
+  "total": 9,
+  "questions": [
+    {
+      "id": "88e60705-961c-49f2-b3e2-7c71d6f62672",
+      "text": "Quelle est la capitale de Égypte ?",
+      "category": "Géographie",
+      "answer": "Le Caire",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "Nouveau Caire",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Kinshasa",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Khartoum",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Djouba",
+          "type": "place",
+          "isIncoherent": false
+        }
+      ]
+    },
+    {
+      "id": "de568404-b2a6-4eea-a2a1-b631688b602c",
+      "text": "Quelle ville est la capitale de Égypte ?",
+      "category": "Géographie",
+      "answer": "Le Caire",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "Nouveau Caire",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Kinshasa",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Khartoum",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Djouba",
+          "type": "place",
+          "isIncoherent": false
+        }
+      ]
+    },
+    {
+      "id": "c118b08f-8ba9-4df7-b383-89bc2df65218",
+      "text": "De quelle animation japonaise provient ce personnage ? [4]",
+      "category": "Animation Japonaise",
+      "answer": "L'Attaque des Titans",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "Seven Deadly Sins",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Dragon Ball",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Naruto",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Saitama",
+          "type": "place",
+          "isIncoherent": false
+        }
+      ]
+    },
+    {
+      "id": "03ea2916-55c1-4f63-b1c7-4f68f61baa47",
+      "text": "Quel handballeur français, légende du handball mondial et triple champion olympique, porte le nom \"Karabatic\" ?",
+      "category": "Sports - Handball",
+      "answer": "Nikola Karabatic",
+      "expectedType": "person",
+      "allDistractors": [
+        {
+          "text": "France",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Espagne",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Allemagne",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Les Experts",
+          "type": "person",
+          "isIncoherent": true
+        }
+      ]
+    },
+    {
+      "id": "f57bb82b-1050-4da1-8acd-7d3c7d4fd3d4",
+      "text": "Quel est le métier principal de Dr. Dre ?",
+      "category": "Musique - Artistes internationaux",
+      "answer": "Producteur et rappeur",
+      "expectedType": "person",
+      "allDistractors": [
+        {
+          "text": "King of Pop",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "The Beatles",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Bad Romance",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Queen",
+          "type": "person",
+          "isIncoherent": false
+        }
+      ]
+    },
+    {
+      "id": "21b5472b-6ebc-4129-9f6c-7239116659f4",
+      "text": "Handballeur français, légende du handball mondial, triple champion olympique. Qui est ce sportif ?",
+      "category": "Sports - Handball",
+      "answer": "Nikola Karabatic",
+      "expectedType": "person",
+      "allDistractors": [
+        {
+          "text": "France",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Espagne",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Allemagne",
+          "type": "person",
+          "isIncoherent": false
+        },
+        {
+          "text": "Les Experts",
+          "type": "person",
+          "isIncoherent": true
+        }
+      ]
+    },
+    {
+      "id": "dbb38c2e-293d-4c5b-bf9d-474db7af70ca",
+      "text": "Quelle franchise de jeu vidéo met en scène un héros nommé Link qui explore Hyrule ?",
+      "category": "Jeux Vidéo - Franchises",
+      "answer": "The Legend of Zelda",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "Final Fantasy",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "Minecraft",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Pokémon",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "The Witcher",
+          "type": "title",
+          "isIncoherent": false
+        }
+      ]
+    },
+    {
+      "id": "90126bf8-6fc5-4e00-acbb-611dd3578707",
+      "text": "Quelle franchise de jeu vidéo met en scène un sorceleur chasseur de monstres nommé Geralt ?",
+      "category": "Jeux Vidéo - Franchises",
+      "answer": "The Witcher",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "Super Mario",
+          "type": "person",
+          "isIncoherent": true
+        },
+        {
+          "text": "The Legend of Zelda",
+          "type": "title",
+          "isIncoherent": false
+        },
+        {
+          "text": "Fortnite",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Epic Games",
+          "type": "person",
+          "isIncoherent": true
+        }
+      ]
+    },
+    {
+      "id": "537fe18d-5140-4029-98da-e8496c9996be",
+      "text": "Dans quelle franchise de jeu vidéo trouve-t-on le personnage Geralt de Riv ?",
+      "category": "Jeux Vidéo - Personnages",
+      "answer": "The Witcher",
+      "expectedType": "title",
+      "allDistractors": [
+        {
+          "text": "God of War",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "Halo",
+          "type": "place",
+          "isIncoherent": false
+        },
+        {
+          "text": "The Legend of Zelda",
+          "type": "title",
+          "isIncoherent": false
+        },
+        {
+          "text": "Master Chief",
+          "type": "person",
+          "isIncoherent": true
+        }
+      ]
+    }
+  ]
+}

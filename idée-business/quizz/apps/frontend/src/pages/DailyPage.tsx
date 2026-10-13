@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { dailyApi } from '@/api/daily';
 import type { Daily, AnswerSubmission, SubmitDailyResponse } from '@/types/daily';
 import QuizResults from '@/components/QuizResults';
+import ReportQuestionModal from '@/components/ReportQuestionModal';
 
 export default function DailyPage() {
   const { user, streak, logout } = useAuthStore();
@@ -20,6 +21,8 @@ export default function DailyPage() {
   const [questionTimes, setQuestionTimes] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<SubmitDailyResponse | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   useEffect(() => {
     loadDaily();
@@ -398,7 +401,29 @@ export default function DailyPage() {
               autoFocus
             />
           </div>
+
+          {/* Report Question Button */}
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="text-sm text-gray-500 hover:text-red-600 flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Signaler cette question
+            </button>
+          </div>
         </div>
+
+        {/* Report Success Message */}
+        {reportSuccess && (
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-700 text-center">
+              ✅ Question signalée avec succès. Merci pour votre contribution !
+            </p>
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="flex justify-end">
@@ -419,6 +444,20 @@ export default function DailyPage() {
           )}
         </div>
       </div>
+
+      {/* Report Question Modal */}
+      {showReportModal && (
+        <ReportQuestionModal
+          questionId={currentQuestion.questionId}
+          questionText={currentQuestion.text}
+          onClose={() => setShowReportModal(false)}
+          onSuccess={() => {
+            setShowReportModal(false);
+            setReportSuccess(true);
+            setTimeout(() => setReportSuccess(false), 5000);
+          }}
+        />
+      )}
     </div>
   );
 }

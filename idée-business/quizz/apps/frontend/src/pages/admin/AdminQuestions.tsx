@@ -8,6 +8,8 @@ export default function AdminQuestions() {
   const [pagination, setPagination] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
 
   // Filters from URL params
   const currentPage = parseInt(searchParams.get('page') || '1');
@@ -129,6 +131,46 @@ export default function AdminQuestions() {
     } catch (err) {
       console.error('Failed to archive question:', err);
       alert('Échec de l\'archivage de la question');
+    }
+  };
+
+  const startEditing = (questionId: string, currentText: string) => {
+    setEditingQuestionId(questionId);
+    setEditingText(currentText);
+  };
+
+  const cancelEditing = () => {
+    setEditingQuestionId(null);
+    setEditingText('');
+  };
+
+  const saveQuestionText = async (questionId: string) => {
+    if (!editingText.trim()) {
+      alert('Le texte de la question ne peut pas être vide');
+      return;
+    }
+
+    try {
+      await adminApi.updateQuestion(questionId, { text: editingText });
+
+      // Update local state
+      setQuestions(questions.map(q =>
+        q.id === questionId ? { ...q, text: editingText } : q
+      ));
+
+      cancelEditing();
+    } catch (err) {
+      console.error('Failed to update question text:', err);
+      alert('Échec de la mise à jour de la question');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, questionId: string) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveQuestionText(questionId);
+    } else if (e.key === 'Escape') {
+      cancelEditing();
     }
   };
 
@@ -285,7 +327,57 @@ export default function AdminQuestions() {
                           QCM
                         </button>
                       </div>
-                      <p className="text-lg font-medium text-gray-900">{q.text}</p>
+
+                      {editingQuestionId === q.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, q.id)}
+                            onBlur={() => cancelEditing()}
+                            autoFocus
+                            className="flex-1 text-lg font-medium text-gray-900 border-2 border-primary-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                          <button
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              saveQuestionText(q.id);
+                            }}
+                            className="p-1 text-green-600 hover:bg-green-50 rounded"
+                            title="Sauvegarder (Entrée)"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </button>
+                          <button
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              cancelEditing();
+                            }}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded"
+                            title="Annuler (Escape)"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 group">
+                          <p className="text-lg font-medium text-gray-900">{q.text}</p>
+                          <button
+                            onClick={() => startEditing(q.id, q.text)}
+                            className="p-1 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Modifier la question"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 

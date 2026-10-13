@@ -7,6 +7,7 @@ import DailyPage from '@/pages/DailyPage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuestions from '@/pages/admin/AdminQuestions';
 import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
+import AdminReportedQuestions from '@/pages/admin/AdminReportedQuestions';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -49,6 +50,10 @@ function App() {
         <Route
           path="/admin/questions/:id"
           element={user ? <AdminQuestionDetail /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin/reported"
+          element={user ? <AdminReportedQuestions /> : <Navigate to="/login" />}
         />
         <Route path="/" element={<Navigate to="/daily" />} />
       </Routes>

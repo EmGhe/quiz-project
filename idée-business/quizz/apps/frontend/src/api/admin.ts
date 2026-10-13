@@ -61,4 +61,34 @@ export const adminApi = {
     const response = await apiClient.get('/api/admin/categories');
     return response.data;
   },
+
+  async getReportedQuestions(params?: { limit?: number; minReports?: number }) {
+    const response = await apiClient.get('/api/admin/reported-questions', { params });
+    return response.data;
+  },
+
+  async resolveReport(questionId: string, action: 'dismiss' | 'archive' | 'fix') {
+    const response = await apiClient.post(`/api/admin/reported-questions/${questionId}/resolve`, { action });
+    return response.data;
+  },
+
+  async updatePrimaryAnswer(questionId: string, answer: string) {
+    const response = await apiClient.patch(`/api/admin/questions/${questionId}/primary-answer`, { answer });
+    return response.data;
+  },
+
+  async addDistractor(questionId: string, text: string, order?: number) {
+    const response = await apiClient.post(`/api/admin/questions/${questionId}/distractors`, { text, order });
+    return response.data;
+  },
+
+  async updateDistractor(distractorId: string, text: string) {
+    const response = await apiClient.patch(`/api/admin/distractors/${distractorId}`, { text });
+    return response.data;
+  },
+
+  async deleteDistractor(distractorId: string) {
+    const response = await apiClient.delete(`/api/admin/distractors/${distractorId}`);
+    return response.data;
+  },
 };

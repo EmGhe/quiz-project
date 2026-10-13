@@ -107,4 +107,33 @@ export class AdminController {
   ) {
     return this.adminService.resolveReport(questionId, action);
   }
+
+  @Patch('questions/:id/primary-answer')
+  async updatePrimaryAnswer(
+    @Param('id') id: string,
+    @Body('answer') answer: string,
+  ) {
+    return this.adminService.updatePrimaryAnswer(id, answer);
+  }
+
+  @Post('questions/:id/distractors')
+  async addDistractor(
+    @Param('id') id: string,
+    @Body() data: { text: string; order?: number },
+  ) {
+    return this.adminService.addDistractor(id, data.text, data.order);
+  }
+
+  @Patch('distractors/:id')
+  async updateDistractor(
+    @Param('id') id: string,
+    @Body('text') text: string,
+  ) {
+    return this.adminService.updateDistractor(id, text);
+  }
+
+  @Delete('distractors/:id')
+  async deleteDistractor(@Param('id') id: string) {
+    return this.adminService.deleteDistractor(id);
+  }
 }
