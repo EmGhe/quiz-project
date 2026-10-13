@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { AnswerValidatorService } from './answer-validator.service';
 
 @Injectable()
 export class DailyService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private answerValidator: AnswerValidatorService,
+  ) {}
 
   private getTodayDateUTC(): string {
     return new Date().toISOString().split('T')[0];
@@ -25,19 +29,122 @@ export class DailyService {
 
     const dailyNumber = (lastDaily?.dailyNumber || 0) + 1;
 
-    // Select 10 random published questions
-    const questions = await this.prisma.question.findMany({
-      where: { status: 'publie' },
-      include: { acceptedAnswers: true },
-      take: 100,
+    // Get all categories with their published questions
+    const categories = await this.prisma.category.findMany({
+      where: {
+        questions: {
+          some: {
+            status: 'publie',
+            enabledForDaily: true
+          }
+        }
+      },
+      include: {
+        questions: {
+          where: {
+            status: 'publie',
+            enabledForDaily: true
+          },
+          select: { id: true }
+        }
+      }
     });
 
-    if (questions.length < 10) {
+    const totalQuestions = categories.reduce((sum, cat) => sum + cat.questions.length, 0);
+
+    if (totalQuestions < 10) {
       throw new Error('Not enough published questions for daily');
     }
 
-    // Shuffle and take 10
-    const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, 10);
+    // Balanced selection strategy:
+    // - Minimum 2 questions per category (if category has ≥20 questions)
+    // - Minimum 1 question per category (if category has ≥10 questions)
+    // - Rest distributed proportionally
+    const TARGET_QUESTIONS = 10;
+    const selectedQuestions = [];
+
+    // Calculate distribution
+    const distribution = categories.map(cat => {
+      const count = cat.questions.length;
+      let minQuestions = 0;
+
+      if (count >= 20) minQuestions = 2;
+      else if (count >= 10) minQuestions = 1;
+
+      return {
+        categoryId: cat.id,
+        categoryName: cat.name,
+        totalQuestions: count,
+        minQuestions,
+        allocatedQuestions: minQuestions,
+      };
+    });
+
+    // Calculate remaining slots after minimum allocation
+    const allocatedMin = distribution.reduce((sum, d) => sum + d.minQuestions, 0);
+
+    // If we allocated more than target (too many categories), reduce allocations
+    if (allocatedMin > TARGET_QUESTIONS) {
+      // Sort by total questions descending (prioritize bigger categories)
+      const sorted = distribution.map((d, index) => ({ ...d, originalIndex: index }))
+        .sort((a, b) => b.totalQuestions - a.totalQuestions);
+
+      // Reset all allocations
+      distribution.forEach(d => d.allocatedQuestions = 0);
+
+      // Allocate 1 question to top categories until we reach target
+      for (let i = 0; i < Math.min(TARGET_QUESTIONS, sorted.length); i++) {
+        distribution[sorted[i].originalIndex].allocatedQuestions = 1;
+      }
+    } else {
+      const remainingSlots = TARGET_QUESTIONS - allocatedMin;
+
+      // Distribute remaining slots proportionally
+      if (remainingSlots > 0) {
+        const proportionalDistribution = distribution.map((d, index) => ({
+          ...d,
+          originalIndex: index,
+          proportion: d.totalQuestions / totalQuestions,
+        }));
+
+        // Sort by proportion descending
+        proportionalDistribution.sort((a, b) => b.proportion - a.proportion);
+
+        // Allocate remaining slots
+        for (let i = 0; i < remainingSlots; i++) {
+          const idx = i % proportionalDistribution.length;
+          proportionalDistribution[idx].allocatedQuestions++;
+        }
+
+        // Update distribution using original indexes
+        proportionalDistribution.forEach((pd) => {
+          distribution[pd.originalIndex].allocatedQuestions = pd.allocatedQuestions;
+        });
+      }
+    }
+
+    // Select questions from each category
+    for (const dist of distribution) {
+      if (dist.allocatedQuestions === 0) continue;
+
+      const categoryQuestions = await this.prisma.question.findMany({
+        where: {
+          categoryId: dist.categoryId,
+          status: 'publie',
+          enabledForDaily: true,
+        },
+        include: { acceptedAnswers: true },
+      });
+
+      // Shuffle and take allocated amount
+      const shuffled = categoryQuestions.sort(() => Math.random() - 0.5);
+      selectedQuestions.push(...shuffled.slice(0, dist.allocatedQuestions));
+
+      console.log(`  ${dist.categoryName}: ${dist.allocatedQuestions} questions (${dist.totalQuestions} available)`);
+    }
+
+    // Final shuffle to mix categories
+    const shuffled = selectedQuestions.sort(() => Math.random() - 0.5);
 
     const daily = await this.prisma.daily.create({
       data: {
@@ -109,6 +216,8 @@ export class DailyService {
       questions: daily.questions.map((dq) => ({
         questionId: dq.question.id,
         text: dq.question.text,
+        questionType: dq.question.questionType,
+        mediaUrl: dq.question.mediaUrl,
         order: dq.order,
         acceptedAnswers: dq.question.acceptedAnswers,
       })),
@@ -165,11 +274,14 @@ export class DailyService {
         throw new Error(`Invalid time for question ${ans.questionId}`);
       }
 
-      const acceptedAnswers = question.acceptedAnswers.map((a) =>
-        a.answer.toLowerCase().trim()
+      // Use advanced answer validation (Levenshtein, normalization, etc.)
+      const correct = this.answerValidator.validateAnswer(
+        ans.answer,
+        question.acceptedAnswers.map((a) => ({
+          answer: a.answer,
+          levenshteinThreshold: a.levenshteinThreshold,
+        }))
       );
-      const userAnswer = ans.answer.toLowerCase().trim();
-      const correct = acceptedAnswers.includes(userAnswer);
 
       let pointsEarned = 0;
 

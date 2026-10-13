@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DailyModule } from './modules/daily/daily.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DailyModule } from './modules/daily/daily.module';
     QuestionsModule,
     AuthModule,
     DailyModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

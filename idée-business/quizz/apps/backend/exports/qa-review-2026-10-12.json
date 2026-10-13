@@ -1,0 +1,1512 @@
+{
+  "exportDate": "2026-10-12T13:02:46.447Z",
+  "totalQuestions": 50,
+  "questions": [
+    {
+      "id": "df129d44-146f-46b9-9d2f-b2ea1dd02a2f",
+      "text": "Quelle est la capitale de Russie ?",
+      "correctAnswer": "Moscou",
+      "acceptedVariants": [
+        "moscou"
+      ],
+      "distractors": [
+        "Londres",
+        "Ankara",
+        "Berlin",
+        "Bucarest"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 93,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Moscou",
+        "property": "est la capitale de",
+        "object": "Russie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "119a8c91-f599-4d44-aefb-17c001e24e51",
+      "text": "Quelle est la capitale de Royaume-Uni ?",
+      "correctAnswer": "Londres",
+      "acceptedVariants": [
+        "londres"
+      ],
+      "distractors": [
+        "Moscou",
+        "Ankara",
+        "Berlin",
+        "Madrid"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 93,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Londres",
+        "property": "est la capitale de",
+        "object": "Royaume-Uni",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "29f41a84-6442-4ef9-a224-92bbe8f79724",
+      "text": "Quelle ville est la capitale de Russie ?",
+      "correctAnswer": "Moscou",
+      "acceptedVariants": [
+        "moscou"
+      ],
+      "distractors": [
+        "Londres",
+        "Ankara",
+        "Berlin",
+        "Rome"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 93,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Moscou",
+        "property": "est la capitale de",
+        "object": "Russie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "3354e663-ec5d-4002-bd05-439b2d30c700",
+      "text": "Quelle ville est la capitale de Royaume-Uni ?",
+      "correctAnswer": "Londres",
+      "acceptedVariants": [
+        "londres"
+      ],
+      "distractors": [
+        "Moscou",
+        "Ankara",
+        "Berlin",
+        "Madrid"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 93,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Londres",
+        "property": "est la capitale de",
+        "object": "Royaume-Uni",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "2cfb5198-84c9-4dfc-b36b-13e2c66e7cf3",
+      "text": "Quelle est la capitale de Italie ?",
+      "correctAnswer": "Rome",
+      "acceptedVariants": [
+        "rome"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Madrid"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Rome",
+        "property": "est la capitale de",
+        "object": "Italie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "63e6d0b7-1bdb-4786-9450-3fc646ad983b",
+      "text": "Quelle ville est la capitale de Italie ?",
+      "correctAnswer": "Rome",
+      "acceptedVariants": [
+        "rome"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Madrid"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Rome",
+        "property": "est la capitale de",
+        "object": "Italie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "742cc8be-d424-4491-8114-83c03a2982cc",
+      "text": "Quelle est la capitale de France ?",
+      "correctAnswer": "Paris",
+      "acceptedVariants": [
+        "paris"
+      ],
+      "distractors": [
+        "Moscou",
+        "Londres",
+        "Ankara",
+        "Madrid"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Paris",
+        "property": "est la capitale de",
+        "object": "France",
+        "geoRegion": "france"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "ee955a58-1fcb-4657-8349-68d66f8e7d50",
+      "text": "Quelle ville est la capitale de Mexique ?",
+      "correctAnswer": "Mexico",
+      "acceptedVariants": [
+        "mexico"
+      ],
+      "distractors": [
+        "Saint-Pétersbourg",
+        "Ottawa",
+        "Washington",
+        "Managua"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Mexico",
+        "property": "est la capitale de",
+        "object": "Mexique",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "cd66c400-8e23-4fe0-90ef-2d742ef8126a",
+      "text": "Quelle ville est la capitale de Allemagne ?",
+      "correctAnswer": "Berlin",
+      "acceptedVariants": [
+        "berlin"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Rome"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Berlin",
+        "property": "est la capitale de",
+        "object": "Allemagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "405cc604-71b3-40bf-94a0-6280c71fda78",
+      "text": "Quelle est la capitale de Allemagne ?",
+      "correctAnswer": "Berlin",
+      "acceptedVariants": [
+        "berlin"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Rome"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Berlin",
+        "property": "est la capitale de",
+        "object": "Allemagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "7a35e53c-9fbe-44f2-aa95-077859fc6382",
+      "text": "Quelle est la capitale de république populaire de Chine ?",
+      "correctAnswer": "Pékin",
+      "acceptedVariants": [
+        "Pekin",
+        "pékin"
+      ],
+      "distractors": [
+        "Tokyo",
+        "Dacca",
+        "Jakarta",
+        "Kuala Lumpur"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Pékin",
+        "property": "est la capitale de",
+        "object": "république populaire de Chine",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "2f3070f6-d86b-4d2d-a5a5-10adbcade0c0",
+      "text": "Quelle ville est la capitale de Espagne ?",
+      "correctAnswer": "Madrid",
+      "acceptedVariants": [
+        "madrid"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Copenhague"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Madrid",
+        "property": "est la capitale de",
+        "object": "Espagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "cb32aa6e-3935-4974-9194-15f1f71527a1",
+      "text": "Quelle est la capitale de Japon ?",
+      "correctAnswer": "Tokyo",
+      "acceptedVariants": [
+        "tokyo"
+      ],
+      "distractors": [
+        "Pékin",
+        "Jakarta",
+        "Dacca",
+        "Séoul"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Tokyo",
+        "property": "est la capitale de",
+        "object": "Japon",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "d6458968-a30d-4597-ad6a-346895457c96",
+      "text": "Quelle ville est la capitale de Turquie ?",
+      "correctAnswer": "Ankara",
+      "acceptedVariants": [
+        "ankara"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Berlin",
+        "Copenhague"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Ankara",
+        "property": "est la capitale de",
+        "object": "Turquie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "f7687d6e-79dc-4084-b4cd-707914e3c0e7",
+      "text": "Quelle est la capitale de Mexique ?",
+      "correctAnswer": "Mexico",
+      "acceptedVariants": [
+        "mexico"
+      ],
+      "distractors": [
+        "Saint-Pétersbourg",
+        "Ottawa",
+        "Washington",
+        "Panama"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Mexico",
+        "property": "est la capitale de",
+        "object": "Mexique",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "edc37adb-41a7-4215-9d94-a75126481675",
+      "text": "Quelle ville est la capitale de république populaire de Chine ?",
+      "correctAnswer": "Pékin",
+      "acceptedVariants": [
+        "Pekin",
+        "pékin"
+      ],
+      "distractors": [
+        "Tokyo",
+        "Dacca",
+        "Jakarta",
+        "Séoul"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Pékin",
+        "property": "est la capitale de",
+        "object": "république populaire de Chine",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "4f64b043-8793-48cb-8b35-6dc17227d035",
+      "text": "Quelle ville est la capitale de Japon ?",
+      "correctAnswer": "Tokyo",
+      "acceptedVariants": [
+        "tokyo"
+      ],
+      "distractors": [
+        "Pékin",
+        "Jakarta",
+        "Dacca",
+        "Séoul"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Tokyo",
+        "property": "est la capitale de",
+        "object": "Japon",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "17cdf40b-1c2a-44d6-877b-36462f77114c",
+      "text": "Quelle est la capitale de Turquie ?",
+      "correctAnswer": "Ankara",
+      "acceptedVariants": [
+        "ankara"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Berlin",
+        "Copenhague"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Ankara",
+        "property": "est la capitale de",
+        "object": "Turquie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "dcc90744-7e3b-4089-88df-34a35c59b984",
+      "text": "Quelle est la capitale de Espagne ?",
+      "correctAnswer": "Madrid",
+      "acceptedVariants": [
+        "madrid"
+      ],
+      "distractors": [
+        "Londres",
+        "Moscou",
+        "Ankara",
+        "Berlin"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 20,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Madrid",
+        "property": "est la capitale de",
+        "object": "Espagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "9aecfdfe-8450-408c-98fb-5ea5aa852b57",
+      "text": "Quelle ville est la capitale de France ?",
+      "correctAnswer": "Paris",
+      "acceptedVariants": [
+        "paris"
+      ],
+      "distractors": [
+        "Moscou",
+        "Londres",
+        "Ankara",
+        "Berlin"
+      ],
+      "difficulty": "facile",
+      "difficultyScore": 25,
+      "qualityScore": 91,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Paris",
+        "property": "est la capitale de",
+        "object": "France",
+        "geoRegion": "france"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "a69b1dc4-e099-447f-a417-bef42641d091",
+      "text": "Moscou est la capitale de quel pays ?",
+      "correctAnswer": "Russie",
+      "acceptedVariants": [
+        "Russia"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Turquie",
+        "Allemagne",
+        "royaume de Roumanie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 98,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Moscou",
+        "property": "est la capitale de",
+        "object": "Russie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "4318e4c0-9ff5-4f6c-9d3a-95175767c1db",
+      "text": "Dans quel pays se trouve Moscou ?",
+      "correctAnswer": "Russie",
+      "acceptedVariants": [
+        "Russia"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Turquie",
+        "Allemagne",
+        "Espagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 98,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Moscou",
+        "property": "est la capitale de",
+        "object": "Russie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "ce1bc72a-2741-4eea-a777-a578675db406",
+      "text": "Londres est la capitale de quel pays ?",
+      "correctAnswer": "Royaume-Uni",
+      "acceptedVariants": [
+        "United Kingdom",
+        "UK",
+        "Royaume Uni",
+        "Grande-Bretagne"
+      ],
+      "distractors": [
+        "Russie",
+        "Turquie",
+        "Allemagne",
+        "Royaume de Danemark"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 98,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Londres",
+        "property": "est la capitale de",
+        "object": "Royaume-Uni",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "078c46cc-31f5-42d4-b3a4-96b9b4a79d4b",
+      "text": "Dans quel pays se trouve Londres ?",
+      "correctAnswer": "Royaume-Uni",
+      "acceptedVariants": [
+        "United Kingdom",
+        "UK",
+        "Royaume Uni",
+        "Grande-Bretagne"
+      ],
+      "distractors": [
+        "Russie",
+        "Turquie",
+        "Allemagne",
+        "Espagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 98,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Londres",
+        "property": "est la capitale de",
+        "object": "Royaume-Uni",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "b40c63f1-e1d2-46e1-a70b-7cf45204924d",
+      "text": "Dans quel pays se trouve Madrid ?",
+      "correctAnswer": "Espagne",
+      "acceptedVariants": [
+        "Spain"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Allemagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Madrid",
+        "property": "est la capitale de",
+        "object": "Espagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "95b181d3-1f35-4bcd-964f-314140bb78b2",
+      "text": "Dans quel pays se trouve Pékin ?",
+      "correctAnswer": "république populaire de Chine",
+      "acceptedVariants": [
+        "People's Republic of China",
+        "republique populaire de Chine"
+      ],
+      "distractors": [
+        "Japon",
+        "Bangladesh",
+        "Indonésie",
+        "Malaisie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Pékin",
+        "property": "est la capitale de",
+        "object": "république populaire de Chine",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "65d736d6-ae1d-43d7-b896-c930ca469351",
+      "text": "Dans quel pays se trouve Rome ?",
+      "correctAnswer": "Italie",
+      "acceptedVariants": [
+        "Italy"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Royaume de Danemark"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Rome",
+        "property": "est la capitale de",
+        "object": "Italie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "b9d12fae-e972-4103-8577-1c748956eb3d",
+      "text": "Paris est la capitale de quel pays ?",
+      "correctAnswer": "France",
+      "acceptedVariants": [],
+      "distractors": [
+        "Russie",
+        "Royaume-Uni",
+        "Turquie",
+        "Italie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Paris",
+        "property": "est la capitale de",
+        "object": "France",
+        "geoRegion": "france"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "d215dd47-d4e6-45a1-b3ad-f3f7da386ed1",
+      "text": "Dans quel pays se trouve Tokyo ?",
+      "correctAnswer": "Japon",
+      "acceptedVariants": [
+        "Japan"
+      ],
+      "distractors": [
+        "république populaire de Chine",
+        "Indonésie",
+        "Bangladesh",
+        "Malaisie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Tokyo",
+        "property": "est la capitale de",
+        "object": "Japon",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "bce681b2-fc7a-4183-a890-19bb87c41b8a",
+      "text": "Rome est la capitale de quel pays ?",
+      "correctAnswer": "Italie",
+      "acceptedVariants": [
+        "Italy"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Espagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Rome",
+        "property": "est la capitale de",
+        "object": "Italie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "b7e17cc2-6ded-461b-b609-907f2432bdc8",
+      "text": "Madrid est la capitale de quel pays ?",
+      "correctAnswer": "Espagne",
+      "acceptedVariants": [
+        "Spain"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Allemagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Madrid",
+        "property": "est la capitale de",
+        "object": "Espagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "078cad3a-9f0c-4eeb-b572-f1478d916a9b",
+      "text": "Dans quel pays se trouve Paris ?",
+      "correctAnswer": "France",
+      "acceptedVariants": [],
+      "distractors": [
+        "Russie",
+        "Royaume-Uni",
+        "Turquie",
+        "Espagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Paris",
+        "property": "est la capitale de",
+        "object": "France",
+        "geoRegion": "france"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "192f1402-4eb3-4b77-9b44-3fa1f3b9fc7c",
+      "text": "Dans quel pays se trouve Ankara ?",
+      "correctAnswer": "Turquie",
+      "acceptedVariants": [
+        "Turkey"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Allemagne",
+        "Espagne"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Ankara",
+        "property": "est la capitale de",
+        "object": "Turquie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "007bead6-60db-439b-bd7a-f3ba5c00952a",
+      "text": "Pékin est la capitale de quel pays ?",
+      "correctAnswer": "république populaire de Chine",
+      "acceptedVariants": [
+        "People's Republic of China",
+        "republique populaire de Chine"
+      ],
+      "distractors": [
+        "Japon",
+        "Bangladesh",
+        "Indonésie",
+        "Afghanistan"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Pékin",
+        "property": "est la capitale de",
+        "object": "république populaire de Chine",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "20bcc283-c6cc-4f63-8658-c371abeddcf7",
+      "text": "Tokyo est la capitale de quel pays ?",
+      "correctAnswer": "Japon",
+      "acceptedVariants": [
+        "Japan"
+      ],
+      "distractors": [
+        "république populaire de Chine",
+        "Indonésie",
+        "Bangladesh",
+        "Afghanistan"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Tokyo",
+        "property": "est la capitale de",
+        "object": "Japon",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "109e30cf-1694-40f8-be4e-ee25d9e4d93d",
+      "text": "Ankara est la capitale de quel pays ?",
+      "correctAnswer": "Turquie",
+      "acceptedVariants": [
+        "Turkey"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Allemagne",
+        "Royaume de Danemark"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Ankara",
+        "property": "est la capitale de",
+        "object": "Turquie",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "6409678a-e076-4940-9ddc-7c8765eda22e",
+      "text": "Dans quel pays se trouve Berlin ?",
+      "correctAnswer": "Allemagne",
+      "acceptedVariants": [
+        "Germany"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Italie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Berlin",
+        "property": "est la capitale de",
+        "object": "Allemagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "e9312bbb-c61d-4809-a110-5fef034139b4",
+      "text": "Dans quel pays se trouve Mexico ?",
+      "correctAnswer": "Mexique",
+      "acceptedVariants": [
+        "Mexico"
+      ],
+      "distractors": [
+        "Empire russe",
+        "Canada",
+        "États-Unis",
+        "Panama"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Mexico",
+        "property": "est la capitale de",
+        "object": "Mexique",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "6d6892ee-284f-4852-8a1b-5b973feed1f9",
+      "text": "Berlin est la capitale de quel pays ?",
+      "correctAnswer": "Allemagne",
+      "acceptedVariants": [
+        "Germany"
+      ],
+      "distractors": [
+        "Royaume-Uni",
+        "Russie",
+        "Turquie",
+        "Italie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Berlin",
+        "property": "est la capitale de",
+        "object": "Allemagne",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "638f50fa-fa35-4470-ae9a-8aeb5d10b864",
+      "text": "Mexico est la capitale de quel pays ?",
+      "correctAnswer": "Mexique",
+      "acceptedVariants": [
+        "Mexico"
+      ],
+      "distractors": [
+        "Empire russe",
+        "Canada",
+        "États-Unis",
+        "Nicaragua"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 96,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Mexico",
+        "property": "est la capitale de",
+        "object": "Mexique",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "931df07e-e081-4e3e-afa1-627b065ce4dd",
+      "text": "Dans quel pays se trouve Dacca ?",
+      "correctAnswer": "Bangladesh",
+      "acceptedVariants": [],
+      "distractors": [
+        "Japon",
+        "république populaire de Chine",
+        "Indonésie",
+        "Malaisie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Dacca",
+        "property": "est la capitale de",
+        "object": "Bangladesh",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "0c012d7b-d24c-4dbd-980a-c8518c80b76f",
+      "text": "Dans quel pays se trouve Kiev ?",
+      "correctAnswer": "Ukraine",
+      "acceptedVariants": [],
+      "distractors": [
+        "Russie",
+        "Royaume-Uni",
+        "Turquie",
+        "Italie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Kiev",
+        "property": "est la capitale de",
+        "object": "Ukraine",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "f3861281-bc47-4914-8e1f-b279bbc234b4",
+      "text": "Kiev est la capitale de quel pays ?",
+      "correctAnswer": "Ukraine",
+      "acceptedVariants": [],
+      "distractors": [
+        "Russie",
+        "Royaume-Uni",
+        "Turquie",
+        "Italie"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Kiev",
+        "property": "est la capitale de",
+        "object": "Ukraine",
+        "geoRegion": "europe"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "38b1ec78-01e4-41e6-8c64-bcffbc4e8db6",
+      "text": "Jakarta est la capitale de quel pays ?",
+      "correctAnswer": "Indonésie",
+      "acceptedVariants": [
+        "Indonesia",
+        "Indonesie"
+      ],
+      "distractors": [
+        "Japon",
+        "république populaire de Chine",
+        "Bangladesh",
+        "Corée du Sud"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Jakarta",
+        "property": "est la capitale de",
+        "object": "Indonésie",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "0128fde0-1280-4436-aa67-d939ccf72747",
+      "text": "Kinshasa est la capitale de quel pays ?",
+      "correctAnswer": "République démocratique du Congo",
+      "acceptedVariants": [
+        "Democratic Republic of the Congo",
+        "Republique democratique du Congo",
+        "RDC",
+        "Congo-Kinshasa"
+      ],
+      "distractors": [
+        "Soudan",
+        "Égypte",
+        "Éthiopie",
+        "Mali"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Kinshasa",
+        "property": "est la capitale de",
+        "object": "République démocratique du Congo",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "17456311-5c82-476d-b74a-847d13b388ef",
+      "text": "Dans quel pays se trouve Jakarta ?",
+      "correctAnswer": "Indonésie",
+      "acceptedVariants": [
+        "Indonesia",
+        "Indonesie"
+      ],
+      "distractors": [
+        "Japon",
+        "république populaire de Chine",
+        "Bangladesh",
+        "Corée du Sud"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Jakarta",
+        "property": "est la capitale de",
+        "object": "Indonésie",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "46accb83-1273-4c86-a9c1-fbaf751cf7d5",
+      "text": "Dans quel pays se trouve Saint-Pétersbourg ?",
+      "correctAnswer": "Empire russe",
+      "acceptedVariants": [
+        "Russian Empire"
+      ],
+      "distractors": [
+        "Mexique",
+        "États-Unis",
+        "Canada",
+        "Nicaragua"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Saint-Pétersbourg",
+        "property": "est la capitale de",
+        "object": "Empire russe",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "1e86c7af-4a29-4979-8d34-88bc5601f7c2",
+      "text": "Dans quel pays se trouve Kinshasa ?",
+      "correctAnswer": "République démocratique du Congo",
+      "acceptedVariants": [
+        "Democratic Republic of the Congo",
+        "Republique democratique du Congo",
+        "RDC",
+        "Congo-Kinshasa"
+      ],
+      "distractors": [
+        "Soudan",
+        "Égypte",
+        "Éthiopie",
+        "Soudan du Sud"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 50,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Kinshasa",
+        "property": "est la capitale de",
+        "object": "République démocratique du Congo",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "6259d01c-d112-4897-9faa-ca5833ecea71",
+      "text": "Saint-Pétersbourg est la capitale de quel pays ?",
+      "correctAnswer": "Empire russe",
+      "acceptedVariants": [
+        "Russian Empire"
+      ],
+      "distractors": [
+        "Mexique",
+        "États-Unis",
+        "Canada",
+        "République dominicaine"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Saint-Pétersbourg",
+        "property": "est la capitale de",
+        "object": "Empire russe",
+        "geoRegion": "amerique_nord"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    },
+    {
+      "id": "50f1c871-1b72-4233-9f15-9a4f497a3615",
+      "text": "Dacca est la capitale de quel pays ?",
+      "correctAnswer": "Bangladesh",
+      "acceptedVariants": [],
+      "distractors": [
+        "Japon",
+        "république populaire de Chine",
+        "Indonésie",
+        "Corée du Sud"
+      ],
+      "difficulty": "moyen",
+      "difficultyScore": 55,
+      "qualityScore": 94,
+      "category": "Géographie",
+      "fact": {
+        "subject": "Dacca",
+        "property": "est la capitale de",
+        "object": "Bangladesh",
+        "geoRegion": "reste_monde"
+      },
+      "review": {
+        "status": "",
+        "comments": "",
+        "reviewedBy": "",
+        "reviewedAt": ""
+      }
+    }
+  ]
+}

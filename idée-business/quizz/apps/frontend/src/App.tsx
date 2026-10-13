@@ -4,6 +4,9 @@ import { useAuthStore } from '@/store/authStore';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import DailyPage from '@/pages/DailyPage';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminQuestions from '@/pages/admin/AdminQuestions';
+import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -34,6 +37,18 @@ function App() {
         <Route
           path="/daily"
           element={user ? <DailyPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin"
+          element={user ? <AdminDashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin/questions"
+          element={user ? <AdminQuestions /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin/questions/:id"
+          element={user ? <AdminQuestionDetail /> : <Navigate to="/login" />}
         />
         <Route path="/" element={<Navigate to="/daily" />} />
       </Routes>

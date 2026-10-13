@@ -9,7 +9,7 @@ datasource db {
 
 model Source {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   type        String   // 'wikidata', 'data_gouv', 'api', 'manuel'
   url         String?
   reliability Int?     // 1-5
@@ -83,14 +83,18 @@ model Question {
   incorrectAnswersCount   Int      @default(0)
   successRate             Decimal? @db.Decimal(5, 2)
   status                  String   @default("brouillon") // 'brouillon', 'valide', 'publie', 'archive'
+  enabledForDaily         Boolean  @default(true)
+  enabledForMcq           Boolean  @default(false)
   validatedBy             String?
   validatedAt             DateTime?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
-  fact             Fact              @relation(fields: [factId], references: [id])
-  category         Category?         @relation(fields: [categoryId], references: [id])
+  fact             Fact                @relation(fields: [factId], references: [id])
+  category         Category?           @relation(fields: [categoryId], references: [id])
   acceptedAnswers  AcceptedAnswer[]
+  distractors      Distractor[]
+  metadata         QuestionMetadata?
   duplicates1      DetectedDuplicate[] @relation("Question1")
   duplicates2      DetectedDuplicate[] @relation("Question2")
   dailyQuestions   DailyQuestion[]
@@ -99,16 +103,50 @@ model Question {
 }
 
 model AcceptedAnswer {
-  id           String   @id @default(uuid())
-  questionId   String
-  answer       String
-  isPrimary    Boolean  @default(false)
-  variantType  String?  // 'exacte', 'accent', 'abreviation', 'orthographe'
-  createdAt    DateTime @default(now())
+  id                    String   @id @default(uuid())
+  questionId            String
+  answer                String
+  isPrimary             Boolean  @default(false)
+  variantType           String?  // 'exacte', 'accent', 'abreviation', 'orthographe'
+  levenshteinThreshold  Int      @default(2) // Max edit distance to accept
+  createdAt             DateTime @default(now())
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("reponses_acceptees")
+}
+
+model Distractor {
+  id                String   @id @default(uuid())
+  questionId        String
+  distractorText    String
+  wikidataSourceId  String?  // Wikidata entity ID used to generate this distractor
+  plausibilityScore Int?     // 1-100, how plausible/good this distractor is
+  order             Int      // 1-4, order of display in MCQ
+  createdAt         DateTime @default(now())
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, order])
+  @@map("distractors")
+}
+
+model QuestionMetadata {
+  id              String   @id @default(uuid())
+  questionId      String   @unique
+  successRate     Decimal? @db.Decimal(5, 2) // Cached from Question stats
+  avgTimeMs       Int?     // Average time to answer in milliseconds
+  timesAsked      Int      @default(0)
+  skipRate        Decimal? @db.Decimal(5, 2) // % of players who skipped this question
+  userReports     Json?    // [{userId, reason, timestamp, comment}]
+  reportCount     Int      @default(0)
+  lastAsked       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("question_metadata")
 }
 
 model DetectedDuplicate {

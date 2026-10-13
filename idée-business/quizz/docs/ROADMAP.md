@@ -6,12 +6,13 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 
 | Phase | Focus | Tasks | Estimated Time | Priority |
 |-------|-------|-------|----------------|----------|
-| **MVP1** | Daily Challenge | ~12 tasks | 2-3 weeks | 🔴 Critical |
+| **MVP1** | Daily Challenge | ~12 tasks | 2-3 weeks | ✅ Complete |
+| **POST-MVP1** | Question Database | ~17 tasks | 2-3 weeks | 🔴 Critical |
 | **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🟠 High |
 | **V2** | Collection System | ~16 tasks | 2-3 weeks | 🟡 Medium |
 | **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 🟢 Low |
 
-**Total estimated time:** 9-13 weeks (2-3 months) for complete platform
+**Total estimated time:** 11-16 weeks (3-4 months) for complete platform
 
 ---
 
@@ -52,6 +53,198 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 
 ---
 
+## POST-MVP1 - Question Database Pipeline (Content Foundation)
+
+**Goal:** Replace template questions with production-ready content pipeline
+
+**Status:** 📋 Planned
+
+**Strategy Document:** `brainstorm/stratégie_bdd_quiz.md`
+
+**Estimated Time:** 2-3 weeks
+
+### Overview
+
+MVP1 was built with ~50 template questions for testing. This phase builds the infrastructure to generate and manage thousands of high-quality questions from Wikidata.
+
+### Key Principles (from strategy doc)
+
+- **Facts first, questions second:** Never generate questions from LLM memory alone
+- **Wikidata as single source:** All MVPs use Wikidata exclusively
+- **Separate storage:** Facts and questions stored independently
+- **Quality over quantity:** 500 validated questions > 5000 mediocre ones
+
+### Phase 1: Database Architecture (2-3 days)
+
+#### Task 1: Design schema
+- [ ] Create `facts` table (source of truth from Wikidata)
+  - Columns: id, wikidata_entity_id, property, value, category, source_url, last_verified, metadata (JSONB)
+- [ ] Create `questions` table 
+  - Columns: id, fact_id (FK), question_text, canonical_answer, difficulty, category, format (open/mcq), status (draft/published), created_at
+- [ ] Create `accepted_answers` table (for open questions - Daily mode)
+  - Columns: id, question_id (FK), answer_variant, levenshtein_threshold
+- [ ] Create `distractors` table (for MCQ - PvP/Training mode)
+  - Columns: id, question_id (FK), distractor_text, wikidata_source_id, score
+- [ ] Create `question_metadata` table (analytics & QA)
+  - Columns: question_id (FK), success_rate, avg_time_ms, times_asked, user_reports (JSONB)
+
+#### Task 2: Set up Wikidata integration
+- [ ] Install Wikidata SDK/library (Python: `wikidata` or Node: `wikibase-sdk`)
+- [ ] Create utility functions for SPARQL queries
+- [ ] Test connection and basic queries
+- [ ] Set up error handling and rate limiting
+
+### Phase 2: POC - Capitals Domain (3-5 days)
+
+**Target:** 200 high-quality questions about world capitals
+
+#### Task 3: Wikidata ingestion script
+- [ ] Write SPARQL query to fetch all countries + capitals from Wikidata
+  - Query properties: P31 (instance of) = Q6256 (country), P36 (capital)
+  - Include: country name (FR + EN), capital name (FR + EN), population, continent
+- [ ] Parse SPARQL results and insert into `facts` table
+- [ ] Log source URL and verification timestamp
+- [ ] Expected output: ~200 country-capital facts
+
+#### Task 4: Question generation from facts
+- [ ] Create question templates for capitals:
+  - "Quelle est la capitale de {country} ?"
+  - "Dans quel pays se trouve {capital} ?"
+  - "{capital} est la capitale de quel pays ?"
+- [ ] Generate questions from each fact using templates
+- [ ] Insert into `questions` table with status = 'draft'
+- [ ] Link each question to source fact (fact_id)
+
+#### Task 5: Answer variants generation (for Daily mode)
+- [ ] For each question, generate accepted answer variants:
+  - Canonical answer (e.g., "Rome")
+  - Alternate spellings (e.g., "Roma")
+  - With/without articles (e.g., "La Rome" should also match)
+- [ ] Store in `accepted_answers` table
+- [ ] Set appropriate Levenshtein threshold (1 for short words, 2-3 for longer)
+- [ ] Test fuzzy matching algorithm (case-insensitive, accent-insensitive, typo-tolerant)
+
+#### Task 6: Distractor generation (for PvP/Training mode)
+- [ ] For each capital question, generate 4 distractors:
+  - Query Wikidata for other capitals from same continent
+  - Query Wikidata for major cities from same country (non-capitals)
+  - Score distractors by plausibility (similar population, geographic proximity)
+- [ ] Store top 4 distractors per question
+- [ ] Validate: no duplicates, no distractor = correct answer
+- [ ] Expected output: 200 questions × 5 choices (1 correct + 4 distractors)
+
+#### Task 7: Manual QA review
+- [ ] Export first 50 generated questions to CSV/spreadsheet
+- [ ] Manual review checklist:
+  - Question text is clear and grammatically correct
+  - Canonical answer is factually correct
+  - Accepted variants cover common spellings/typos
+  - Distractors are plausible but incorrect
+  - No ambiguity (only one correct answer)
+- [ ] Fix issues and iterate on generation scripts
+- [ ] Approve questions: update status 'draft' → 'published'
+
+### Phase 3: Extend to 3-4 More Domains (1 week)
+
+**Target:** 500-700 total questions across 5 categories
+
+#### Task 8: Add Geography basics
+- [ ] Wikidata ingestion: oceans, seas, major rivers, continents
+- [ ] Question generation: "Quel océan borde {country} ?", "Quel fleuve traverse {city} ?"
+- [ ] Target: +100 questions
+
+#### Task 9: Add Cinema/Oscars
+- [ ] Wikidata ingestion: Best Picture winners, famous directors, lead actors/actresses
+  - Properties: P166 (award received) = Q102427 (Academy Award for Best Picture)
+- [ ] Question generation: "Qui a réalisé {film} ?", "Quel film a gagné l'Oscar du meilleur film en {year} ?"
+- [ ] Distractors: other directors/films from similar era
+- [ ] Target: +150 questions
+
+#### Task 10: Add Basic Science
+- [ ] Wikidata ingestion: planets, chemical elements, major inventions
+  - Properties: P31 (instance of) = Q634 (planet), P246 (element symbol)
+- [ ] Question generation: "Quel est le symbole chimique de {element} ?", "Combien de planètes dans le système solaire ?"
+- [ ] Target: +100 questions
+
+#### Task 11: Add Flags (image-based questions)
+- [ ] Wikidata ingestion: country flags (P41 - flag image)
+- [ ] Download flag images to CDN/Cloudinary
+- [ ] Question generation: "À quel pays appartient ce drapeau ?" + image URL
+- [ ] Distractors: flags with similar colors/patterns
+- [ ] Target: +50 questions
+
+### Phase 4: Industrialization Tools (parallel to content creation)
+
+#### Task 12: Admin dashboard (basic)
+- [ ] View all questions (filterable by category, difficulty, status)
+- [ ] Approve/reject/edit draft questions
+- [ ] View question stats (success rate, avg time, times asked)
+- [ ] Bulk actions (approve multiple, delete multiple)
+
+#### Task 13: Automated quality checks
+- [ ] Duplicate detection: flag questions with >80% similar text
+- [ ] Distractor validation: ensure 4-5 unique distractors per MCQ question
+- [ ] Answer validation: canonical_answer must be in accepted_answers list
+- [ ] Category balance check: warn if category has <50 questions
+- [ ] Difficulty distribution: visualize easy/medium/hard ratio
+
+#### Task 14: User reporting system
+- [ ] Add "Report Question" button in frontend
+- [ ] Store reports in question_metadata.user_reports (JSONB)
+- [ ] Admin dashboard: review queue for reported questions
+- [ ] Track common report reasons (incorrect answer, ambiguous, typo)
+
+#### Task 15: Analytics & monitoring
+- [ ] Track question performance metrics:
+  - Success rate by question (too easy? too hard?)
+  - Average answer time (outliers = poorly worded?)
+  - Skip rate (players skipping = uninteresting/too hard?)
+- [ ] Flag questions for review if:
+  - Success rate <10% or >95% (rebalance difficulty)
+  - Avg time >20s for simple questions (unclear wording)
+  - Skip rate >30% (boring or frustrating)
+
+### Phase 5: Content Expansion Strategy (ongoing)
+
+#### Task 16: Define content roadmap
+- [ ] Set target: 1000 questions by MVP2 launch
+- [ ] Prioritize categories based on user preferences (from MVP1 analytics)
+- [ ] Create weekly content sprint plan:
+  - Week 1: +100 History questions (Wikidata: major events, historical figures)
+  - Week 2: +100 Sports questions (Wikidata: Olympic winners, World Cup, tennis Grand Slams)
+  - Week 3: +100 Music questions (Wikidata: famous artists, albums, hit songs)
+  - Week 4: +50 Technology questions (Wikidata: inventions, companies, programming languages)
+
+#### Task 17: Community content pipeline (future)
+- [ ] Design user-submitted question workflow:
+  - Users propose questions (with sources)
+  - Moderators review and approve
+  - Credits for accepted questions (Gold reward in V2?)
+- [ ] Not required for MVP2, but plan architecture
+
+### Success Metrics
+
+- [ ] **500+ published questions** across 5+ categories before MVP2
+- [ ] **<5% reported questions** (high quality from start)
+- [ ] **20/60/20 difficulty distribution** achieved (easy/medium/hard)
+- [ ] **Wikidata pipeline** can generate 100 new questions/week with <2 hours human review
+- [ ] **Zero duplicate questions** detected in production
+
+### Dependencies
+
+- ✅ MVP1 complete (infrastructure ready to consume new questions)
+- ⏳ Wikidata integration tested and rate-limits understood
+- ⏳ Admin dashboard deployed for QA review
+
+### Notes
+
+- **Content over features:** MVP2 PvP requires diverse questions to avoid repetition
+- **Quality gates:** Every question must pass manual QA before first 500, then spot-check 10% after pipeline is proven
+- **Scalability:** Design with 10k+ questions in mind (indexing, query performance)
+- **Localization:** All Wikidata queries fetch both French and English labels (future i18n support)
+
+---
+
 ## MVP2 - PvP Competition (Engagement)
 
 **Goal:** Competitive layer for engagement and depth
@@ -83,7 +276,7 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 
 ### Dependencies
 - ✅ MVP1 complete (auth, users, questions, scoring)
-- ⏳ Seed 200+ published questions across 8+ categories
+- ⏳ POST-MVP1 complete (500+ published questions from Wikidata pipeline)
 - ⏳ WebSocket infrastructure tested under load
 
 ---
@@ -118,7 +311,7 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 - **No Pay-to-Win:** Cards are purely cosmetic/educational
 
 ### Dependencies
-- ✅ MVP1 + MVP2 complete (Gold earning mechanisms exist)
+- ✅ MVP1 + POST-MVP1 + MVP2 complete (Gold earning mechanisms exist)
 - ⏳ Create 100+ card entries with educational descriptions
 - ⏳ Source/generate card images (Cloudinary/S3 setup)
 - ⏳ Balance Gold earning rates
@@ -168,9 +361,14 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 ### Phase Sequencing
 
 ```
-MVP1 (2-3 weeks) - BASIC DESIGN
+MVP1 (2-3 weeks) - BASIC DESIGN ✅
   ↓
   Test with users, measure retention
+  ↓
+POST-MVP1 (2-3 weeks) - CONTENT PIPELINE 🚧
+  ↓
+  Replace template questions with Wikidata
+  Build to 500+ high-quality questions
   ↓
 MVP2 (2-3 weeks) - BASIC DESIGN
   ↓
@@ -288,28 +486,35 @@ Start free, scale only when users validate the product.
 
 ## Next Steps
 
-1. **Immediate (Week 1):**
-   - Review MVP1 plan
-   - Set up staging environment (free tier hosting)
-   - Seed initial 100 questions for testing
+1. **Immediate (Week 1-2): POST-MVP1 Phase 1-2**
+   - Design database schema for facts/questions/answers/distractors
+   - Set up Wikidata integration (SPARQL queries)
+   - POC: Generate 200 capital questions with variants + distractors
+   - Manual QA review of first 50 questions
 
-2. **Short-term (Weeks 2-4):**
-   - Execute MVP1 plan (superpowers:executing-plans or subagent-driven)
+2. **Short-term (Weeks 3-4): POST-MVP1 Phase 3-4**
+   - Extend to 4 more domains (Geography, Cinema, Science, Flags)
+   - Target: 500-700 published questions
+   - Build admin dashboard for question management
+   - Set up automated quality checks and user reporting
+
+3. **Medium-term (Weeks 5-6): POST-MVP1 Phase 5 + MVP1 Beta Testing**
+   - Deploy new question database to production
+   - Replace template questions in MVP1
    - Recruit 20-50 beta testers
-   - Measure Day 1 & Day 7 retention
+   - Measure Day 1 & Day 7 retention with real content
 
-3. **Medium-term (Month 2):**
-   - Iterate based on MVP1 feedback
+4. **Long-term (Months 2-4):**
    - Execute MVP2 if retention validates concept
-   - Plan question generation pipeline (Wikidata integration)
-
-4. **Long-term (Months 3-4):**
+   - Continue content expansion (target 1000+ questions)
    - Execute V2 & V3
    - Scale infrastructure as user base grows
-   - Implement monetization (optional, not in current plans)
 
 ---
 
-**Latest Update:** 2026-10-09
-**Status:** All implementation plans drafted, ready for execution
+**Latest Update:** 2026-10-12
+**Status:** 
+- MVP1 implementation complete ✅
+- POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
+- Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
 

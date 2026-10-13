@@ -10,6 +10,8 @@ export interface AcceptedAnswer {
 export interface DailyQuestion {
   questionId: string;
   text: string;
+  questionType?: string; // 'texte' | 'image' | 'carte'
+  mediaUrl?: string;
   order: number;
   acceptedAnswers: AcceptedAnswer[];
 }

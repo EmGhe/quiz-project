@@ -200,12 +200,20 @@ export default function DailyPage() {
                 </h1>
                 <p className="text-gray-600">Welcome, {user?.username}!</p>
               </div>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-              >
-                Logout
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
+                >
+                  Admin
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
 
@@ -274,12 +282,20 @@ export default function DailyPage() {
               </h1>
               <p className="text-gray-600">Date: {daily.date}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-            >
-              Logout
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate('/admin')}
+                className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
+              >
+                Admin
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -346,6 +362,28 @@ export default function DailyPage() {
               {currentQuestion.text}
             </h2>
           </div>
+
+          {/* Image display for visual questions */}
+          {currentQuestion.questionType === 'image' && currentQuestion.mediaUrl && (
+            <div className="mb-6 flex justify-center">
+              <img
+                src={currentQuestion.mediaUrl}
+                alt="Photo de la question"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+                className="max-w-md w-full h-auto rounded-lg shadow-lg object-cover"
+                style={{ maxHeight: '400px' }}
+                onError={(e) => {
+                  console.error('Failed to load image:', currentQuestion.mediaUrl);
+                  e.currentTarget.style.display = 'none';
+                  const errorDiv = document.createElement('div');
+                  errorDiv.className = 'text-red-600 p-4 bg-red-50 rounded-lg';
+                  errorDiv.textContent = '❌ Erreur de chargement de l\'image';
+                  e.currentTarget.parentElement?.appendChild(errorDiv);
+                }}
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

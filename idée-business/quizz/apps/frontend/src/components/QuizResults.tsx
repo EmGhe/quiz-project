@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { dailyApi } from '@/api/daily';
 import type { DailySubmission, DailyQuestion } from '@/types/daily';
 import ShareCard from './ShareCard';
@@ -22,6 +23,7 @@ interface LeaderboardEntry {
 }
 
 export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, currentStreak, onClose }: QuizResultsProps) {
+  const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
@@ -100,10 +102,13 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <span className={`font-bold ${ans.correct ? 'text-green-700' : 'text-red-700'}`}>
-                        {ans.correct ? '✓' : '✗'}
-                      </span>
-                      <span className="ml-2 text-gray-700">Question {idx + 1}</span>
+                      <div className="mb-2">
+                        <span className={`font-bold ${ans.correct ? 'text-green-700' : 'text-red-700'}`}>
+                          {ans.correct ? '✓' : '✗'}
+                        </span>
+                        <span className="ml-2 font-semibold text-gray-900">Question {idx + 1}: </span>
+                        <span className="text-gray-700">{question?.text || 'Question text not available'}</span>
+                      </div>
                       <p className="text-gray-600 mt-1">
                         Your answer: <span className="font-medium">{ans.answer || '(no answer)'}</span>
                       </p>
@@ -196,13 +201,19 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
           currentStreak={currentStreak}
         />
 
-        {/* Close Button */}
-        <div className="text-center mt-6">
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-4 mt-6">
           <button
             onClick={onClose}
             className="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 font-medium"
           >
             Back to Daily
+          </button>
+          <button
+            onClick={() => navigate('/admin')}
+            className="bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-gray-700 font-medium"
+          >
+            Admin
           </button>
         </div>
       </div>
