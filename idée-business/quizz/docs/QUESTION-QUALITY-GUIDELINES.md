@@ -337,20 +337,29 @@ Avant de générer des questions, vérifier :
 - Scripts : `scripts/images/test-download-speed-safe.ts` + `download-and-store-all-images.ts`
 - Documentation : `scripts/images/INSTRUCTIONS-DEMAIN.md`
 
-**État actuel (2026-10-13) :**
-- ✅ 7 images téléchargées et fonctionnelles
-- ⏳ 173 images à télécharger (délai 1-3h selon vitesse optimale trouvée)
+**État actuel (2026-10-14) :**
+- ✅ 37 images téléchargées, optimisées et fonctionnelles avec métadonnées de licence
+- ⏳ 143 images restantes (reprendre demain après levée du ban IP Wikimedia)
+
+**Pipeline d'images implémenté :**
+1. API Wikimedia Commons → Récupération métadonnées de licence
+2. Téléchargement avec retry (3× + backoff exponentiel)
+3. Optimisation Sharp (resize 800px max + compression)
+   - SVG : aucune transformation (déjà vectoriel)
+   - JPG/PNG : resize + compression quality 85
+   - **Économies : 50-98% de réduction de taille** (ex: 4.8 MB → 99 KB)
+4. Stockage local : `apps/frontend/public/images/quiz/`
+5. Mise à jour DB : URL locale + métadonnées licence (auteur, type, URLs)
 
 **Règle générale :**
 - **Pour nouvelles images visuelles :**
-  1. Télécharger l'image depuis la source
-  2. Optimiser/compresser si nécessaire
-  3. Stocker dans `apps/frontend/public/images/quiz/`
-  4. Utiliser URL relative : `/images/quiz/[filename]`
-  5. Tester l'affichage dans le Daily
+  1. Utiliser le script : `npx ts-node scripts/images/download-and-store-all-images.ts`
+  2. Le script gère automatiquement : téléchargement, optimisation, métadonnées, DB
+  3. Tester l'affichage dans le Daily
 - **JAMAIS utiliser d'URLs externes directes** (CORS + rate limiting)
 - **JAMAIS dépendre d'un proxy tiers** (peut tomber, changer de politique)
-- Script de vérification : `scripts/qa/check-broken-images.ts`
+- **Documentation détaillée :** `docs/IMAGE-QUALITY-GUIDELINES.md` (problèmes techniques, commandes, checklist)
+- **Design spec :** `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
 
 ---
 

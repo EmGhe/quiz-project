@@ -1,13 +1,17 @@
 /**
  * Script: Download and Store All Images Locally
  *
- * Downloads all Wikimedia images, optimizes them, and stores them locally
+ * Enhanced version with:
+ * - Wikimedia Commons API metadata extraction
+ * - Sharp image optimization
+ * - License metadata storage in DB
+ * - Retry with exponential backoff
  *
  * Usage: npx ts-node scripts/images/download-and-store-all-images.ts
  */
 
 import { getPrismaClient, closePrismaConnection } from '../utils/db';
-import axios from 'axios';
+import { getImageMetadata, downloadWithRetry, optimizeImage } from '../utils/image-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -53,6 +57,7 @@ async function downloadAndStoreAllImages() {
         id: true,
         text: true,
         mediaUrl: true,
+        mediaSourceUrl: true, // Check if already processed
       },
     });
 
@@ -81,6 +86,13 @@ async function downloadAndStoreAllImages() {
           }
         }
 
+        // If already a local URL, skip
+        if (wikimediaUrl.startsWith('/images/quiz/')) {
+          console.log(`⏭️  Already local: ${question.text.substring(0, 60)}...`);
+          cached++;
+          continue;
+        }
+
         // Generate filename from hash
         const hash = crypto.createHash('md5').update(wikimediaUrl).digest('hex');
         const ext = wikimediaUrl.split('.').pop()?.split('?')[0] || 'jpg';
@@ -88,65 +100,87 @@ async function downloadAndStoreAllImages() {
         const filepath = path.join(IMAGES_DIR, filename);
 
         // Check if already downloaded
-        if (fs.existsSync(filepath)) {
+        if (fs.existsSync(filepath) && question.mediaSourceUrl) {
           console.log(`⏭️  Cached: ${question.text.substring(0, 60)}...`);
 
-          // Update URL to local path
-          const newUrl = `/images/quiz/${filename}`;
-          await prisma.question.update({
-            where: { id: question.id },
-            data: { mediaUrl: newUrl },
-          });
+          // Update URL to local path if needed
+          if (!question.mediaUrl.startsWith('/images/quiz/')) {
+            await prisma.question.update({
+              where: { id: question.id },
+              data: { mediaUrl: `/images/quiz/${filename}` },
+            });
+          }
 
           cached++;
           continue;
         }
 
-        // Download the image
-        console.log(`📥 Downloading: ${question.text.substring(0, 60)}...`);
+        console.log(`\n📥 Processing: ${question.text.substring(0, 60)}...`);
         console.log(`   From: ${wikimediaUrl.substring(0, 80)}...`);
 
-        const response = await axios.get(wikimediaUrl, {
-          responseType: 'arraybuffer',
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'image/*',
-            'Referer': 'https://www.wikipedia.org/',
-          },
-          timeout: 30000,
-          maxRedirects: 5,
-        });
+        // 1. Fetch metadata from Wikimedia API
+        console.log(`   🔍 Fetching metadata...`);
+        const metadata = await getImageMetadata(wikimediaUrl);
+        console.log(`   📄 Author: ${metadata.author || 'Unknown'}`);
+        console.log(`   📜 License: ${metadata.license || 'Unknown'}`);
 
-        // Save the image
-        fs.writeFileSync(filepath, response.data);
+        // 2. Download the image
+        console.log(`   ⬇️  Downloading image...`);
+        const imageBuffer = await downloadWithRetry(wikimediaUrl);
+        console.log(`   ✅ Downloaded: ${(imageBuffer.length / 1024).toFixed(1)} KB`);
 
-        // Update URL to local path
-        const newUrl = `/images/quiz/${filename}`;
+        // 3. Optimize the image
+        console.log(`   🔧 Optimizing...`);
+        const optimizedBuffer = await optimizeImage(imageBuffer, wikimediaUrl);
+        const sizeBefore = (imageBuffer.length / 1024).toFixed(1);
+        const sizeAfter = (optimizedBuffer.length / 1024).toFixed(1);
+        const savings = ((1 - optimizedBuffer.length / imageBuffer.length) * 100).toFixed(0);
+        console.log(`   📊 Optimized: ${sizeBefore} KB → ${sizeAfter} KB (${savings}% saved)`);
+
+        // 4. Save the image
+        fs.writeFileSync(filepath, optimizedBuffer);
+        console.log(`   💾 Saved: ${filename}`);
+
+        // 5. Update DB with local URL and metadata
         await prisma.question.update({
           where: { id: question.id },
-          data: { mediaUrl: newUrl },
+          data: {
+            mediaUrl: `/images/quiz/${filename}`,
+            mediaLicenseAuthor: metadata.author,
+            mediaLicenseType: metadata.license,
+            mediaLicenseUrl: metadata.licenseUrl,
+            mediaSourceUrl: metadata.sourceUrl,
+          },
         });
 
-        console.log(`✅ Saved: ${filename}`);
+        console.log(`   ✅ Database updated`);
         downloaded++;
 
         // Progress
-        const progress = ((downloaded + cached) / imageQuestions.length * 100).toFixed(1);
-        console.log(`   📊 Progress: ${downloaded + cached}/${imageQuestions.length} (${progress}%)`);
+        const total = downloaded + cached;
+        const progress = (total / imageQuestions.length * 100).toFixed(1);
+        console.log(`   📊 Progress: ${total}/${imageQuestions.length} (${progress}%)`);
 
         // Add random variation to delay (±20%)
-        const variation = DELAY_MS * 0.2;
-        const delay = DELAY_MS + (Math.random() * variation * 2 - variation);
-        const remaining = imageQuestions.length - downloaded - cached - failed;
-        const estimatedMinutes = (remaining * delay / 1000 / 60).toFixed(0);
+        if (total < imageQuestions.length) {
+          const variation = DELAY_MS * 0.2;
+          const delay = DELAY_MS + (Math.random() * variation * 2 - variation);
+          const remaining = imageQuestions.length - total - failed;
+          const estimatedMinutes = (remaining * delay / 1000 / 60).toFixed(0);
 
-        console.log(`   ⏳ Waiting ${(delay/1000).toFixed(0)}s... (${remaining} left, ~${estimatedMinutes} min remaining)\n`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+          console.log(`   ⏳ Waiting ${(delay/1000).toFixed(0)}s... (${remaining} left, ~${estimatedMinutes} min remaining)`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
 
       } catch (error: any) {
-        console.error(`❌ Failed: ${question.text.substring(0, 60)}...`);
-        console.error(`   Error: ${error.message}\n`);
+        console.error(`\n❌ Failed: ${question.text.substring(0, 60)}...`);
+        console.error(`   Error: ${error.message}`);
         failed++;
+
+        // Add delay even on failure to avoid hammering the server
+        const delay = DELAY_MS;
+        console.log(`   ⏳ Waiting ${(delay/1000).toFixed(0)}s before next...\n`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
 
@@ -159,15 +193,17 @@ async function downloadAndStoreAllImages() {
     console.log('========================================\n');
 
     // Show storage size
-    const files = fs.readdirSync(IMAGES_DIR);
-    let totalSize = 0;
-    files.forEach(file => {
-      const stats = fs.statSync(path.join(IMAGES_DIR, file));
-      totalSize += stats.size;
-    });
+    if (fs.existsSync(IMAGES_DIR)) {
+      const files = fs.readdirSync(IMAGES_DIR);
+      let totalSize = 0;
+      files.forEach(file => {
+        const stats = fs.statSync(path.join(IMAGES_DIR, file));
+        totalSize += stats.size;
+      });
 
-    console.log(`💾 Total storage: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
-    console.log(`📁 Location: ${IMAGES_DIR}\n`);
+      console.log(`💾 Total storage: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`📁 Location: ${IMAGES_DIR}\n`);
+    }
 
   } catch (error) {
     console.error('❌ Error:', error);
