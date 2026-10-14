@@ -11,10 +11,19 @@
  */
 
 import { getPrismaClient, closePrismaConnection } from '../utils/db';
-import { getImageMetadata, downloadWithRetry, optimizeImage } from '../utils/image-helpers';
+import { getImageMetadata, getImageMetadataBatch, downloadWithRetry, optimizeImage } from '../utils/image-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+
+// Chunk array into batches
+function chunk<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
 
 // Image storage directory (frontend public folder)
 const IMAGES_DIR = path.join(__dirname, '../../../frontend/public/images/quiz');
@@ -57,16 +66,76 @@ async function downloadAndStoreAllImages() {
         id: true,
         text: true,
         mediaUrl: true,
-        mediaSourceUrl: true, // Check if already processed
+        mediaSourceUrl: true,
+        mediaLicenseAuthor: true,
+        mediaLicenseType: true,
+        mediaLicenseUrl: true,
       },
     });
 
     console.log(`Found ${imageQuestions.length} image questions\n`);
 
+    // Pre-process: extract Wikimedia URLs and filter questions needing metadata
+    const questionsNeedingMetadata: Array<{ question: typeof imageQuestions[0], wikimediaUrl: string }> = [];
+
+    for (const question of imageQuestions) {
+      if (!question.mediaUrl) continue;
+
+      let wikimediaUrl = question.mediaUrl;
+
+      // Extract real URL from proxy
+      if (wikimediaUrl.includes('localhost:3000/api/proxy/image?url=')) {
+        wikimediaUrl = decodeURIComponent(wikimediaUrl.split('url=')[1] || wikimediaUrl);
+      } else if (wikimediaUrl.includes('images.weserv.nl/?url=')) {
+        wikimediaUrl = wikimediaUrl.replace('https://images.weserv.nl/?url=', '');
+        if (!wikimediaUrl.startsWith('http')) {
+          wikimediaUrl = 'https://' + wikimediaUrl;
+        }
+      }
+
+      // Skip if already local or already has metadata
+      if (wikimediaUrl.startsWith('/images/quiz/')) continue;
+      if (question.mediaSourceUrl && question.mediaLicenseAuthor) continue;
+
+      questionsNeedingMetadata.push({ question, wikimediaUrl });
+    }
+
+    // Batch fetch metadata for all questions needing it
+    const metadataCache = new Map<string, any>();
+
+    if (questionsNeedingMetadata.length > 0) {
+      console.log(`📦 Fetching metadata in batches for ${questionsNeedingMetadata.length} images...\n`);
+
+      const batches = chunk(questionsNeedingMetadata, 50);
+
+      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex];
+        const urls = batch.map(item => item.wikimediaUrl);
+
+        console.log(`📦 Batch ${batchIndex + 1}/${batches.length}: Fetching metadata for ${urls.length} images...`);
+        const batchMetadata = await getImageMetadataBatch(urls);
+
+        // Add to cache
+        for (const [url, metadata] of batchMetadata.entries()) {
+          metadataCache.set(url, metadata);
+        }
+
+        console.log(`✅ Batch ${batchIndex + 1}/${batches.length} complete\n`);
+
+        // Small delay between batches
+        if (batchIndex < batches.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
+
+      console.log(`✅ All metadata fetched (${metadataCache.size} images)\n`);
+    }
+
     let downloaded = 0;
     let cached = 0;
     let failed = 0;
 
+    // Now process all questions sequentially
     for (const question of imageQuestions) {
       if (!question.mediaUrl) continue;
 
@@ -118,11 +187,30 @@ async function downloadAndStoreAllImages() {
         console.log(`\n📥 Processing: ${question.text.substring(0, 60)}...`);
         console.log(`   From: ${wikimediaUrl.substring(0, 80)}...`);
 
-        // 1. Fetch metadata from Wikimedia API
-        console.log(`   🔍 Fetching metadata...`);
-        const metadata = await getImageMetadata(wikimediaUrl);
-        console.log(`   📄 Author: ${metadata.author || 'Unknown'}`);
-        console.log(`   📜 License: ${metadata.license || 'Unknown'}`);
+        // 1. Get metadata (from batch cache, DB cache, or fallback API call)
+        let metadata;
+        if (question.mediaSourceUrl && question.mediaLicenseAuthor) {
+          // Metadata already in DB
+          console.log(`   ✓ Using DB cached metadata`);
+          metadata = {
+            author: question.mediaLicenseAuthor,
+            license: question.mediaLicenseType,
+            licenseUrl: question.mediaLicenseUrl,
+            sourceUrl: question.mediaSourceUrl,
+          };
+        } else if (metadataCache.has(wikimediaUrl)) {
+          // Metadata from batch fetch
+          metadata = metadataCache.get(wikimediaUrl);
+          console.log(`   ✓ Using batch metadata`);
+          console.log(`   📄 Author: ${metadata.author || 'Unknown'}`);
+          console.log(`   📜 License: ${metadata.license || 'Unknown'}`);
+        } else {
+          // Fallback: single API call (shouldn't happen normally)
+          console.log(`   🔍 Fetching metadata from API (fallback)...`);
+          metadata = await getImageMetadata(wikimediaUrl);
+          console.log(`   📄 Author: ${metadata.author || 'Unknown'}`);
+          console.log(`   📜 License: ${metadata.license || 'Unknown'}`);
+        }
 
         // 2. Download the image
         console.log(`   ⬇️  Downloading image...`);

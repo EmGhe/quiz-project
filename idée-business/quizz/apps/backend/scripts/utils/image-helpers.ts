@@ -88,7 +88,7 @@ export async function getImageMetadata(
       const response = await axios.get(apiUrl, {
         params,
         headers: {
-          'User-Agent': 'Quiz-Platform/1.0 (Educational; quiz-platform@example.com)',
+          'User-Agent': 'QuizPlatform/1.0 (Educational; https://github.com/quiz-platform; contact: quiz.platform.support@gmail.com)',
         },
         timeout: 15000,
       });
@@ -133,6 +133,8 @@ export async function getImageMetadata(
 
       if (error.response?.status === 429) {
         console.warn(`Rate limited on attempt ${attempt + 1}/${maxRetries} for: ${filename}`);
+      } else if (error.response?.status === 503) {
+        console.warn(`Service unavailable on attempt ${attempt + 1}/${maxRetries} for: ${filename}`);
       } else {
         console.warn(`API error on attempt ${attempt + 1}/${maxRetries} for ${filename}:`, error.message);
       }
@@ -147,8 +149,24 @@ export async function getImageMetadata(
         };
       }
 
-      // Exponential backoff: 1s, 2s, 4s
-      const delay = Math.pow(2, attempt) * 1000;
+      // Respect Retry-After header for 429/503, otherwise exponential backoff
+      let delay = Math.pow(2, attempt) * 1000; // Default: 1s, 2s, 4s
+
+      if (error.response?.status === 429 || error.response?.status === 503) {
+        const retryAfter = error.response.headers['retry-after'];
+        if (retryAfter) {
+          // Retry-After can be in seconds or a date
+          const retryAfterSeconds = parseInt(retryAfter);
+          if (!isNaN(retryAfterSeconds)) {
+            delay = retryAfterSeconds * 1000;
+            console.warn(`   Retry-After header: ${retryAfterSeconds}s`);
+          }
+        } else {
+          // No Retry-After header: use minimum 5s for rate limits
+          delay = Math.max(delay, 5000);
+        }
+      }
+
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -186,6 +204,153 @@ function cleanHtml(text: string | null): string | null {
 }
 
 /**
+ * Fetch metadata for multiple images in a single API call (batch)
+ *
+ * @param wikimediaUrls - Array of Wikimedia URLs (max 50 per batch recommended)
+ * @param maxRetries - Maximum retry attempts
+ * @returns Map of URL -> metadata
+ */
+export async function getImageMetadataBatch(
+  wikimediaUrls: string[],
+  maxRetries: number = 3
+): Promise<Map<string, ImageMetadata>> {
+  const results = new Map<string, ImageMetadata>();
+
+  // Extract filenames and create URL->filename mapping
+  const urlToFilename = new Map<string, string>();
+  const filenames: string[] = [];
+
+  for (const url of wikimediaUrls) {
+    const filename = extractWikimediaFilename(url);
+    if (filename) {
+      urlToFilename.set(url, filename);
+      filenames.push(filename);
+    }
+  }
+
+  if (filenames.length === 0) {
+    return results;
+  }
+
+  const apiUrl = 'https://commons.wikimedia.org/w/api.php';
+  const titles = filenames.join('|');
+  const params = {
+    action: 'query',
+    titles,
+    prop: 'imageinfo',
+    iiprop: 'url|user|extmetadata',
+    format: 'json',
+  };
+
+  // Retry with exponential backoff
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await axios.get(apiUrl, {
+        params,
+        headers: {
+          'User-Agent': 'QuizPlatform/1.0 (Educational; https://github.com/quiz-platform; contact: quiz.platform.support@gmail.com)',
+        },
+        timeout: 30000, // Longer timeout for batch requests
+      });
+
+      const pages = response.data?.query?.pages;
+      if (!pages) {
+        throw new Error('No pages in API response');
+      }
+
+      // Process each page in the response
+      for (const pageId of Object.keys(pages)) {
+        const page = pages[pageId];
+        const pageTitle = page.title;
+
+        // Find original URL for this filename
+        let originalUrl: string | null = null;
+        for (const [url, filename] of urlToFilename.entries()) {
+          if (filename === pageTitle) {
+            originalUrl = url;
+            break;
+          }
+        }
+
+        if (!originalUrl) continue;
+
+        // Extract metadata
+        if (page.imageinfo && page.imageinfo.length > 0) {
+          const imageInfo = page.imageinfo[0];
+          const metadata = imageInfo.extmetadata || {};
+
+          const author = metadata.Artist?.value || imageInfo.user || null;
+          const license = metadata.License?.value || metadata.LicenseShortName?.value || null;
+          const licenseUrl = metadata.LicenseUrl?.value || null;
+          const descriptionUrl = imageInfo.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(pageTitle)}`;
+
+          results.set(originalUrl, {
+            author: cleanHtml(author),
+            license: cleanHtml(license),
+            licenseUrl,
+            sourceUrl: descriptionUrl,
+          });
+        } else {
+          // No imageinfo found
+          results.set(originalUrl, {
+            author: null,
+            license: null,
+            licenseUrl: null,
+            sourceUrl: `https://commons.wikimedia.org/wiki/${encodeURIComponent(pageTitle)}`,
+          });
+        }
+      }
+
+      return results;
+
+    } catch (error: any) {
+      const isLastAttempt = attempt === maxRetries - 1;
+
+      if (error.response?.status === 429 || error.response?.status === 503) {
+        console.warn(`Batch API rate limited on attempt ${attempt + 1}/${maxRetries}`);
+      } else {
+        console.warn(`Batch API error on attempt ${attempt + 1}/${maxRetries}:`, error.message);
+      }
+
+      if (isLastAttempt) {
+        console.error(`Failed to fetch batch metadata after ${maxRetries} attempts`);
+        // Return empty results for failed URLs
+        for (const url of wikimediaUrls) {
+          if (!results.has(url)) {
+            results.set(url, {
+              author: null,
+              license: null,
+              licenseUrl: null,
+              sourceUrl: url,
+            });
+          }
+        }
+        return results;
+      }
+
+      // Respect Retry-After or use exponential backoff
+      let delay = Math.pow(2, attempt) * 1000;
+      if (error.response?.status === 429 || error.response?.status === 503) {
+        const retryAfter = error.response.headers['retry-after'];
+        if (retryAfter) {
+          const retryAfterSeconds = parseInt(retryAfter);
+          if (!isNaN(retryAfterSeconds)) {
+            delay = retryAfterSeconds * 1000;
+            console.warn(`   Retry-After header: ${retryAfterSeconds}s`);
+          }
+        } else {
+          delay = Math.max(delay, 5000);
+        }
+      }
+
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  return results;
+}
+
+/**
  * Download with retry and exponential backoff
  */
 export async function downloadWithRetry(
@@ -197,7 +362,7 @@ export async function downloadWithRetry(
       const response = await axios.get(url, {
         responseType: 'arraybuffer',
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'User-Agent': 'QuizPlatform/1.0 (Educational; https://github.com/quiz-platform; contact: quiz.platform.support@gmail.com)',
           'Accept': 'image/*',
           'Referer': 'https://www.wikipedia.org/',
         },
@@ -211,6 +376,8 @@ export async function downloadWithRetry(
 
       if (error.response?.status === 429) {
         console.warn(`Rate limited on download attempt ${attempt + 1}/${maxRetries}`);
+      } else if (error.response?.status === 503) {
+        console.warn(`Service unavailable on download attempt ${attempt + 1}/${maxRetries}`);
       } else {
         console.warn(`Download error on attempt ${attempt + 1}/${maxRetries}:`, error.message);
       }
@@ -219,8 +386,23 @@ export async function downloadWithRetry(
         throw new Error(`Failed to download after ${maxRetries} attempts: ${error.message}`);
       }
 
-      // Exponential backoff: 1s, 2s, 4s
-      const delay = Math.pow(2, attempt) * 1000;
+      // Respect Retry-After header for 429/503, otherwise exponential backoff
+      let delay = Math.pow(2, attempt) * 1000; // Default: 1s, 2s, 4s
+
+      if (error.response?.status === 429 || error.response?.status === 503) {
+        const retryAfter = error.response.headers['retry-after'];
+        if (retryAfter) {
+          const retryAfterSeconds = parseInt(retryAfter);
+          if (!isNaN(retryAfterSeconds)) {
+            delay = retryAfterSeconds * 1000;
+            console.warn(`   Retry-After header: ${retryAfterSeconds}s`);
+          }
+        } else {
+          // No Retry-After header: use minimum 5s for rate limits
+          delay = Math.max(delay, 5000);
+        }
+      }
+
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
