@@ -611,6 +611,133 @@ Via dashboard Vercel → "Rollback to previous deployment"
 
 ---
 
+## 📈 Scalabilité et évolution future
+
+### Limites du design actuel
+
+**Design optimisé pour : 0-500 images**
+
+| Métrique | 180 images (MVP1) | 5000 images | 10000 images |
+|----------|-------------------|-------------|--------------|
+| **Stockage Git** | 14 MB ✅ | 400 MB ⚠️ | 800 MB ❌ |
+| **Vercel limit** | 14/500 MB ✅ | 400/500 MB ⚠️ | Dépassement ❌ |
+| **Download time** | 1.5h ✅ | 41h ❌ | 83h ❌ |
+| **Clone repo** | 5s ✅ | 2-5 min ⚠️ | 5-10 min ❌ |
+
+### Plan d'évolution : 3 phases
+
+#### Phase 1 : MVP1 (actuel) — 0-500 images
+```
+Stockage : public/images/quiz/
+CDN : Vercel Edge (automatique)
+Status : ✅ Design actuel optimal
+```
+
+**Quand migrer :** Si dépassement de 300-500 images
+
+---
+
+#### Phase 2 : Stockage externe — 500-50000+ images
+
+**Migration vers Cloudflare R2 :**
+
+```typescript
+// Changement dans le script de téléchargement
+// Avant (Phase 1)
+fs.writeFileSync(`public/images/quiz/${filename}`, buffer);
+await prisma.question.update({
+  data: { mediaUrl: `/images/quiz/${filename}` }
+});
+
+// Après (Phase 2)
+await uploadToR2(buffer, filename);
+await prisma.question.update({
+  data: { mediaUrl: `https://pub-xxxxx.r2.dev/${filename}` }
+});
+```
+
+**Avantages R2 :**
+- ✅ Stockage illimité gratuit
+- ✅ CDN Cloudflare global (plus rapide que Vercel)
+- ✅ Pas de frais egress (bande passante sortante)
+- ✅ Compatible S3 API (standard)
+- ✅ Git repo reste léger (<10 MB)
+
+**Configuration requise (one-time, 5 min) :**
+```bash
+1. Créer compte Cloudflare (gratuit)
+2. Activer R2 (pas de carte bancaire pour gratuit)
+3. Créer bucket "quiz-images" avec Public Access
+4. Générer API keys
+5. Ajouter dans .env :
+   R2_ACCOUNT_ID=xxx
+   R2_ACCESS_KEY_ID=xxx
+   R2_SECRET_ACCESS_KEY=xxx
+   R2_PUBLIC_URL=https://pub-xxxxx.r2.dev
+```
+
+**Migration des images existantes :**
+```bash
+cd apps/backend
+
+# 1. Installer SDK S3-compatible
+npm install @aws-sdk/client-s3
+
+# 2. Script de migration (upload public/ vers R2)
+npx ts-node scripts/images/migrate-to-r2.ts
+
+# 3. Update DB URLs
+npx ts-node scripts/images/update-urls-to-r2.ts
+
+# 4. Cleanup Git
+git rm -r apps/frontend/public/images/quiz/
+git commit -m "chore: migrate images to R2"
+```
+
+**Effort de migration : ~1h**
+
+**Aucun changement frontend :** `<img src={question.mediaUrl} />` fonctionne identique.
+
+---
+
+#### Phase 3 : Optimisations avancées — 10000+ images
+
+Si croissance continue, ajouter :
+
+1. **Upload parallèle** (10× plus rapide)
+   ```typescript
+   await Promise.all(
+     chunks(images, 10).map(chunk => uploadBatch(chunk))
+   )
+   // 83h → 8.3h pour 10000 images
+   ```
+
+2. **Responsive images** (optionnel)
+   ```typescript
+   // Générer 3 tailles automatiquement
+   thumb/abc123.jpg   // 200px - listes
+   medium/abc123.jpg  // 800px - desktop
+   large/abc123.jpg   // 1200px - fullscreen
+   ```
+
+3. **Lazy ingestion** (optionnel)
+   ```typescript
+   // Télécharger uniquement quand question publiée
+   // Pas toutes d'un coup
+   ```
+
+### Garantie de compatibilité
+
+**Le design actuel reste compatible avec R2 :**
+- ✅ Schéma DB identique (mediaUrl = string)
+- ✅ Frontend identique (juste l'URL change)
+- ✅ Métadonnées licence identiques
+- ✅ Script modifiable en 30 min (remplacer fs par S3 client)
+
+**Migration = script one-time, pas de refonte.**
+
+---
+
 ## 🚧 Limitations et compromis
 
 ### Limitations acceptées
