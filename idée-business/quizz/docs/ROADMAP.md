@@ -7,7 +7,7 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 | Phase | Focus | Tasks | Estimated Time | Priority |
 |-------|-------|-------|----------------|----------|
 | **MVP1** | Daily Challenge | ~12 tasks | 2-3 weeks | ✅ Complete |
-| **POST-MVP1** | Question Database | ~17 tasks | 2-3 weeks | 🔴 Critical |
+| **POST-MVP1** | Question Database + Images | ~18 tasks | 2-3 weeks | 🔴 Critical |
 | **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🟠 High |
 | **V2** | Collection System | ~16 tasks | 2-3 weeks | 🟡 Medium |
 | **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 🟢 Low |
@@ -173,28 +173,52 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - [ ] Distractors: flags with similar colors/patterns
 - [ ] Target: +50 questions
 
+#### Task 12: Image Pipeline Infrastructure
+- [ ] **Database:** Add license metadata fields to Question model
+  - mediaLicenseAuthor, mediaLicenseType, mediaLicenseUrl, mediaSourceUrl
+  - Prisma migration: `add_media_license_fields`
+- [ ] **Script:** Enhance image download script with:
+  - Wikimedia Commons API integration (fetch license metadata)
+  - Sharp optimization (resize max 800px, compression)
+  - Automatic retry with exponential backoff (3× max)
+  - License metadata storage in DB
+- [ ] **Optimization:** Install Sharp, configure image processing
+  - SVG: no transformation (keep vectorial)
+  - PNG/JPG: resize + compression (target ~80 KB/image)
+- [ ] **Storage:** Local storage in `public/images/quiz/` + Vercel CDN
+  - MD5 hash filenames for deduplication
+  - ~180 images × 80 KB = ~14 MB total
+- [ ] **Execution:** Run download script (optimal delay from test)
+  - Expected: 1-3h for full download (rate limit safe)
+- [ ] **Validation:** Test image display in Daily, check all 180 images load
+- [ ] **Documentation:** Update QUESTION-QUALITY-GUIDELINES.md with image best practices
+
+**Design Spec:** `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
+
+**Scalability Note:** Phase 1 (local + Vercel CDN) supports 0-500 images. Migration to Cloudflare R2 (~1h effort) unlocks unlimited scaling when crossing 500 images. See spec for migration path.
+
 ### Phase 4: Industrialization Tools (parallel to content creation)
 
-#### Task 12: Admin dashboard (basic)
+#### Task 13: Admin dashboard (basic)
 - [ ] View all questions (filterable by category, difficulty, status)
 - [ ] Approve/reject/edit draft questions
 - [ ] View question stats (success rate, avg time, times asked)
 - [ ] Bulk actions (approve multiple, delete multiple)
 
-#### Task 13: Automated quality checks
+#### Task 14: Automated quality checks
 - [ ] Duplicate detection: flag questions with >80% similar text
 - [ ] Distractor validation: ensure 4-5 unique distractors per MCQ question
 - [ ] Answer validation: canonical_answer must be in accepted_answers list
 - [ ] Category balance check: warn if category has <50 questions
 - [ ] Difficulty distribution: visualize easy/medium/hard ratio
 
-#### Task 14: User reporting system
-- [ ] Add "Report Question" button in frontend
-- [ ] Store reports in question_metadata.user_reports (JSONB)
-- [ ] Admin dashboard: review queue for reported questions
-- [ ] Track common report reasons (incorrect answer, ambiguous, typo)
+#### Task 15: User reporting system
+- [x] Add "Report Question" button in frontend ✅ Session 2026-10-13
+- [x] Store reports in question_metadata.user_reports (JSONB) ✅ Session 2026-10-13
+- [x] Admin dashboard: review queue for reported questions ✅ Session 2026-10-13
+- [x] Track common report reasons (incorrect answer, ambiguous, typo) ✅ Session 2026-10-13
 
-#### Task 15: Analytics & monitoring
+#### Task 16: Analytics & monitoring
 - [ ] Track question performance metrics:
   - Success rate by question (too easy? too hard?)
   - Average answer time (outliers = poorly worded?)
@@ -206,7 +230,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ### Phase 5: Content Expansion Strategy (ongoing)
 
-#### Task 16: Define content roadmap
+#### Task 17: Define content roadmap
 - [ ] Set target: 1000 questions by MVP2 launch
 - [ ] Prioritize categories based on user preferences (from MVP1 analytics)
 - [ ] Create weekly content sprint plan:
@@ -215,7 +239,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
   - Week 3: +100 Music questions (Wikidata: famous artists, albums, hit songs)
   - Week 4: +50 Technology questions (Wikidata: inventions, companies, programming languages)
 
-#### Task 17: Community content pipeline (future)
+#### Task 18: Community content pipeline (future)
 - [ ] Design user-submitted question workflow:
   - Users propose questions (with sources)
   - Moderators review and approve
@@ -242,6 +266,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - **Quality gates:** Every question must pass manual QA before first 500, then spot-check 10% after pipeline is proven
 - **Scalability:** Design with 10k+ questions in mind (indexing, query performance)
 - **Localization:** All Wikidata queries fetch both French and English labels (future i18n support)
+- **Image scalability:** Phase 1 pipeline (local + Vercel CDN) supports 0-500 images optimally. When crossing 500 images, migrate to Cloudflare R2 storage (~1h migration effort, unlimited free storage, faster global CDN). See image pipeline design spec for details.
 
 ---
 
@@ -512,9 +537,12 @@ Start free, scale only when users validate the product.
 
 ---
 
-**Latest Update:** 2026-10-12
+**Latest Update:** 2026-10-14
 **Status:** 
 - MVP1 implementation complete ✅
 - POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
+- Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
+- Task 12 (Image Pipeline Infrastructure) added with design spec 📋
 - Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
+- Image pipeline strategy documented in `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
 
