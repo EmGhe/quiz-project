@@ -31,6 +31,7 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private connectedUsers = new Map<string, string>(); // socketId -> userId
+  private rematchRequests = new Map<string, { requesterId: string; opponentId: string; timeout: NodeJS.Timeout }>(); // matchId -> request data
 
   constructor(
     private jwtService: JwtService,
@@ -270,5 +271,108 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
         data.timeMs,
       );
     }
+  }
+
+  /**
+   * Handle rematch request
+   */
+  @SubscribeMessage('rematch:request')
+  async handleRematchRequest(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { matchId: string; opponentId: string },
+  ) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    console.log(`[Rematch] ${client.userId} requests rematch with ${data.opponentId} for match ${data.matchId}`);
+
+    // Clear any existing timeout for this match
+    const existingRequest = this.rematchRequests.get(data.matchId);
+    if (existingRequest) {
+      clearTimeout(existingRequest.timeout);
+    }
+
+    // Create timeout that auto-declines after 10 seconds
+    const timeout = setTimeout(() => {
+      console.log(`[Rematch] Request for match ${data.matchId} timed out`);
+      this.rematchRequests.delete(data.matchId);
+      this.sendToUser(client.userId!, 'rematch:declined', {});
+    }, 10000);
+
+    // Store the request
+    this.rematchRequests.set(data.matchId, {
+      requesterId: client.userId,
+      opponentId: data.opponentId,
+      timeout,
+    });
+
+    // Send request to opponent
+    this.sendToUser(data.opponentId, 'rematch:request', {
+      matchId: data.matchId,
+      requesterId: client.userId,
+    });
+  }
+
+  /**
+   * Handle rematch accept
+   */
+  @SubscribeMessage('rematch:accept')
+  async handleRematchAccept(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { matchId: string },
+  ) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    const request = this.rematchRequests.get(data.matchId);
+    if (!request) {
+      console.log(`[Rematch] No pending request found for match ${data.matchId}`);
+      return { error: 'No pending rematch request' };
+    }
+
+    // Clear timeout
+    clearTimeout(request.timeout);
+    this.rematchRequests.delete(data.matchId);
+
+    console.log(`[Rematch] ${client.userId} accepted rematch from ${request.requesterId}`);
+
+    // Create new match between same players
+    // This will automatically send 'match:created' to both players
+    if (this.matchmakingService) {
+      await this.matchmakingService.createMatch(
+        request.requesterId,
+        client.userId,
+      );
+    }
+  }
+
+  /**
+   * Handle rematch decline
+   */
+  @SubscribeMessage('rematch:decline')
+  async handleRematchDecline(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { matchId: string },
+  ) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    const request = this.rematchRequests.get(data.matchId);
+    if (!request) {
+      console.log(`[Rematch] No pending request found for match ${data.matchId}`);
+      return { error: 'No pending rematch request' };
+    }
+
+    // Clear timeout
+    clearTimeout(request.timeout);
+    this.rematchRequests.delete(data.matchId);
+
+    console.log(`[Rematch] ${client.userId} declined rematch from ${request.requesterId}`);
+
+    // Notify requester
+    this.sendToUser(request.requesterId, 'rematch:declined', {});
   }
 }

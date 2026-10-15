@@ -145,13 +145,15 @@ export default function PvpMatchPage() {
     setTimeLeft(0);
 
     // Update scores based on reveal data
+    // Use getState() to avoid stale closure capturing initial 0 values
+    const currentScores = usePvpStore.getState();
     const isPlayer1 = currentMatch!.player1Id === user?.id;
     const myNewScore = isPlayer1
-      ? (playerScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0))
-      : (playerScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0));
+      ? (currentScores.playerScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0))
+      : (currentScores.playerScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0));
     const oppNewScore = isPlayer1
-      ? (opponentScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0))
-      : (opponentScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0));
+      ? (currentScores.opponentScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0))
+      : (currentScores.opponentScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0));
 
     usePvpStore.getState().updateScores(myNewScore, oppNewScore);
   };
@@ -308,29 +310,6 @@ export default function PvpMatchPage() {
                 />
               ))}
             </div>
-
-            {/* Reveal phase - show points gained */}
-            {isRevealing && revealData && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">Résultats</h3>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className={`p-4 rounded-lg ${revealData.player1Correct ? 'bg-green-100' : 'bg-red-100'}`}>
-                    <div className="font-bold">{isPlayer1 ? 'Vous' : 'Adversaire'}</div>
-                    <div className="text-2xl font-bold">
-                      {revealData.player1Correct ? `+${calculatePoints(revealData.player1Time)} pts` : '0 pts'}
-                    </div>
-                  </div>
-                  <div className={`p-4 rounded-lg ${revealData.player2Correct ? 'bg-green-100' : 'bg-red-100'}`}>
-                    <div className="font-bold">{!isPlayer1 ? 'Vous' : 'Adversaire'}</div>
-                    <div className="text-2xl font-bold">
-                      {revealData.player2Correct ? `+${calculatePoints(revealData.player2Time)} pts` : '0 pts'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

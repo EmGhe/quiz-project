@@ -79,6 +79,19 @@ class WebSocketService {
     this.socket?.emit('answer:submit', { matchId, questionIndex, choice, timeMs });
   }
 
+  // Rematch events
+  requestRematch(matchId: string, opponentId: string) {
+    this.socket?.emit('rematch:request', { matchId, opponentId });
+  }
+
+  acceptRematch(matchId: string) {
+    this.socket?.emit('rematch:accept', { matchId });
+  }
+
+  declineRematch(matchId: string) {
+    this.socket?.emit('rematch:decline', { matchId });
+  }
+
   // Event listeners
   on(event: string, callback: (...args: any[]) => void) {
     this.socket?.on(event, callback);
