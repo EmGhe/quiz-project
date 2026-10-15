@@ -179,10 +179,18 @@ export class MatchmakingService {
 
     // Notify both players that match was found
     this.pvpGateway.sendToMatch(match.id, 'match:created', {
-      matchId: match.id,
+      id: match.id,  // Frontend expects "id", not "matchId"
       player1Id,
       player2Id,
       status: 'waiting',
+      player1Score: 0,
+      player2Score: 0,
+      player1Time: 0,
+      player2Time: 0,
+      winnerId: null,
+      questionIds: [],
+      startedAt: null,
+      completedAt: null,
       player1: {
         id: player1!.id,
         username: player1!.username,

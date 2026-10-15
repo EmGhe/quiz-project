@@ -216,6 +216,9 @@ export default function PvpMatchPage() {
 
     const timeTaken = Date.now() - questionStartTime;
 
+    console.log('[Match] 🔍 DEBUG currentMatch:', currentMatch);
+    console.log('[Match] 🔍 DEBUG currentMatch.id:', currentMatch?.id);
+
     console.log('[Match] ✅ Choice clicked:', {
       choice,
       matchId: currentMatch!.id,
