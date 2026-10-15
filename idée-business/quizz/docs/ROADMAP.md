@@ -274,18 +274,61 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 **Goal:** Competitive layer for engagement and depth
 
-**Status:** 📋 Planned
+**Status:** 🚧 In Progress (60% complete)
 
 **Plan:** `docs/superpowers/plans/2026-10-09-mvp2-pvp-competition.md`
 
+**Branch:** `mvp2-pvp-implementation`
+
+**Latest Session:** 2026-10-15
+
+### Implementation Progress
+
+**Backend (Tasks 1-6):** ✅ Complete
+- ✅ Task 1: PvP Database Schema (Prisma models, migrations)
+- ✅ Task 2: ELO Service (K-factor 32, atomic updates, rank calculation)
+- ✅ Task 3: WebSocket Gateway (Socket.io, JWT auth, room management)
+- ✅ Task 4: Matchmaking Queue (ELO-based pairing, expanding range)
+- ✅ Task 5: Category Ban Phase (⏸️ removed - on stand by for future)
+- ✅ Task 6: PvP Match Flow (simplified: matchmaking → questions → scoring)
+
+**Frontend (Tasks 10-13):** 🚧 In Progress
+- ✅ Task 10: Matchmaking UI (Find Match button, queue status, WebSocket connection)
+- ⏳ Task 11: Category Ban UI (⏸️ skipped - on stand by)
+- ⏳ Task 12: PvP Match UI (play match, answer questions)
+- ⏳ Task 13: Ranks & Missions UI (display progression)
+
+**Backend Advanced (Tasks 7-9):** 📋 Planned
+- ⏳ Task 7: Seasons System (cron jobs, soft reset)
+- ⏳ Task 8: Ranks & Divisions (promotion/demotion notifications)
+- ⏳ Task 9: Weekly Missions Module (rotation, tracking)
+
+**Additional Features:**
+- ⏳ Task 14: Rematch System (30s acceptance window)
+- ⏳ Task 15: Testing & Documentation (integration tests, WebSocket tests)
+
+### Technical Updates
+
+**✅ NestJS 12 Upgrade (2026-10-15)**
+- Migrated from NestJS 10.x → 12.1.3
+- Fixed security vulnerability in @nestjs/core ≤11.1.17
+- Native WebSocket compatibility (no version conflicts)
+- All modules tested and working
+
+**⚠️ Simplified Match Flow**
+- Category ban phase removed from initial implementation
+- Direct flow: matchmaking → questions → answers → scoring
+- Ban phase can be re-added in future (schema fields preserved)
+- Faster time to playable match
+
 ### Key Features
-- ✅ 1v1 Real-time matchmaking (WebSocket-based)
-- ✅ Category ban phase (10s per player, sequential)
-- ✅ ELO system (atomic calculations, rank display)
-- ✅ Ranks & Divisions (Bronze → Grandmaster)
-- ✅ Seasons (6 months, placement matches, soft reset)
-- ✅ Weekly missions (3/5 completion → rewards)
-- ✅ Rematch system (30s acceptance window)
+- ✅ 1v1 Real-time matchmaking (WebSocket + Socket.io)
+- ⏸️ Category ban phase (on stand by - can be re-added later)
+- ✅ ELO system (atomic calculations, K=32, rank calculation)
+- ✅ Ranks & Divisions calculation (Bronze → Grandmaster, 3 divisions each)
+- ⏳ Seasons (6 months, placement matches, soft reset) - planned
+- ⏳ Weekly missions (3/5 completion → rewards) - planned
+- ⏳ Rematch system (30s acceptance window) - planned
 
 ### Critical Success Metrics
 - PvP participation rate > 30% of Daily players
@@ -294,15 +337,17 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - Mission completion rate > 50%
 
 ### Technical Highlights
-- **ELO race conditions:** Row-level locks + transactions
-- **Matchmaking fairness:** ±200 ELO, expands by 50 every 10s
-- **Reconnection handling:** 30s grace period for disconnects
-- **Category ban validation:** Server ensures no banned categories in questions
+- **ELO race conditions:** Row-level locks + Prisma transactions ✅
+- **Matchmaking fairness:** ±200 ELO initial, expands +50 every 10s ✅
+- **Reconnection handling:** 30s grace period (planned)
+- **WebSocket architecture:** JWT auth middleware, room-based events ✅
+- **Simplified flow:** Direct to questions (no ban delay) ✅
 
 ### Dependencies
 - ✅ MVP1 complete (auth, users, questions, scoring)
-- ✅ POST-MVP1 complete (500+ published questions from Wikidata pipeline)
-- ⏳ WebSocket infrastructure tested under load
+- ⏳ POST-MVP1 in progress (500+ published questions from Wikidata pipeline)
+- ✅ WebSocket infrastructure implemented (NestJS 12 + Socket.io)
+- ⏳ WebSocket load testing needed before production
 
 ---
 
@@ -537,10 +582,16 @@ Start free, scale only when users validate the product.
 
 ---
 
-**Latest Update:** 2026-10-14
+**Latest Update:** 2026-10-15
 **Status:** 
 - MVP1 implementation complete ✅
 - POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
+- **MVP2 PvP Competition in progress (60% complete)** 🚧
+  - Backend core complete: Schema, ELO, WebSocket, Matchmaking, Match Flow ✅
+  - Frontend matchmaking UI complete ✅
+  - NestJS upgraded to v12 for security & compatibility ✅
+  - Match flow simplified (category ban on stand by) ✅
+  - Next: PvP Match UI, Seasons, Missions
 - Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
 - Task 12 (Image Pipeline Infrastructure) added with design spec 📋
 - Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
