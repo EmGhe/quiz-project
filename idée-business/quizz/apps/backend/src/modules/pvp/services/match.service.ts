@@ -5,9 +5,6 @@ import { EloService } from './elo.service';
 
 @Injectable()
 export class MatchService {
-  private readonly BAN_TIMEOUT = 10000; // 10 seconds per player
-  private banTimers = new Map<string, NodeJS.Timeout>();
-
   constructor(
     private prisma: PrismaService,
     private pvpGateway: PvpGateway,
@@ -15,137 +12,21 @@ export class MatchService {
   ) {}
 
   /**
-   * Start category ban phase
+   * Start the match - selects questions and notifies players
+   * Note: Category ban phase removed (stand by for future implementation)
    */
-  async startCategoryBanPhase(matchId: string): Promise<void> {
-    const match = await this.prisma.pvpMatch.findUnique({
-      where: { id: matchId },
-    });
-
-    if (!match || match.status !== 'category_ban') {
-      return;
-    }
-
-    // Player 1 bans first
-    this.pvpGateway.sendToMatch(matchId, 'ban:turn', {
-      playerId: match.player1Id,
-      timeLimit: this.BAN_TIMEOUT,
-    });
-
-    // Set timeout for player 1
-    const timer = setTimeout(() => {
-      this.handleBanTimeout(matchId, match.player1Id, 1);
-    }, this.BAN_TIMEOUT);
-
-    this.banTimers.set(`${matchId}:1`, timer);
-  }
-
-  /**
-   * Handle category ban from player
-   */
-  async submitCategoryBan(
-    matchId: string,
-    playerId: string,
-    categoryId: string,
-  ): Promise<void> {
-    const match = await this.prisma.pvpMatch.findUnique({
-      where: { id: matchId },
-    });
-
-    if (!match || match.status !== 'category_ban') {
-      return;
-    }
-
-    const isPlayer1 = match.player1Id === playerId;
-    const isPlayer2 = match.player2Id === playerId;
-
-    if (!isPlayer1 && !isPlayer2) {
-      return; // Not a player in this match
-    }
-
-    // Update match with banned category
-    if (isPlayer1 && match.player1BannedCat.length === 0) {
-      await this.prisma.pvpMatch.update({
-        where: { id: matchId },
-        data: {
-          player1BannedCat: [categoryId],
-        },
-      });
-
-      // Clear timer
-      const timer = this.banTimers.get(`${matchId}:1`);
-      if (timer) clearTimeout(timer);
-
-      // Player 2's turn
-      this.pvpGateway.sendToMatch(matchId, 'ban:turn', {
-        playerId: match.player2Id,
-        timeLimit: this.BAN_TIMEOUT,
-      });
-
-      const timer2 = setTimeout(() => {
-        this.handleBanTimeout(matchId, match.player2Id, 2);
-      }, this.BAN_TIMEOUT);
-
-      this.banTimers.set(`${matchId}:2`, timer2);
-    } else if (isPlayer2 && match.player2BannedCat.length === 0) {
-      await this.prisma.pvpMatch.update({
-        where: { id: matchId },
-        data: {
-          player2BannedCat: [categoryId],
-        },
-      });
-
-      // Clear timer
-      const timer = this.banTimers.get(`${matchId}:2`);
-      if (timer) clearTimeout(timer);
-
-      // Start match
-      await this.startMatch(matchId);
-    }
-  }
-
-  /**
-   * Handle ban timeout (auto-skip)
-   */
-  private async handleBanTimeout(
-    matchId: string,
-    playerId: string,
-    playerNum: number,
-  ) {
-    // Auto-ban a random category
-    const categories = await this.prisma.category.findMany({
-      take: 10,
-    });
-
-    const randomCategory =
-      categories[Math.floor(Math.random() * categories.length)];
-
-    await this.submitCategoryBan(matchId, playerId, randomCategory.id);
-  }
-
-  /**
-   * Start the match (after bans)
-   */
-  private async startMatch(matchId: string): Promise<void> {
+  async startMatch(matchId: string): Promise<void> {
     const match = await this.prisma.pvpMatch.findUnique({
       where: { id: matchId },
     });
 
     if (!match) return;
 
-    // Get 10 questions excluding banned categories
-    const bannedCategories = [
-      ...match.player1BannedCat,
-      ...match.player2BannedCat,
-    ];
-
+    // Get 10 random questions (no ban filtering for now)
     const questions = await this.prisma.question.findMany({
       where: {
         status: 'publie',
         enabledForMcq: true,
-        categoryId: {
-          notIn: bannedCategories,
-        },
       },
       take: 10,
       orderBy: {

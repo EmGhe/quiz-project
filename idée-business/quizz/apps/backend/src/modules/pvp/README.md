@@ -55,19 +55,15 @@
   - Queue status tracking
   - Match creation with notifications
 
-#### ✅ Task 5: Category Ban Phase
-- **Implementation:** `services/match.service.ts` (part 1)
-- **Features:**
-  - Sequential bans: Player 1 → Player 2
-  - 10-second timer per player
-  - Auto-ban random category on timeout
-  - Question pool filtering by banned categories
-  - Real-time ban notifications via WebSocket
+#### ⏸️ Task 5: Category Ban Phase (Stand By)
+- **Status:** Removed from current implementation (on hold for future)
+- **Reason:** Simplified match flow - direct to questions
+- **Future implementation:** Will allow players to ban 1 category each before match starts
 
-#### ✅ Task 6: PvP Match Flow
-- **Implementation:** `services/match.service.ts` (part 2)
+#### ✅ Task 6: PvP Match Flow (Simplified)
+- **Implementation:** `services/match.service.ts`
 - **Features:**
-  - Full match flow: category ban → question selection → answers → scoring → ELO update
+  - **Simplified flow:** matchmaking → questions → answers → scoring → ELO update (no ban phase)
   - Server-authoritative timing
   - Scoring with time bonus: `points = 100 * (1 + (30000 - timeMs) / 30000)`
   - Tie-breaker: same score → faster total time wins
@@ -266,19 +262,19 @@ WebSocket server will be available on the same port as HTTP server.
 
 - `matchmaking:join` - Join matchmaking queue
 - `matchmaking:leave` - Leave queue
-- `ban:submit` - Submit category ban
 - `match:answer` - Submit answer to question
 
 ### Server → Client
 
 - `matchmaking:joined` - Queue joined confirmation
 - `matchmaking:left` - Queue left confirmation
-- `match:created` - Match found, entering ban phase
-- `ban:turn` - Your turn to ban (or opponent's)
-- `match:start` - Match starting with questions
+- `match:created` - Match found, preparing questions
+- `match:start` - Match starting with 10 questions
 - `match:progress` - Opponent answered a question
 - `match:complete` - Match finished with results
 - `match:cancelled` - Match cancelled
+
+**Note:** Category ban events (`ban:submit`, `ban:turn`) removed in simplified flow
 
 ---
 

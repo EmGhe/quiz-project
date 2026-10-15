@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { PvpGateway } from '../gateways/pvp.gateway';
+import { MatchService } from './match.service';
 
 interface QueueEntry {
   userId: string;
@@ -18,6 +19,8 @@ export class MatchmakingService {
   constructor(
     private prisma: PrismaService,
     private pvpGateway: PvpGateway,
+    @Inject(forwardRef(() => MatchService))
+    private matchService: MatchService,
   ) {
     // Start matchmaking loop
     this.startMatchmakingLoop();
@@ -138,7 +141,7 @@ export class MatchmakingService {
   }
 
   /**
-   * Create a PvP match
+   * Create a PvP match and start it immediately (no ban phase)
    */
   private async createMatch(
     player1Id: string,
@@ -148,7 +151,9 @@ export class MatchmakingService {
       data: {
         player1Id,
         player2Id,
-        status: 'category_ban',
+        status: 'waiting', // Will be updated to 'in_progress' by startMatch
+        player1BannedCat: [], // Empty for now (ban phase on stand by)
+        player2BannedCat: [],
       },
     });
 
@@ -158,13 +163,16 @@ export class MatchmakingService {
     this.pvpGateway.joinMatchRoom(player1Id, match.id);
     this.pvpGateway.joinMatchRoom(player2Id, match.id);
 
-    // Notify both players
+    // Notify both players that match was found
     this.pvpGateway.sendToMatch(match.id, 'match:created', {
       matchId: match.id,
       player1Id,
       player2Id,
-      status: 'category_ban',
+      status: 'waiting',
     });
+
+    // Start match immediately (skip ban phase)
+    await this.matchService.startMatch(match.id);
   }
 
   /**
