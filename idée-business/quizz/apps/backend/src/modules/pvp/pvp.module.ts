@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { EloService } from './services/elo.service';
+import { MatchmakingService } from './services/matchmaking.service';
 import { PvpGateway } from './gateways/pvp.gateway';
 
 @Module({
@@ -16,7 +17,7 @@ import { PvpGateway } from './gateways/pvp.gateway';
       }),
     }),
   ],
-  providers: [EloService, PvpGateway],
-  exports: [EloService, PvpGateway],
+  providers: [EloService, MatchmakingService, PvpGateway],
+  exports: [EloService, MatchmakingService, PvpGateway],
 })
 export class PvpModule {}
