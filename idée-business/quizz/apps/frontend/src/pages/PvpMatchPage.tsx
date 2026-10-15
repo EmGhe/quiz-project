@@ -30,14 +30,19 @@ export default function PvpMatchPage() {
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
+  // Check user and match
   useEffect(() => {
     if (!user || !currentMatch) {
       console.log('[Match] No user or match, redirecting to /pvp');
       navigate('/pvp');
       return;
     }
+  }, [user, currentMatch, navigate]);
 
-    // Allow some time for questions to load
+  // Wait for questions to load
+  useEffect(() => {
+    if (!currentMatch) return;
+
     if (matchQuestions.length === 0) {
       console.log('[Match] Waiting for questions to load...');
       const timeout = setTimeout(() => {
@@ -45,12 +50,18 @@ export default function PvpMatchPage() {
           console.error('[Match] No questions received, redirecting');
           navigate('/pvp');
         }
-      }, 3000); // Wait 3 seconds for questions
+      }, 3000);
 
       return () => clearTimeout(timeout);
+    } else {
+      console.log('[Match] Questions loaded:', matchQuestions.length);
     }
+  }, [matchQuestions, currentMatch, navigate]);
 
-    // Listen to match events
+  // Attach WebSocket event listeners (regardless of questions loading state)
+  useEffect(() => {
+    if (!currentMatch) return;
+
     const socket = websocketService.getSocket();
 
     if (!socket) {
@@ -59,6 +70,8 @@ export default function PvpMatchPage() {
       return;
     }
 
+    console.log('[Match] Attaching WebSocket event listeners');
+
     socket.on('match:question_start', handleQuestionStart);
     socket.on('match:question_end', handleQuestionEnd);
     socket.on('match:player_answered', handlePlayerAnswered);
@@ -66,6 +79,7 @@ export default function PvpMatchPage() {
     socket.on('match:cancelled', handleMatchCancelled);
 
     return () => {
+      console.log('[Match] Removing WebSocket event listeners');
       if (socket) {
         socket.off('match:question_start', handleQuestionStart);
         socket.off('match:question_end', handleQuestionEnd);
@@ -79,7 +93,7 @@ export default function PvpMatchPage() {
         clearInterval(timerInterval);
       }
     };
-  }, [user, currentMatch, matchQuestions, timerInterval]);
+  }, [currentMatch, navigate, timerInterval]);
 
   const handleQuestionStart = (data: { questionIndex: number; timerMs: number }) => {
     console.log('[Match] Question start:', data);
