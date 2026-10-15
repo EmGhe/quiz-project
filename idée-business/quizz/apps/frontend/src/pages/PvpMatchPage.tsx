@@ -30,9 +30,23 @@ export default function PvpMatchPage() {
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!user || !currentMatch || matchQuestions.length === 0) {
+    if (!user || !currentMatch) {
+      console.log('[Match] No user or match, redirecting to /pvp');
       navigate('/pvp');
       return;
+    }
+
+    // Allow some time for questions to load
+    if (matchQuestions.length === 0) {
+      console.log('[Match] Waiting for questions to load...');
+      const timeout = setTimeout(() => {
+        if (matchQuestions.length === 0) {
+          console.error('[Match] No questions received, redirecting');
+          navigate('/pvp');
+        }
+      }, 3000); // Wait 3 seconds for questions
+
+      return () => clearTimeout(timeout);
     }
 
     // Listen to match events
@@ -162,8 +176,19 @@ export default function PvpMatchPage() {
     );
   };
 
-  if (!currentMatch || matchQuestions.length === 0) {
+  if (!currentMatch) {
     return null;
+  }
+
+  if (matchQuestions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement du match...</p>
+        </div>
+      </div>
+    );
   }
 
   const currentQuestion = matchQuestions[currentQuestionIndex];

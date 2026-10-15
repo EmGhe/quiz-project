@@ -96,8 +96,12 @@ export default function PvpMatchmakingPage() {
       socket.on('match:start', (data: { questions: any[] }) => {
         console.log('[Match] Starting with questions:', data.questions);
         setMatchQuestions(data.questions);
-        // Navigate to match page
-        navigate('/pvp/match');
+
+        // Wait a bit to ensure store is updated before navigating
+        setTimeout(() => {
+          console.log('[Match] Navigating to match page...');
+          navigate('/pvp/match');
+        }, 100);
       });
 
       socket.on('match:cancelled', (data: { reason: string }) => {
