@@ -50,15 +50,24 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       // Verify JWT
       const payload = await this.jwtService.verifyAsync(token);
-      client.userId = payload.sub;
-      client.username = payload.username;
 
-      this.connectedUsers.set(client.id, client.userId);
+      if (!payload.sub || !payload.username) {
+        client.disconnect();
+        return;
+      }
 
-      console.log(`User ${client.username} (${client.userId}) connected`);
+      const userId = payload.sub;
+      const username = payload.username;
+
+      client.userId = userId;
+      client.username = username;
+
+      this.connectedUsers.set(client.id, userId);
+
+      console.log(`User ${username} (${userId}) connected`);
 
       // Join user to their personal room
-      client.join(`user:${client.userId}`);
+      client.join(`user:${userId}`);
     } catch (error) {
       console.error('WebSocket authentication failed:', error);
       client.disconnect();
