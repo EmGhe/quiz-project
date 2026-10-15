@@ -148,6 +148,22 @@ export default function PvpMatchPage() {
     // Use getState() to avoid stale closure capturing initial 0 values
     const currentScores = usePvpStore.getState();
     const isPlayer1 = currentMatch!.player1Id === user?.id;
+
+    // Debug logs
+    console.log('[Match] Current scores before update:', {
+      playerScore: currentScores.playerScore,
+      opponentScore: currentScores.opponentScore,
+    });
+    console.log('[Match] Calculating new scores:', {
+      isPlayer1,
+      player1Correct: data.player1Correct,
+      player1Time: data.player1Time,
+      player1Points: data.player1Correct ? calculatePoints(data.player1Time) : 0,
+      player2Correct: data.player2Correct,
+      player2Time: data.player2Time,
+      player2Points: data.player2Correct ? calculatePoints(data.player2Time) : 0,
+    });
+
     const myNewScore = isPlayer1
       ? (currentScores.playerScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0))
       : (currentScores.playerScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0));
@@ -155,6 +171,7 @@ export default function PvpMatchPage() {
       ? (currentScores.opponentScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0))
       : (currentScores.opponentScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0));
 
+    console.log('[Match] New scores:', { myNewScore, oppNewScore });
     usePvpStore.getState().updateScores(myNewScore, oppNewScore);
   };
 

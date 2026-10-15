@@ -87,6 +87,8 @@ export default function PvpMatchmakingPage() {
 
       socket.on('match:created', (data: any) => {
         console.log('[Match] Created:', data);
+        // Reset all game state for fresh start
+        resetMatch();
         setCurrentMatch(data);
         resetMatchmaking();
       });

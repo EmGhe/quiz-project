@@ -39,9 +39,10 @@ export default function PvpResultsPage() {
 
     const handleMatchCreated = (data: any) => {
       console.log('[Results] New match created for rematch:', data);
-      // Update store with new match
-      usePvpStore.getState().setCurrentMatch(data);
-      usePvpStore.getState().resetPlayerAnswer();
+      // Reset all match state for fresh start
+      const store = usePvpStore.getState();
+      store.resetMatch();
+      store.setCurrentMatch(data);
       // Navigate to new match
       navigate('/pvp/match');
     };

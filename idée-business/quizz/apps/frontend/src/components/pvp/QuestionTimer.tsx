@@ -42,7 +42,7 @@ export default function QuestionTimer({ timeLeft, matchPhase = 'playing' }: Ques
       </div>
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
         <div
-          className={`h-3 rounded-full transition-all duration-1000 ${
+          className={`h-3 rounded-full transition-all duration-300 ease-linear ${
             isUrgent ? 'bg-red-500' : percentage > 50 ? 'bg-green-500' : 'bg-yellow-500'
           }`}
           style={{ width: `${percentage}%` }}
