@@ -302,6 +302,7 @@ model PvpMatch {
   player2EloChange Int @default(0)
 
   // Metadata
+  metadata    Json? // Stores questions, player answers, and other match data
   seasonId    String?
   createdAt   DateTime  @default(now())
   startedAt   DateTime?

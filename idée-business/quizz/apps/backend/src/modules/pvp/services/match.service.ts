@@ -29,6 +29,12 @@ export class MatchService {
         enabledForMcq: true,
       },
       take: 10,
+      include: {
+        acceptedAnswers: true,
+        distractors: {
+          orderBy: { order: 'asc' },
+        },
+      },
       orderBy: {
         // Random selection (simple approach)
         createdAt: 'desc',
@@ -38,6 +44,16 @@ export class MatchService {
     if (questions.length < 10) {
       // Not enough questions, cancel match
       await this.cancelMatch(matchId, 'Not enough questions');
+      return;
+    }
+
+    // Validate that all questions have distractors
+    const invalidQuestions = questions.filter((q) => q.distractors.length < 4);
+    if (invalidQuestions.length > 0) {
+      console.error(
+        `Invalid questions without enough distractors: ${invalidQuestions.map((q) => q.id).join(', ')}`,
+      );
+      await this.cancelMatch(matchId, 'Invalid questions');
       return;
     }
 
@@ -51,16 +67,123 @@ export class MatchService {
       },
     });
 
-    // Send questions to players
-    this.pvpGateway.sendToMatch(matchId, 'match:start', {
-      questions: questions.map((q) => ({
+    // Prepare questions with shuffled choices
+    const questionsWithChoices = questions.map((q) => {
+      const correctAnswer = q.acceptedAnswers.find((a) => a.isPrimary)?.answer || q.acceptedAnswers[0]?.answer;
+
+      if (!correctAnswer) {
+        throw new Error(`Question ${q.id} has no accepted answer`);
+      }
+
+      const distractorTexts = q.distractors.map((d) => d.distractorText);
+      const allChoices = [correctAnswer, ...distractorTexts];
+
+      // Shuffle choices
+      const shuffledChoices = this.shuffleArray([...allChoices]);
+
+      return {
         id: q.id,
         text: q.text,
         questionType: q.questionType,
         mediaUrl: q.mediaUrl,
-        // MCQ: include distractors (to be fetched separately)
-      })),
+        choices: shuffledChoices,
+        correctAnswer, // Stored server-side for validation, not sent to client
+      };
     });
+
+    // Store questions data for later validation
+    await this.prisma.pvpMatch.update({
+      where: { id: matchId },
+      data: {
+        // Store as JSON for question validation
+        metadata: {
+          questions: questionsWithChoices,
+        } as any,
+      },
+    });
+
+    // Send questions to players (without correctAnswer)
+    this.pvpGateway.sendToMatch(matchId, 'match:start', {
+      questions: questionsWithChoices.map(({ correctAnswer, ...rest }) => rest),
+    });
+
+    // Start first question timer
+    setTimeout(() => this.startQuestionTimer(matchId, 0), 1000);
+  }
+
+  /**
+   * Start timer for a specific question
+   */
+  private async startQuestionTimer(matchId: string, questionIndex: number): Promise<void> {
+    const match = await this.prisma.pvpMatch.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!match || match.status !== 'in_progress') return;
+
+    // Notify players that question started
+    this.pvpGateway.sendToMatch(matchId, 'match:question_start', {
+      questionIndex,
+      timerMs: 10000,
+    });
+
+    // After 10 seconds, reveal answers and move to next question
+    setTimeout(() => this.endQuestionTimer(matchId, questionIndex), 10000);
+  }
+
+  /**
+   * End timer for a specific question - reveal answers and progress
+   */
+  private async endQuestionTimer(matchId: string, questionIndex: number): Promise<void> {
+    const match = await this.prisma.pvpMatch.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!match || match.status !== 'in_progress') return;
+
+    const metadata = match.metadata as any;
+    const questions = metadata?.questions || [];
+    const currentQuestion = questions[questionIndex];
+
+    if (!currentQuestion) return;
+
+    // Get player answers for this question (stored in metadata)
+    const playerAnswers = metadata?.playerAnswers || {};
+    const player1Answer = playerAnswers[match.player1Id]?.[questionIndex];
+    const player2Answer = playerAnswers[match.player2Id]?.[questionIndex];
+
+    // Send revelation to both players
+    this.pvpGateway.sendToMatch(matchId, 'match:question_end', {
+      questionIndex,
+      correctAnswer: currentQuestion.correctAnswer,
+      player1Answer: player1Answer?.choice || null,
+      player1Time: player1Answer?.timeMs || null,
+      player1Correct: player1Answer?.choice === currentQuestion.correctAnswer,
+      player2Answer: player2Answer?.choice || null,
+      player2Time: player2Answer?.timeMs || null,
+      player2Correct: player2Answer?.choice === currentQuestion.correctAnswer,
+    });
+
+    // Move to next question or complete match
+    if (questionIndex < 9) {
+      // Next question after 3 seconds (revelation time)
+      setTimeout(() => this.startQuestionTimer(matchId, questionIndex + 1), 3000);
+    } else {
+      // Match complete after 3 seconds
+      setTimeout(() => this.completeMatch(matchId), 3000);
+    }
+  }
+
+  /**
+   * Shuffle array (Fisher-Yates algorithm)
+   */
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   /**
@@ -69,65 +192,78 @@ export class MatchService {
   async submitAnswer(
     matchId: string,
     playerId: string,
-    questionId: string,
-    answer: string,
+    questionIndex: number,
+    choice: string,
     timeMs: number,
   ): Promise<void> {
-    // Validate answer (check against acceptedAnswers or distractors)
-    const question = await this.prisma.question.findUnique({
-      where: { id: questionId },
-      include: {
-        acceptedAnswers: true,
-        distractors: true,
-      },
-    });
+    // Validate time (must be <= 10 seconds)
+    if (timeMs > 10000) {
+      console.warn(`Player ${playerId} submitted answer after timeout: ${timeMs}ms`);
+      return;
+    }
 
-    if (!question) return;
-
-    const isCorrect = question.acceptedAnswers.some(
-      (a) => a.answer.toLowerCase() === answer.toLowerCase(),
-    );
-
-    // Update player score (implementation depends on scoring logic)
     const match = await this.prisma.pvpMatch.findUnique({
       where: { id: matchId },
     });
 
-    if (!match) return;
+    if (!match || match.status !== 'in_progress') return;
 
-    const isPlayer1 = match.player1Id === playerId;
+    const metadata = (match.metadata as any) || {};
+    const questions = metadata.questions || [];
+    const currentQuestion = questions[questionIndex];
 
-    if (isCorrect) {
-      const points = this.calculatePoints(timeMs);
-
-      if (isPlayer1) {
-        await this.prisma.pvpMatch.update({
-          where: { id: matchId },
-          data: {
-            player1Score: { increment: points },
-            player1Time: { increment: timeMs },
-          },
-        });
-      } else {
-        await this.prisma.pvpMatch.update({
-          where: { id: matchId },
-          data: {
-            player2Score: { increment: points },
-            player2Time: { increment: timeMs },
-          },
-        });
-      }
+    if (!currentQuestion) {
+      console.error(`Question ${questionIndex} not found in match ${matchId}`);
+      return;
     }
 
-    // Notify match of progress
-    this.pvpGateway.sendToMatch(matchId, 'match:progress', {
-      playerId,
-      questionId,
-      isCorrect,
+    // Store player answer in metadata
+    if (!metadata.playerAnswers) {
+      metadata.playerAnswers = {};
+    }
+    if (!metadata.playerAnswers[playerId]) {
+      metadata.playerAnswers[playerId] = {};
+    }
+
+    metadata.playerAnswers[playerId][questionIndex] = {
+      choice,
+      timeMs,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Check if answer is correct
+    const isCorrect = choice === currentQuestion.correctAnswer;
+
+    // Calculate points if correct
+    let points = 0;
+    if (isCorrect) {
+      points = this.calculatePoints(timeMs);
+    }
+
+    // Update score and time
+    const isPlayer1 = match.player1Id === playerId;
+
+    await this.prisma.pvpMatch.update({
+      where: { id: matchId },
+      data: {
+        metadata: metadata as any,
+        ...(isPlayer1
+          ? {
+              player1Score: { increment: points },
+              player1Time: { increment: timeMs },
+            }
+          : {
+              player2Score: { increment: points },
+              player2Time: { increment: timeMs },
+            }),
+      },
     });
 
-    // Check if match complete (both players answered all 10)
-    // (Implementation needed: track answered questions per player)
+    // Notify that player answered (but don't reveal if correct yet)
+    this.pvpGateway.sendToMatch(matchId, 'match:player_answered', {
+      playerId,
+      questionIndex,
+    });
   }
 
   /**
@@ -135,7 +271,7 @@ export class MatchService {
    */
   private calculatePoints(timeMs: number): number {
     const basePoints = 100;
-    const maxTime = 30000; // 30 seconds
+    const maxTime = 10000; // 10 seconds
     const timeBonus = Math.max(0, maxTime - timeMs) / maxTime;
     return Math.round(basePoints * (1 + timeBonus));
   }
@@ -180,46 +316,48 @@ export class MatchService {
       matchId,
     );
 
+    const player1EloChange =
+      winnerId === match.player1Id
+        ? eloUpdate.winner.change
+        : eloUpdate.loser.change;
+    const player2EloChange =
+      winnerId === match.player2Id
+        ? eloUpdate.winner.change
+        : eloUpdate.loser.change;
+
     // Update match
     await this.prisma.pvpMatch.update({
       where: { id: matchId },
       data: {
         status: 'completed',
         winnerId,
-        player1EloChange:
-          winnerId === match.player1Id
-            ? eloUpdate.winner.change
-            : eloUpdate.loser.change,
-        player2EloChange:
-          winnerId === match.player2Id
-            ? eloUpdate.winner.change
-            : eloUpdate.loser.change,
+        player1EloChange,
+        player2EloChange,
         completedAt: new Date(),
       },
     });
 
-    // Send results
-    this.pvpGateway.sendToMatch(matchId, 'match:complete', {
+    // Send results to both players
+    const results = {
+      matchId,
       winnerId,
       player1Score: match.player1Score,
       player2Score: match.player2Score,
       player1Time: match.player1Time,
       player2Time: match.player2Time,
       eloChanges: {
-        [match.player1Id]:
-          winnerId === match.player1Id
-            ? eloUpdate.winner.change
-            : eloUpdate.loser.change,
-        [match.player2Id]:
-          winnerId === match.player2Id
-            ? eloUpdate.winner.change
-            : eloUpdate.loser.change,
+        [match.player1Id]: player1EloChange,
+        [match.player2Id]: player2EloChange,
       },
-    });
+    };
+
+    this.pvpGateway.sendToMatch(matchId, 'match:complete', results);
 
     // Clean up rooms
-    this.pvpGateway.leaveMatchRoom(match.player1Id, matchId);
-    this.pvpGateway.leaveMatchRoom(match.player2Id, matchId);
+    setTimeout(() => {
+      this.pvpGateway.leaveMatchRoom(match.player1Id, matchId);
+      this.pvpGateway.leaveMatchRoom(match.player2Id, matchId);
+    }, 5000); // Wait 5s before cleanup
   }
 
   /**

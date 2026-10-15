@@ -31,7 +31,21 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private connectedUsers = new Map<string, string>(); // socketId -> userId
 
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    // Services will be injected via setter to avoid circular dependency
+  ) {}
+
+  private matchmakingService: any;
+  private matchService: any;
+
+  setMatchmakingService(service: any) {
+    this.matchmakingService = service;
+  }
+
+  setMatchService(service: any) {
+    this.matchService = service;
+  }
 
   /**
    * Handle client connection with JWT authentication
@@ -144,5 +158,60 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return this.connectedUsers.size;
   }
 
-  // Event handlers will be added by other services (matchmaking, match flow, etc.)
+  /**
+   * Handle join queue request
+   */
+  @SubscribeMessage('matchmaking:join')
+  async handleJoinQueue(@ConnectedSocket() client: AuthenticatedSocket) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    if (this.matchmakingService) {
+      await this.matchmakingService.joinQueue(client.userId);
+    }
+  }
+
+  /**
+   * Handle leave queue request
+   */
+  @SubscribeMessage('matchmaking:leave')
+  handleLeaveQueue(@ConnectedSocket() client: AuthenticatedSocket) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    if (this.matchmakingService) {
+      this.matchmakingService.leaveQueue(client.userId);
+    }
+  }
+
+  /**
+   * Handle answer submission
+   */
+  @SubscribeMessage('answer:submit')
+  async handleSubmitAnswer(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody()
+    data: {
+      matchId: string;
+      questionIndex: number;
+      choice: string;
+      timeMs: number;
+    },
+  ) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    if (this.matchService) {
+      await this.matchService.submitAnswer(
+        data.matchId,
+        client.userId,
+        data.questionIndex,
+        data.choice,
+        data.timeMs,
+      );
+    }
+  }
 }

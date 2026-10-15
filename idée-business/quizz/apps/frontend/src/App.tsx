@@ -5,6 +5,8 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import DailyPage from '@/pages/DailyPage';
 import PvpMatchmakingPage from '@/pages/PvpMatchmakingPage';
+import PvpMatchPage from '@/pages/PvpMatchPage';
+import PvpResultsPage from '@/pages/PvpResultsPage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuestions from '@/pages/admin/AdminQuestions';
 import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
@@ -43,6 +45,14 @@ function App() {
         <Route
           path="/pvp"
           element={user ? <PvpMatchmakingPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pvp/match"
+          element={user ? <PvpMatchPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pvp/results"
+          element={user ? <PvpResultsPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/admin"

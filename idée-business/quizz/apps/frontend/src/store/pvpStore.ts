@@ -19,6 +19,17 @@ interface PvpState {
   setCurrentQuestionIndex: (index: number) => void;
   submitAnswer: (questionId: string, answer: string, timeMs: number) => void;
 
+  // Match state (for UI)
+  playerAnswer: string | null;
+  opponentAnswered: boolean;
+  playerScore: number;
+  opponentScore: number;
+
+  setPlayerAnswer: (answer: string | null) => void;
+  setOpponentAnswered: (answered: boolean) => void;
+  resetPlayerAnswer: () => void;
+  updateScores: (playerScore: number, opponentScore: number) => void;
+
   // Match results
   matchResults: MatchResults | null;
   setMatchResults: (results: MatchResults | null) => void;
@@ -59,6 +70,17 @@ export const usePvpStore = create<PvpState>((set) => ({
       questionTimes: { ...state.questionTimes, [questionId]: timeMs },
     })),
 
+  // Match UI state
+  playerAnswer: null,
+  opponentAnswered: false,
+  playerScore: 0,
+  opponentScore: 0,
+
+  setPlayerAnswer: (answer) => set({ playerAnswer: answer }),
+  setOpponentAnswered: (answered) => set({ opponentAnswered: answered }),
+  resetPlayerAnswer: () => set({ playerAnswer: null, opponentAnswered: false }),
+  updateScores: (playerScore, opponentScore) => set({ playerScore, opponentScore }),
+
   // Results
   matchResults: null,
   setMatchResults: (results) => set({ matchResults: results }),
@@ -72,5 +94,9 @@ export const usePvpStore = create<PvpState>((set) => ({
       answers: {},
       questionTimes: {},
       matchResults: null,
+      playerAnswer: null,
+      opponentAnswered: false,
+      playerScore: 0,
+      opponentScore: 0,
     }),
 }));

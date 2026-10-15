@@ -29,7 +29,7 @@ export interface MatchQuestion {
   text: string;
   questionType: 'texte' | 'image' | 'carte';
   mediaUrl: string | null;
-  distractors?: string[];
+  choices: string[]; // Shuffled: 1 correct answer + 4 distractors
 }
 
 export interface MatchResults {

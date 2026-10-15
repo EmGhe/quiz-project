@@ -1,0 +1,291 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+import { usePvpStore } from '@/store/pvpStore';
+import { websocketService } from '@/services/websocket';
+import QuestionTimer from '@/components/pvp/QuestionTimer';
+import MCQChoice from '@/components/pvp/MCQChoice';
+
+export default function PvpMatchPage() {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const {
+    currentMatch,
+    matchQuestions,
+    currentQuestionIndex,
+    playerAnswer,
+    opponentAnswered,
+    setPlayerAnswer,
+    setOpponentAnswered,
+    resetPlayerAnswer,
+    playerScore,
+    opponentScore,
+  } = usePvpStore();
+
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [revealData, setRevealData] = useState<any>(null);
+  const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!user || !currentMatch || matchQuestions.length === 0) {
+      navigate('/pvp');
+      return;
+    }
+
+    // Listen to match events
+    const socket = websocketService.getSocket();
+
+    if (!socket) {
+      console.error('[Match] WebSocket not connected');
+      navigate('/pvp');
+      return;
+    }
+
+    socket.on('match:question_start', handleQuestionStart);
+    socket.on('match:question_end', handleQuestionEnd);
+    socket.on('match:player_answered', handlePlayerAnswered);
+    socket.on('match:complete', handleMatchComplete);
+    socket.on('match:cancelled', handleMatchCancelled);
+
+    return () => {
+      if (socket) {
+        socket.off('match:question_start', handleQuestionStart);
+        socket.off('match:question_end', handleQuestionEnd);
+        socket.off('match:player_answered', handlePlayerAnswered);
+        socket.off('match:complete', handleMatchComplete);
+        socket.off('match:cancelled', handleMatchCancelled);
+      }
+
+      // Clear timer on unmount
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [user, currentMatch, matchQuestions, timerInterval]);
+
+  const handleQuestionStart = (data: { questionIndex: number; timerMs: number }) => {
+    console.log('[Match] Question start:', data);
+
+    // Clear previous timer if exists
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+
+    setTimeLeft(data.timerMs / 1000);
+    setIsRevealing(false);
+    setRevealData(null);
+    resetPlayerAnswer();
+    setOpponentAnswered(false);
+    setQuestionStartTime(Date.now());
+
+    // Start countdown timer
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    setTimerInterval(interval);
+  };
+
+  const handleQuestionEnd = (data: any) => {
+    console.log('[Match] Question end:', data);
+    setIsRevealing(true);
+    setRevealData(data);
+    setTimeLeft(0);
+
+    // Update scores based on reveal data
+    const isPlayer1 = currentMatch!.player1Id === user?.id;
+    const myNewScore = isPlayer1
+      ? (playerScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0))
+      : (playerScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0));
+    const oppNewScore = isPlayer1
+      ? (opponentScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0))
+      : (opponentScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0));
+
+    usePvpStore.getState().updateScores(myNewScore, oppNewScore);
+  };
+
+  const handlePlayerAnswered = (data: { playerId: string; questionIndex: number }) => {
+    console.log('[Match] Player answered:', data);
+    if (data.playerId !== user?.id) {
+      setOpponentAnswered(true);
+    }
+  };
+
+  const handleMatchComplete = (data: any) => {
+    console.log('[Match] Complete:', data);
+
+    // Store results in store
+    usePvpStore.getState().setMatchResults({
+      matchId: data.matchId,
+      winnerId: data.winnerId,
+      player1Score: data.player1Score,
+      player2Score: data.player2Score,
+      player1Time: data.player1Time,
+      player2Time: data.player2Time,
+      eloChanges: data.eloChanges,
+    });
+
+    // Navigate to results after 2 seconds
+    setTimeout(() => {
+      navigate('/pvp/results');
+    }, 2000);
+  };
+
+  const handleMatchCancelled = (data: { reason: string }) => {
+    console.log('[Match] Cancelled:', data.reason);
+    alert(`Match annulé: ${data.reason}`);
+    navigate('/pvp');
+  };
+
+  const handleChoiceClick = (choice: string) => {
+    if (playerAnswer || isRevealing) return;
+
+    const timeTaken = Date.now() - questionStartTime;
+
+    setPlayerAnswer(choice);
+
+    // Submit to backend
+    websocketService.submitAnswer(
+      currentMatch!.id,
+      currentQuestionIndex,
+      choice,
+      timeTaken,
+    );
+  };
+
+  if (!currentMatch || matchQuestions.length === 0) {
+    return null;
+  }
+
+  const currentQuestion = matchQuestions[currentQuestionIndex];
+  const isPlayer1 = currentMatch.player1Id === user?.id;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500">
+      {/* Header - Scores */}
+      <header className="bg-white shadow-md py-4">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            {/* Player 1 */}
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                {isPlayer1 ? 'VOUS' : 'ADV'}
+              </div>
+              <div>
+                <div className="font-bold text-gray-800">{isPlayer1 ? user?.username : 'Adversaire'}</div>
+                <div className="text-2xl font-bold text-purple-600">{isPlayer1 ? playerScore : opponentScore} pts</div>
+              </div>
+            </div>
+
+            {/* Question progress */}
+            <div className="text-center">
+              <div className="text-sm text-gray-600">Question</div>
+              <div className="text-2xl font-bold text-gray-800">{currentQuestionIndex + 1}/10</div>
+            </div>
+
+            {/* Player 2 */}
+            <div className="flex items-center gap-3 flex-row-reverse">
+              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                {!isPlayer1 ? 'VOUS' : 'ADV'}
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-gray-800">{!isPlayer1 ? user?.username : 'Adversaire'}</div>
+                <div className="text-2xl font-bold text-blue-600">{!isPlayer1 ? playerScore : opponentScore} pts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          {/* Timer */}
+          <QuestionTimer timeLeft={timeLeft} />
+
+          {/* Question card */}
+          <div className="bg-white rounded-lg shadow-xl p-8 mt-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                {currentQuestion.text}
+              </h2>
+              {currentQuestion.mediaUrl && (
+                <img
+                  src={currentQuestion.mediaUrl}
+                  alt="Question"
+                  className="max-w-full h-auto rounded-lg mb-4"
+                />
+              )}
+            </div>
+
+            {/* MCQ Choices */}
+            <div className="space-y-3">
+              {currentQuestion.choices.map((choice, index) => (
+                <MCQChoice
+                  key={index}
+                  choice={choice}
+                  index={index}
+                  isSelected={playerAnswer === choice}
+                  isRevealing={isRevealing}
+                  isCorrect={revealData?.correctAnswer === choice}
+                  onClick={() => handleChoiceClick(choice)}
+                  disabled={!!playerAnswer || isRevealing}
+                />
+              ))}
+            </div>
+
+            {/* Status indicators */}
+            <div className="mt-6 flex justify-between text-sm">
+              <div className={`flex items-center gap-2 ${playerAnswer ? 'text-green-600' : 'text-gray-400'}`}>
+                {playerAnswer ? '✓' : '○'} Vous avez répondu
+              </div>
+              <div className={`flex items-center gap-2 ${opponentAnswered ? 'text-green-600' : 'text-gray-400'}`}>
+                {opponentAnswered ? '✓' : '○'} Adversaire a répondu
+              </div>
+            </div>
+
+            {/* Reveal phase - show points gained */}
+            {isRevealing && revealData && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">Résultats</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className={`p-4 rounded-lg ${revealData.player1Correct ? 'bg-green-100' : 'bg-red-100'}`}>
+                    <div className="font-bold">{isPlayer1 ? 'Vous' : 'Adversaire'}</div>
+                    <div className="text-2xl font-bold">
+                      {revealData.player1Correct ? `+${calculatePoints(revealData.player1Time)} pts` : '0 pts'}
+                    </div>
+                  </div>
+                  <div className={`p-4 rounded-lg ${revealData.player2Correct ? 'bg-green-100' : 'bg-red-100'}`}>
+                    <div className="font-bold">{!isPlayer1 ? 'Vous' : 'Adversaire'}</div>
+                    <div className="text-2xl font-bold">
+                      {revealData.player2Correct ? `+${calculatePoints(revealData.player2Time)} pts` : '0 pts'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function calculatePoints(timeMs: number): number {
+  if (!timeMs) return 0;
+  const basePoints = 100;
+  const maxTime = 10000;
+  const timeBonus = Math.max(0, maxTime - timeMs) / maxTime;
+  return Math.round(basePoints * (1 + timeBonus));
+}

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaModule } from '../../prisma/prisma.module';
@@ -21,4 +21,16 @@ import { PvpGateway } from './gateways/pvp.gateway';
   providers: [EloService, MatchmakingService, MatchService, PvpGateway],
   exports: [EloService, MatchmakingService, MatchService, PvpGateway],
 })
-export class PvpModule {}
+export class PvpModule implements OnModuleInit {
+  constructor(
+    private pvpGateway: PvpGateway,
+    private matchmakingService: MatchmakingService,
+    private matchService: MatchService,
+  ) {}
+
+  onModuleInit() {
+    // Inject services into gateway to avoid circular dependency
+    this.pvpGateway.setMatchmakingService(this.matchmakingService);
+    this.pvpGateway.setMatchService(this.matchService);
+  }
+}

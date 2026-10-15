@@ -69,8 +69,8 @@ class WebSocketService {
   }
 
   // Match events
-  submitAnswer(matchId: string, questionId: string, answer: string, timeMs: number) {
-    this.socket?.emit('match:answer', { matchId, questionId, answer, timeMs });
+  submitAnswer(matchId: string, questionIndex: number, choice: string, timeMs: number) {
+    this.socket?.emit('answer:submit', { matchId, questionIndex, choice, timeMs });
   }
 
   // Event listeners
