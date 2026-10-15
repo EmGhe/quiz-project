@@ -35,7 +35,11 @@ export default function PvpMatchmakingPage() {
       if (matchmakingStatus.inQueue) {
         websocketService.leaveQueue();
       }
-      websocketService.disconnect();
+      // DON'T disconnect WebSocket - we need it for the match!
+      // Only disconnect if not in a match
+      if (!currentMatch) {
+        websocketService.disconnect();
+      }
       resetMatchmaking();
     };
   }, []);
