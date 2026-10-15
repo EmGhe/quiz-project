@@ -5,7 +5,7 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
-  connect(token: string): Socket {
+  connect(): Socket {
     if (this.socket?.connected) {
       return this.socket;
     }
@@ -13,9 +13,7 @@ class WebSocketService {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
     this.socket = io(BACKEND_URL, {
-      auth: {
-        token,
-      },
+      withCredentials: true, // Send cookies automatically (for HTTP-only token cookie)
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: this.maxReconnectAttempts,

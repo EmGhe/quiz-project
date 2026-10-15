@@ -43,20 +43,8 @@ export default function PvpMatchmakingPage() {
     try {
       setConnecting(true);
 
-      // Get token from cookies
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('token='))
-        ?.split('=')[1];
-
-      if (!token) {
-        setError('Non authentifié');
-        navigate('/login');
-        return;
-      }
-
-      // Connect to WebSocket
-      const socket = websocketService.connect(token);
+      // Connect to WebSocket (uses HTTP-only cookies for auth)
+      const socket = websocketService.connect();
 
       // Listen to matchmaking events
       socket.on('matchmaking:joined', (data: { queueSize: number; estimatedWait: number }) => {

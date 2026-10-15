@@ -52,12 +52,22 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
    */
   async handleConnection(client: AuthenticatedSocket) {
     try {
-      // Extract token from handshake
-      const token =
+      // Extract token from handshake (auth, headers, or cookies)
+      let token =
         client.handshake.auth.token ||
         client.handshake.headers.authorization?.split(' ')[1];
 
+      // If no token in auth/headers, try to get it from cookies
+      if (!token && client.handshake.headers.cookie) {
+        const cookies = client.handshake.headers.cookie.split(';');
+        const tokenCookie = cookies.find((c) => c.trim().startsWith('token='));
+        if (tokenCookie) {
+          token = tokenCookie.split('=')[1];
+        }
+      }
+
       if (!token) {
+        console.error('[WebSocket] No token found in handshake');
         client.disconnect();
         return;
       }
