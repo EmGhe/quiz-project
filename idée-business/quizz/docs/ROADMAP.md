@@ -274,13 +274,15 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 **Goal:** Competitive layer for engagement and depth
 
-**Status:** 🚧 In Progress (67% complete)
+**Status:** 🚧 In Progress (80% complete)
 
 **Plan:** `docs/superpowers/plans/2026-10-09-mvp2-pvp-competition.md`
 
+**Guidelines:** `docs/PVP-GUIDELINES.md`
+
 **Branch:** `mvp2-pvp-implementation`
 
-**Latest Session:** 2026-10-15
+**Latest Session:** 2026-10-15 (UI/UX improvements + critical bug fixes)
 
 ### Implementation Progress
 
@@ -296,6 +298,12 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - ✅ Task 10: Matchmaking UI (Find Match button, queue status, WebSocket connection)
 - ⏸️ Task 11: Category Ban UI (on stand by - skipped for simplified flow)
 - ✅ Task 12: PvP Match UI (synchronized gameplay, MCQ choices, timer, results)
+- ✅ Task 12.1: UI/UX Polish (Session 2026-10-15)
+  - Player profiles with rank, division, ELO in header
+  - Ready/Go countdown animation before first question
+  - Timer animation synchronization fix (300ms linear)
+  - Rematch system with 10s acceptance popup
+  - Match statistics with accurate question counts
 - ⏳ Task 13: Ranks & Missions UI (display progression)
 
 **Backend Advanced (Tasks 7-9):** 📋 Planned
@@ -304,8 +312,23 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - ⏳ Task 9: Weekly Missions Module (rotation, tracking)
 
 **Additional Features:**
-- ⏳ Task 14: Rematch System (30s acceptance window)
+- ✅ Task 14: Rematch System (10s acceptance window, popup UI, WebSocket events) - Session 2026-10-15
 - ⏳ Task 15: Testing & Documentation (integration tests, WebSocket tests)
+
+**Critical Bug Fixes (Session 2026-10-15):**
+- ✅ **Match ID Bug:** Fixed `matchId` vs `id` mismatch in WebSocket events
+  - Backend was sending `matchId`, frontend expected `id`
+  - Caused `currentMatch.id` to be undefined → answers not submitted
+  - Root cause of scores staying at 0
+- ✅ **Score Calculation Bug:** Fixed stale closure in `handleQuestionEnd`
+  - playerScore/opponentScore captured at first render (always 0)
+  - Fixed by using `getState()` to read fresh values
+- ✅ **Match Statistics Bug:** Fixed incorrect question count calculation
+  - Was calculating from score (2200/200 * 10 = 11) → displayed as "22/10"
+  - Backend now counts actual correct answers and sends to frontend
+- ✅ **Rematch State Bug:** Fixed flash of "Question 10/10" when accepting rematch
+  - Added `resetMatch()` before setting new match in both flows
+  - Prevents stale state bleeding into new match
 
 ### Technical Updates
 
@@ -586,15 +609,29 @@ Start free, scale only when users validate the product.
 **Status:** 
 - MVP1 implementation complete ✅
 - POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
-- **MVP2 PvP Competition in progress (67% complete)** 🚧
+- **MVP2 PvP Competition in progress (80% complete)** 🚧
   - Backend core complete: Schema, ELO, WebSocket, Matchmaking, Match Flow ✅
   - Frontend matchmaking UI complete ✅
   - Frontend match UI complete (synchronized gameplay, MCQ, timer, results) ✅
+  - **UI/UX Polish complete (Session 2026-10-15)** ✅
+    - Player profiles with rank/ELO in header
+    - Ready/Go countdown animation
+    - Timer animation sync fix
+    - Rematch system with popup
+    - Accurate match statistics
+  - **Critical bugs fixed (Session 2026-10-15)** ✅
+    - Match ID mismatch (matchId vs id)
+    - Score calculation stale closure
+    - Match statistics calculation
+    - Rematch state reset
   - NestJS upgraded to v12 for security & compatibility ✅
   - Match flow simplified (category ban on stand by) ✅
+  - Comprehensive logging added for debugging ✅
   - Next: Ranks & Missions UI, Seasons System, Weekly Missions
 - Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
 - Task 12 (Image Pipeline Infrastructure) added with design spec 📋
+- Task 14 (Rematch System) completed ✅ (Session 2026-10-15)
 - Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
 - Image pipeline strategy documented in `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
+- PVP technical guidelines documented in `docs/PVP-GUIDELINES.md` 📋 (Session 2026-10-15)
 
