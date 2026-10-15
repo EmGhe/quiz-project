@@ -17,7 +17,8 @@ export default function PvpMatchmakingPage() {
     resetMatch,
   } = usePvpStore();
 
-  const [connecting, setConnecting] = useState(false);
+  const [connecting, setConnecting] = useState(true);
+  const [connected, setConnected] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -42,9 +43,30 @@ export default function PvpMatchmakingPage() {
   const initializeWebSocket = async () => {
     try {
       setConnecting(true);
+      setConnected(false);
 
       // Connect to WebSocket (uses HTTP-only cookies for auth)
       const socket = websocketService.connect();
+
+      // Handle connection events
+      socket.on('connect', () => {
+        console.log('[WebSocket] Connected successfully');
+        setConnected(true);
+        setConnecting(false);
+        setError('');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('[WebSocket] Disconnected');
+        setConnected(false);
+      });
+
+      socket.on('connect_error', (err: any) => {
+        console.error('[WebSocket] Connection error:', err);
+        setError('Erreur de connexion WebSocket');
+        setConnected(false);
+        setConnecting(false);
+      });
 
       // Listen to matchmaking events
       socket.on('matchmaking:joined', (data: { queueSize: number; estimatedWait: number }) => {
@@ -80,18 +102,17 @@ export default function PvpMatchmakingPage() {
         resetMatch();
         resetMatchmaking();
       });
-
-      setConnecting(false);
     } catch (err: any) {
       console.error('[WebSocket] Init error:', err);
       setError('Erreur de connexion au serveur');
       setConnecting(false);
+      setConnected(false);
     }
   };
 
   const handleFindMatch = () => {
-    if (!websocketService.isConnected()) {
-      setError('Connexion WebSocket perdue. Rechargez la page.');
+    if (!connected) {
+      setError('Connexion WebSocket en cours... Patientez quelques secondes.');
       return;
     }
 
@@ -175,10 +196,16 @@ export default function PvpMatchmakingPage() {
                 <button
                   onClick={handleFindMatch}
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white text-xl font-bold rounded-lg shadow-lg transform transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  disabled={connecting}
+                  disabled={!connected || connecting}
                 >
-                  🎮 Trouver un adversaire
+                  {connecting ? '🔄 Connexion...' : connected ? '🎮 Trouver un adversaire' : '⏳ Connexion WebSocket...'}
                 </button>
+
+                {connected && (
+                  <div className="mt-2 text-sm text-green-600">
+                    ✓ Connecté au serveur PvP
+                  </div>
+                )}
 
                 <div className="mt-8 grid grid-cols-3 gap-4 text-center">
                   <div className="bg-gray-50 rounded-lg p-4">
