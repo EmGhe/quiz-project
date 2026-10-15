@@ -2,16 +2,18 @@
 
 ## ⚠️ Prérequis
 
-### 1. Installer les dépendances WebSocket
+### 1. Installer les dépendances (NestJS 12)
 
 ```bash
 cd apps/backend
 
-# Versions compatibles avec NestJS 10.x
-npm install --ignore-scripts @nestjs/websockets@^10.4.22 @nestjs/platform-socket.io@^10.4.22 socket.io
-
-# Option alternative si échec
+# Les dépendances sont déjà dans package.json
 pnpm install --filter @quiz/backend
+
+# Versions installées (NestJS 12.x):
+# - @nestjs/websockets@^12.1.3
+# - @nestjs/platform-socket.io@^12.1.3
+# - socket.io@^4.8.4
 ```
 
 ### 2. Vérifier la compilation
