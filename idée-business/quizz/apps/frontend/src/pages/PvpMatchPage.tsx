@@ -58,19 +58,16 @@ export default function PvpMatchPage() {
     }
   }, [matchQuestions, currentMatch, navigate]);
 
-  // Attach WebSocket event listeners (regardless of questions loading state)
+  // Attach WebSocket event listeners ONCE on mount
   useEffect(() => {
-    if (!currentMatch) return;
-
     const socket = websocketService.getSocket();
 
     if (!socket) {
       console.error('[Match] WebSocket not connected');
-      navigate('/pvp');
       return;
     }
 
-    console.log('[Match] Attaching WebSocket event listeners');
+    console.log('[Match] Attaching WebSocket event listeners (once)');
 
     socket.on('match:question_start', handleQuestionStart);
     socket.on('match:question_end', handleQuestionEnd);
@@ -78,22 +75,17 @@ export default function PvpMatchPage() {
     socket.on('match:complete', handleMatchComplete);
     socket.on('match:cancelled', handleMatchCancelled);
 
+    // Cleanup on unmount: remove all listeners for these events
     return () => {
-      console.log('[Match] Removing WebSocket event listeners');
-      if (socket) {
-        socket.off('match:question_start', handleQuestionStart);
-        socket.off('match:question_end', handleQuestionEnd);
-        socket.off('match:player_answered', handlePlayerAnswered);
-        socket.off('match:complete', handleMatchComplete);
-        socket.off('match:cancelled', handleMatchCancelled);
-      }
-
-      // Clear timer on unmount
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
+      console.log('[Match] Removing all match event listeners');
+      socket.removeAllListeners('match:question_start');
+      socket.removeAllListeners('match:question_end');
+      socket.removeAllListeners('match:player_answered');
+      socket.removeAllListeners('match:complete');
+      socket.removeAllListeners('match:cancelled');
     };
-  }, [currentMatch, navigate, timerInterval]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps = attach once on mount, never re-attach
 
   const handleQuestionStart = (data: { questionIndex: number; timerMs: number }) => {
     console.log('[Match] Question start:', data);
