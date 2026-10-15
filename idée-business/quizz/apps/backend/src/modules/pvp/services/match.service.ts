@@ -130,10 +130,10 @@ export class MatchService {
         questions: questionsWithChoices.map(({ correctAnswer, ...rest }) => rest),
       });
 
-      console.log(`[Match] Questions sent, starting first question timer...`);
+      console.log(`[Match] Questions sent, starting first question timer in 3 seconds...`);
 
-      // Start first question timer
-      setTimeout(() => this.startQuestionTimer(matchId, 0), 1000);
+      // Start first question timer (wait 3s for players to navigate and mount components)
+      setTimeout(() => this.startQuestionTimer(matchId, 0), 3000);
 
       console.log(`[Match] Match ${matchId} started successfully`);
     } catch (error) {

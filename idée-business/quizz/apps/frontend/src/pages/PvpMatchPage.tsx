@@ -19,6 +19,7 @@ export default function PvpMatchPage() {
     setPlayerAnswer,
     setOpponentAnswered,
     resetPlayerAnswer,
+    setCurrentQuestionIndex,
     playerScore,
     opponentScore,
   } = usePvpStore();
@@ -82,6 +83,9 @@ export default function PvpMatchPage() {
 
   const handleQuestionStart = (data: { questionIndex: number; timerMs: number }) => {
     console.log('[Match] Question start:', data);
+
+    // Update question index in store
+    setCurrentQuestionIndex(data.questionIndex);
 
     // Clear previous timer if exists
     if (timerInterval) {
