@@ -1,0 +1,43 @@
+export type MatchStatus = 'waiting' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface PvpMatch {
+  id: string;
+  player1Id: string;
+  player2Id: string;
+  status: MatchStatus;
+  player1Score: number;
+  player2Score: number;
+  player1Time: number;
+  player2Time: number;
+  winnerId: string | null;
+  questionIds: string[];
+  startedAt: Date | null;
+  completedAt: Date | null;
+}
+
+export interface MatchmakingStatus {
+  inQueue: boolean;
+  queueSize: number;
+  estimatedWait: number;
+  position?: number;
+  waitTime?: number;
+  eloRange?: number;
+}
+
+export interface MatchQuestion {
+  id: string;
+  text: string;
+  questionType: 'texte' | 'image' | 'carte';
+  mediaUrl: string | null;
+  distractors?: string[];
+}
+
+export interface MatchResults {
+  matchId: string;
+  winnerId: string;
+  player1Score: number;
+  player2Score: number;
+  player1Time: number;
+  player2Time: number;
+  eloChanges: Record<string, number>;
+}

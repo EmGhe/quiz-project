@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import DailyPage from '@/pages/DailyPage';
+import PvpMatchmakingPage from '@/pages/PvpMatchmakingPage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuestions from '@/pages/admin/AdminQuestions';
 import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
@@ -38,6 +39,10 @@ function App() {
         <Route
           path="/daily"
           element={user ? <DailyPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pvp"
+          element={user ? <PvpMatchmakingPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/admin"
