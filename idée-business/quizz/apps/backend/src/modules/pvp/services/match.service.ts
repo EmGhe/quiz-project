@@ -146,17 +146,24 @@ export class MatchService {
    * Start timer for a specific question
    */
   private async startQuestionTimer(matchId: string, questionIndex: number): Promise<void> {
+    console.log(`[Match] Starting question ${questionIndex} timer for match ${matchId}`);
+
     const match = await this.prisma.pvpMatch.findUnique({
       where: { id: matchId },
     });
 
-    if (!match || match.status !== 'in_progress') return;
+    if (!match || match.status !== 'in_progress') {
+      console.log(`[Match] Match ${matchId} not found or not in progress, skipping question timer`);
+      return;
+    }
 
     // Notify players that question started
     this.pvpGateway.sendToMatch(matchId, 'match:question_start', {
       questionIndex,
       timerMs: 10000,
     });
+
+    console.log(`[Match] Question ${questionIndex} timer started, will end in 10s`);
 
     // After 10 seconds, reveal answers and move to next question
     setTimeout(() => this.endQuestionTimer(matchId, questionIndex), 10000);

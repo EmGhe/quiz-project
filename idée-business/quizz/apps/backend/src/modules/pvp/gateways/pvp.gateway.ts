@@ -144,7 +144,12 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * Send message to match room
    */
   sendToMatch(matchId: string, event: string, data: any) {
-    this.server.to(`match:${matchId}`).emit(event, data);
+    const room = `match:${matchId}`;
+    const sockets = this.server.in(room).allSockets();
+    sockets.then((socketIds) => {
+      console.log(`[WebSocket] Sending ${event} to match ${matchId} (${socketIds.size} clients in room)`);
+    });
+    this.server.to(room).emit(event, data);
   }
 
   /**
@@ -157,7 +162,14 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (socketId) {
       const socket = this.server.sockets.sockets.get(socketId);
-      socket?.join(`match:${matchId}`);
+      if (socket) {
+        socket.join(`match:${matchId}`);
+        console.log(`[WebSocket] User ${userId} joined match room ${matchId}`);
+      } else {
+        console.error(`[WebSocket] Socket not found for user ${userId}`);
+      }
+    } else {
+      console.error(`[WebSocket] User ${userId} not connected, cannot join match room`);
     }
   }
 
