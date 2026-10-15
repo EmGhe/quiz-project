@@ -113,6 +113,20 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       // Join user to their personal room
       client.join(`user:${user.id}`);
+
+      // If user has an active match, rejoin the match room
+      const activeMatch = await this.prisma.pvpMatch.findFirst({
+        where: {
+          OR: [{ player1Id: user.id }, { player2Id: user.id }],
+          status: 'in_progress',
+        },
+        orderBy: { startedAt: 'desc' },
+      });
+
+      if (activeMatch) {
+        client.join(`match:${activeMatch.id}`);
+        console.log(`[WebSocket] User ${user.id} rejoined active match room ${activeMatch.id}`);
+      }
     } catch (error) {
       console.error('WebSocket authentication failed:', error);
       client.disconnect();

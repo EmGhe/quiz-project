@@ -36,12 +36,9 @@ export default function PvpMatchmakingPage() {
       if (matchmakingStatus.inQueue) {
         websocketService.leaveQueue();
       }
-      // DON'T disconnect WebSocket - we need it for the match!
-      // Only disconnect if not in a match
-      if (!currentMatch) {
-        websocketService.disconnect();
-      }
-      resetMatchmaking();
+      // NEVER disconnect WebSocket - it's needed for the entire PvP session
+      // The WebSocket will be reused by PvpMatchPage
+      console.log('[Matchmaking] Component unmounting, keeping WebSocket connected');
     };
   }, []);
 
