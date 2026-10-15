@@ -10,9 +10,9 @@ datasource db {
 model Source {
   id          String   @id @default(uuid())
   name        String   @unique
-  type        String   // 'wikidata', 'data_gouv', 'api', 'manuel'
+  type        String // 'wikidata', 'data_gouv', 'api', 'manuel'
   url         String?
-  reliability Int?     // 1-5
+  reliability Int? // 1-5
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -40,22 +40,22 @@ model Category {
 }
 
 model Fact {
-  id                   String   @id @default(uuid())
-  subject              String
-  property             String
-  object               String
-  sourceId             String
-  sourceReference      String?
-  lastVerification     DateTime @default(now())
-  categoryId           String?
-  tags                 String[]
-  geoRegion            String?  // 'france', 'europe', 'amerique_nord', 'reste_monde'
-  data                 Json?
-  interestScore        Int?     // 1-10
-  active               Boolean  @default(true)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  createdBy            String?
+  id               String   @id @default(uuid())
+  subject          String
+  property         String
+  object           String
+  sourceId         String
+  sourceReference  String?
+  lastVerification DateTime @default(now())
+  categoryId       String?
+  tags             String[]
+  geoRegion        String? // 'france', 'europe', 'amerique_nord', 'reste_monde'
+  data             Json?
+  interestScore    Int? // 1-10
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  createdBy        String?
 
   source    Source        @relation(fields: [sourceId], references: [id])
   category  Category?     @relation(fields: [categoryId], references: [id])
@@ -67,53 +67,53 @@ model Fact {
 }
 
 model Question {
-  id                      String   @id @default(uuid())
-  factId                  String
-  text                    String   @unique
-  questionType            String   @default("texte") // 'texte', 'image', 'carte'
-  mediaUrl                String?
-  mediaType               String?
-  mediaLicenseAuthor      String?  // Author/creator from Wikimedia Commons
-  mediaLicenseType        String?  // e.g., "CC BY-SA 4.0", "CC0", "Public Domain"
-  mediaLicenseUrl         String?  // URL to license page
-  mediaSourceUrl          String?  // Original Wikimedia Commons page URL
-  difficulty              String?  // 'facile', 'moyen', 'difficile'
-  difficultyScore         Int?     // 1-100
-  categoryId              String?
-  qualityScore            Int?     // 1-100
-  ambiguous               Boolean  @default(false)
-  displayCount            Int      @default(0)
-  correctAnswersCount     Int      @default(0)
-  incorrectAnswersCount   Int      @default(0)
-  successRate             Decimal? @db.Decimal(5, 2)
-  status                  String   @default("brouillon") // 'brouillon', 'valide', 'publie', 'archive'
-  enabledForDaily         Boolean  @default(true)
-  enabledForMcq           Boolean  @default(false)
-  validatedBy             String?
-  validatedAt             DateTime?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                    String    @id @default(uuid())
+  factId                String
+  text                  String    @unique
+  questionType          String    @default("texte") // 'texte', 'image', 'carte'
+  mediaUrl              String?
+  mediaType             String?
+  mediaLicenseAuthor    String? // Author/creator from Wikimedia Commons
+  mediaLicenseType      String? // e.g., "CC BY-SA 4.0", "CC0", "Public Domain"
+  mediaLicenseUrl       String? // URL to license page
+  mediaSourceUrl        String? // Original Wikimedia Commons page URL
+  difficulty            String? // 'facile', 'moyen', 'difficile'
+  difficultyScore       Int? // 1-100
+  categoryId            String?
+  qualityScore          Int? // 1-100
+  ambiguous             Boolean   @default(false)
+  displayCount          Int       @default(0)
+  correctAnswersCount   Int       @default(0)
+  incorrectAnswersCount Int       @default(0)
+  successRate           Decimal?  @db.Decimal(5, 2)
+  status                String    @default("brouillon") // 'brouillon', 'valide', 'publie', 'archive'
+  enabledForDaily       Boolean   @default(true)
+  enabledForMcq         Boolean   @default(false)
+  validatedBy           String?
+  validatedAt           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  fact             Fact                @relation(fields: [factId], references: [id])
-  category         Category?           @relation(fields: [categoryId], references: [id])
-  acceptedAnswers  AcceptedAnswer[]
-  distractors      Distractor[]
-  metadata         QuestionMetadata?
-  duplicates1      DetectedDuplicate[] @relation("Question1")
-  duplicates2      DetectedDuplicate[] @relation("Question2")
-  dailyQuestions   DailyQuestion[]
+  fact            Fact                @relation(fields: [factId], references: [id])
+  category        Category?           @relation(fields: [categoryId], references: [id])
+  acceptedAnswers AcceptedAnswer[]
+  distractors     Distractor[]
+  metadata        QuestionMetadata?
+  duplicates1     DetectedDuplicate[] @relation("Question1")
+  duplicates2     DetectedDuplicate[] @relation("Question2")
+  dailyQuestions  DailyQuestion[]
 
   @@map("questions")
 }
 
 model AcceptedAnswer {
-  id                    String   @id @default(uuid())
-  questionId            String
-  answer                String
-  isPrimary             Boolean  @default(false)
-  variantType           String?  // 'exacte', 'accent', 'abreviation', 'orthographe'
-  levenshteinThreshold  Int      @default(2) // Max edit distance to accept
-  createdAt             DateTime @default(now())
+  id                   String   @id @default(uuid())
+  questionId           String
+  answer               String
+  isPrimary            Boolean  @default(false)
+  variantType          String? // 'exacte', 'accent', 'abreviation', 'orthographe'
+  levenshteinThreshold Int      @default(2) // Max edit distance to accept
+  createdAt            DateTime @default(now())
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
@@ -124,9 +124,9 @@ model Distractor {
   id                String   @id @default(uuid())
   questionId        String
   distractorText    String
-  wikidataSourceId  String?  // Wikidata entity ID used to generate this distractor
-  plausibilityScore Int?     // 1-100, how plausible/good this distractor is
-  order             Int      // 1-4, order of display in MCQ
+  wikidataSourceId  String? // Wikidata entity ID used to generate this distractor
+  plausibilityScore Int? // 1-100, how plausible/good this distractor is
+  order             Int // 1-4, order of display in MCQ
   createdAt         DateTime @default(now())
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -136,17 +136,17 @@ model Distractor {
 }
 
 model QuestionMetadata {
-  id              String   @id @default(uuid())
-  questionId      String   @unique
-  successRate     Decimal? @db.Decimal(5, 2) // Cached from Question stats
-  avgTimeMs       Int?     // Average time to answer in milliseconds
-  timesAsked      Int      @default(0)
-  skipRate        Decimal? @db.Decimal(5, 2) // % of players who skipped this question
-  userReports     Json?    // [{userId, reason, timestamp, comment}]
-  reportCount     Int      @default(0)
-  lastAsked       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String    @id @default(uuid())
+  questionId  String    @unique
+  successRate Decimal?  @db.Decimal(5, 2) // Cached from Question stats
+  avgTimeMs   Int? // Average time to answer in milliseconds
+  timesAsked  Int       @default(0)
+  skipRate    Decimal?  @db.Decimal(5, 2) // % of players who skipped this question
+  userReports Json? // [{userId, reason, timestamp, comment}]
+  reportCount Int       @default(0)
+  lastAsked   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
@@ -154,16 +154,16 @@ model QuestionMetadata {
 }
 
 model DetectedDuplicate {
-  id                String    @id @default(uuid())
-  question1Id       String
-  question2Id       String
-  similarityScore   Decimal   @db.Decimal(5, 2)
-  duplicateType     String    // 'exact', 'reformulation', 'partiel'
-  resolved          Boolean   @default(false)
-  action            String?   // 'fusionnee', 'conservee', 'supprimee'
-  resolvedBy        String?
-  resolvedAt        DateTime?
-  createdAt         DateTime  @default(now())
+  id              String    @id @default(uuid())
+  question1Id     String
+  question2Id     String
+  similarityScore Decimal   @db.Decimal(5, 2)
+  duplicateType   String // 'exact', 'reformulation', 'partiel'
+  resolved        Boolean   @default(false)
+  action          String? // 'fusionnee', 'conservee', 'supprimee'
+  resolvedBy      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
 
   question1 Question @relation("Question1", fields: [question1Id], references: [id], onDelete: Cascade)
   question2 Question @relation("Question2", fields: [question2Id], references: [id], onDelete: Cascade)
@@ -196,17 +196,23 @@ model User {
   submissions DailySubmission[]
   streaks     UserStreak[]
 
+  // PvP relations
+  player1Matches  PvpMatch[]        @relation("Player1Matches")
+  player2Matches  PvpMatch[]        @relation("Player2Matches")
+  elo             UserElo?
+  missionProgress MissionProgress[]
+
   @@map("users")
 }
 
 model UserStreak {
-  id             String   @id @default(uuid())
-  userId         String
-  currentStreak  Int      @default(0)
-  longestStreak  Int      @default(0)
-  lastDailyDate  String?  // YYYY-MM-DD format, UTC
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastDailyDate String? // YYYY-MM-DD format, UTC
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -230,7 +236,7 @@ model DailyQuestion {
   id         String @id @default(uuid())
   dailyId    String
   questionId String
-  order      Int    // 1-10
+  order      Int // 1-10
 
   daily    Daily    @relation(fields: [dailyId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id])
@@ -240,14 +246,14 @@ model DailyQuestion {
 }
 
 model DailySubmission {
-  id                 String   @id @default(uuid())
-  userId             String
-  dailyId            String
-  score              Int
-  totalTime          Int      // milliseconds
-  correctCount       Int
-  answersData        Json     // [{questionId, answer, correct, timeMs, pointsEarned}]
-  submittedAt        DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String
+  dailyId      String
+  score        Int
+  totalTime    Int // milliseconds
+  correctCount Int
+  answersData  Json // [{questionId, answer, correct, timeMs, pointsEarned}]
+  submittedAt  DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   daily Daily @relation(fields: [dailyId], references: [id], onDelete: Cascade)
@@ -255,4 +261,170 @@ model DailySubmission {
   @@unique([userId, dailyId])
   @@index([dailyId, score])
   @@map("daily_submissions")
+}
+
+// ==========================================
+// MVP2 - PvP Models
+// ==========================================
+
+enum MatchStatus {
+  waiting
+  category_ban
+  in_progress
+  completed
+  cancelled
+}
+
+model PvpMatch {
+  id     String      @id @default(uuid())
+  status MatchStatus @default(waiting)
+
+  // Players
+  player1Id String
+  player2Id String
+
+  // Category ban phase
+  player1BannedCat String[] // Category IDs banned by player 1
+  player2BannedCat String[] // Category IDs banned by player 2
+
+  // Match data
+  questionIds String[] // 10 question IDs for this match
+
+  // Results
+  player1Score Int     @default(0)
+  player2Score Int     @default(0)
+  player1Time  Int     @default(0) // Total time in ms
+  player2Time  Int     @default(0)
+  winnerId     String?
+
+  // ELO changes
+  player1EloChange Int @default(0)
+  player2EloChange Int @default(0)
+
+  // Metadata
+  seasonId    String?
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  player1 User    @relation("Player1Matches", fields: [player1Id], references: [id], onDelete: Cascade)
+  player2 User    @relation("Player2Matches", fields: [player2Id], references: [id], onDelete: Cascade)
+  season  Season? @relation(fields: [seasonId], references: [id])
+
+  @@index([player1Id, createdAt])
+  @@index([player2Id, createdAt])
+  @@index([status])
+  @@map("pvp_matches")
+}
+
+model UserElo {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Current ELO
+  elo      Int    @default(1200)
+  rank     String @default("Bronze") // Bronze, Silver, Gold, Platinum, Diamond, Master, Grandmaster
+  division Int    @default(3) // 3 = lowest, 1 = highest within rank
+
+  // Season data
+  seasonId         String?
+  placementMatches Int     @default(0) // 0-5, first 5 games are placement
+
+  // Stats
+  totalMatches Int @default(0)
+  wins         Int @default(0)
+  losses       Int @default(0)
+  winStreak    Int @default(0)
+  highestElo   Int @default(1200)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season     Season?      @relation(fields: [seasonId], references: [id])
+  eloHistory EloHistory[]
+
+  @@index([elo])
+  @@index([seasonId, elo])
+  @@map("user_elo")
+}
+
+model EloHistory {
+  id        String @id @default(uuid())
+  userEloId String
+
+  matchId String
+  oldElo  Int
+  newElo  Int
+  change  Int
+
+  createdAt DateTime @default(now())
+
+  userElo UserElo @relation(fields: [userEloId], references: [id], onDelete: Cascade)
+
+  @@index([userEloId, createdAt])
+  @@map("elo_history")
+}
+
+model Season {
+  id     String @id @default(uuid())
+  name   String @unique
+  number Int    @unique
+
+  startDate DateTime
+  endDate   DateTime
+  active    Boolean  @default(false)
+
+  // Rewards (in Gold)
+  rewards Json? // { "Bronze": 100, "Silver": 250, ... }
+
+  createdAt DateTime @default(now())
+
+  matches  PvpMatch[]
+  userElos UserElo[]
+
+  @@index([active])
+  @@map("seasons")
+}
+
+model WeeklyMission {
+  id String @id @default(uuid())
+
+  type   String // 'win_pvp', 'play_daily', 'answer_correct', 'category_accuracy'
+  target Int // Target value (e.g., 5 wins, 100 correct answers)
+  reward Int // Gold reward
+
+  // Category-specific (optional)
+  categoryId String?
+
+  // Week period
+  weekStart DateTime // Monday 00:00 UTC
+  weekEnd   DateTime // Calculated as weekStart + 7 days in application
+
+  createdAt DateTime @default(now())
+
+  progress MissionProgress[]
+
+  @@index([weekStart, weekEnd])
+  @@map("weekly_missions")
+}
+
+model MissionProgress {
+  id        String @id @default(uuid())
+  userId    String
+  missionId String
+
+  progress  Int       @default(0)
+  completed Boolean   @default(false)
+  claimedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission WeeklyMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, missionId])
+  @@index([userId, completed])
+  @@map("mission_progress")
 }
