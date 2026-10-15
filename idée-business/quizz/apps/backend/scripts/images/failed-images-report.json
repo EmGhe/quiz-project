@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-15T10:55:53.426Z",
+  "totalFailed": 11,
+  "questions": [
+    {
+      "questionId": "b1c9c840-ba3a-4635-97a7-bdc6411d6c57",
+      "questionText": "Quel est le nom de ce personnage de L'Attaque des Titans ? [10]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/9/92/Sasha_Blouse_character_image.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "7007ccbe-c5dc-4ab4-b95b-f951a5362e30",
+      "questionText": "Quel est le nom de ce personnage de Fullmetal Alchemist ? [9]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/4/43/Edward_Elric_by_Bones_Studio.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "c6eed3e0-5566-4dcf-80ba-641004e4ce92",
+      "questionText": "De quelle animation japonaise provient ce personnage ? [7]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/4/42/All_Might_MHA.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "0266bedb-e59f-447b-8486-b62ef386676a",
+      "questionText": "De quelle animation japonaise provient ce personnage ? [9]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/c/cc/Meliodas_NNT.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "8b6750ce-218a-4838-a352-303a42f50079",
+      "questionText": "Qui est ce réalisateur ? [1]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Olivier_Nakache_et_Éric_Toledano_Cannes_2019.jpg",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "ee5a0216-224c-488d-9118-82a0c3c80f4f",
+      "questionText": "Qui est cet entraîneur de football ? [7]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Jürgen_Klopp,_Liverpool_vs._Chelsea,_UEFA_Super_Cup_2019-08-14_03_(cropped).jpg",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "b413927d-4dda-416a-a0f2-657a7a76b731",
+      "questionText": "Qui est ce personnage de jeu vidéo ? [109]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/a/a9/MarioNSMBUDeluxe.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "0753b56a-9ee4-4e7d-81f4-c35f570a0203",
+      "questionText": "Qui est ce personnage de jeu vidéo ? [111]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/en/4/42/Sonic_Forces_-_Avatar.png",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "5518c317-800d-4020-8577-5b0e60da2f42",
+      "questionText": "Qui est cet artiste ? [96]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Stromae_Coachella_2015_(cropped).jpg",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "b8bac303-0eef-45ed-82f2-f0507c6f2b4e",
+      "questionText": "Qui est cet artiste ? [98]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Orelsan_aux_Victoires_de_la_Musique_2018.jpg",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    },
+    {
+      "questionId": "afc3e7d8-0e88-450c-9b79-e6f39fdf9993",
+      "questionText": "Qui est cet artiste ? [104]",
+      "oldUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Madonna_at_the_premiere_of_W.E._at_the_68th_Venice_International_Film_Festival_(cropped).jpg",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404",
+      "searchAttempted": true
+    }
+  ]
+}

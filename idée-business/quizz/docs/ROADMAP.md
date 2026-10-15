@@ -257,8 +257,8 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 ### Dependencies
 
 - ✅ MVP1 complete (infrastructure ready to consume new questions)
-- ⏳ Wikidata integration tested and rate-limits understood
-- ⏳ Admin dashboard deployed for QA review
+- ✅ Wikidata integration tested and rate-limits understood
+- ✅ Admin dashboard deployed for QA review
 
 ### Notes
 
@@ -301,7 +301,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ### Dependencies
 - ✅ MVP1 complete (auth, users, questions, scoring)
-- ⏳ POST-MVP1 complete (500+ published questions from Wikidata pipeline)
+- ✅ POST-MVP1 complete (500+ published questions from Wikidata pipeline)
 - ⏳ WebSocket infrastructure tested under load
 
 ---

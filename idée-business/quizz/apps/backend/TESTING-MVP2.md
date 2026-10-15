@@ -7,11 +7,11 @@
 ```bash
 cd apps/backend
 
-# Option 1 : Installer sans husky
-npm install --ignore-scripts @nestjs/websockets @nestjs/platform-socket.io socket.io
+# Versions compatibles avec NestJS 10.x
+npm install --ignore-scripts @nestjs/websockets@^10.4.22 @nestjs/platform-socket.io@^10.4.22 socket.io
 
-# Option 2 : Si option 1 échoue
-npm install @nestjs/websockets @nestjs/platform-socket.io socket.io --legacy-peer-deps --ignore-scripts
+# Option alternative si échec
+pnpm install --filter @quiz/backend
 ```
 
 ### 2. Vérifier la compilation

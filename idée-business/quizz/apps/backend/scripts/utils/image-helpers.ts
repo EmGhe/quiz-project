@@ -154,13 +154,11 @@ export async function getImageMetadata(
 
       if (error.response?.status === 429 || error.response?.status === 503) {
         const retryAfter = error.response.headers['retry-after'];
-        if (retryAfter) {
-          // Retry-After can be in seconds or a date
-          const retryAfterSeconds = parseInt(retryAfter);
-          if (!isNaN(retryAfterSeconds)) {
-            delay = retryAfterSeconds * 1000;
-            console.warn(`   Retry-After header: ${retryAfterSeconds}s`);
-          }
+        const parsedDelay = parseRetryAfter(retryAfter);
+
+        if (parsedDelay !== null) {
+          delay = parsedDelay;
+          console.warn(`   Retry-After header: ${Math.round(parsedDelay / 1000)}s`);
         } else {
           // No Retry-After header: use minimum 5s for rate limits
           delay = Math.max(delay, 5000);
@@ -178,6 +176,40 @@ export async function getImageMetadata(
     licenseUrl: null,
     sourceUrl: wikimediaUrl,
   };
+}
+
+/**
+ * Parse Retry-After header value
+ * Supports both formats:
+ * - Number of seconds: "120"
+ * - HTTP date: "Wed, 21 Oct 2015 07:28:00 GMT"
+ *
+ * @param retryAfter - Retry-After header value
+ * @returns Delay in milliseconds
+ */
+function parseRetryAfter(retryAfter: string | undefined): number | null {
+  if (!retryAfter) return null;
+
+  // Try parsing as number of seconds first
+  const seconds = parseInt(retryAfter, 10);
+  if (!isNaN(seconds) && seconds > 0) {
+    return seconds * 1000;
+  }
+
+  // Try parsing as HTTP date
+  try {
+    const retryDate = new Date(retryAfter);
+    if (!isNaN(retryDate.getTime())) {
+      const now = Date.now();
+      const delay = retryDate.getTime() - now;
+      // Only return positive delays
+      return delay > 0 ? delay : null;
+    }
+  } catch {
+    // Invalid date format
+  }
+
+  return null;
 }
 
 /**
@@ -391,12 +423,11 @@ export async function downloadWithRetry(
 
       if (error.response?.status === 429 || error.response?.status === 503) {
         const retryAfter = error.response.headers['retry-after'];
-        if (retryAfter) {
-          const retryAfterSeconds = parseInt(retryAfter);
-          if (!isNaN(retryAfterSeconds)) {
-            delay = retryAfterSeconds * 1000;
-            console.warn(`   Retry-After header: ${retryAfterSeconds}s`);
-          }
+        const parsedDelay = parseRetryAfter(retryAfter);
+
+        if (parsedDelay !== null) {
+          delay = parsedDelay;
+          console.warn(`   Retry-After header: ${Math.round(parsedDelay / 1000)}s`);
         } else {
           // No Retry-After header: use minimum 5s for rate limits
           delay = Math.max(delay, 5000);

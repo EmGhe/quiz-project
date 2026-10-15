@@ -12,13 +12,11 @@ import random
 import time
 import sys
 from logging.handlers import RotatingFileHandler
-from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
 
 # ============================================================================
 # CONFIGURATION CONSTANTS
@@ -34,12 +32,12 @@ PULLS_URL = "https://www.wiki-masters.com/pulls"
 
 # Timing (in seconds)
 ACTION_DELAY_MIN = 2
-ACTION_DELAY_MAX = 7
+ACTION_DELAY_MAX = 5
 WAIT_WHEN_NO_PACKS_MIN = 660  # 11 minutes
 WAIT_WHEN_NO_PACKS_MAX = 900  # 15 minutes
 
 # Browser configuration
-HEADLESS_MODE = True
+HEADLESS_MODE = False
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
 
@@ -100,27 +98,29 @@ class BrowserManager:
     """Manages Chrome WebDriver lifecycle and configuration."""
 
     def __init__(self):
-        """Initialize Chrome WebDriver with headless configuration."""
-        logger.info("Initializing Chrome WebDriver...")
+        """Initialize Chrome WebDriver with anti-detection configuration."""
+        logger.info("Initializing Chrome WebDriver with anti-detection...")
 
-        # Configure Chrome options
-        chrome_options = webdriver.ChromeOptions()
+        # Configure Chrome options for undetected-chromedriver
+        chrome_options = uc.ChromeOptions()
 
         if HEADLESS_MODE:
-            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--headless=new')
             logger.debug("Headless mode enabled")
 
-        # Stability and compatibility options
+        # Stability options (compatible with undetected-chromedriver)
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument(f'--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}')
 
-        # Initialize WebDriver with auto-managed ChromeDriver
-        service = Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        # Additional stealth options
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
 
-        logger.info("Chrome WebDriver initialized successfully")
+        # Initialize WebDriver with undetected-chromedriver
+        # This automatically bypasses most bot detection including Cloudflare
+        self.driver = uc.Chrome(options=chrome_options, use_subprocess=True)
+
+        logger.info("Chrome WebDriver initialized successfully with anti-detection")
 
     def get_driver(self):
         """Return the WebDriver instance."""
@@ -210,6 +210,45 @@ class LoginHandler:
 class CardDeckHandler:
     """Handles card pack availability checking and opening sequence."""
 
+    def check_verification_popup(self, driver):
+        """
+        Check if the anti-bot verification popup is present.
+
+        Returns:
+            True if verification popup detected
+            False if no popup found
+        """
+        try:
+            # Look for the "Vérification rapide" text in the popup
+            verification_elements = driver.find_elements(
+                By.XPATH,
+                "//*[contains(text(), 'Vérification rapide')]"
+            )
+
+            if verification_elements:
+                logger.warning("=" * 60)
+                logger.warning("VERIFICATION POPUP DETECTED!")
+                logger.warning("The website is asking for manual verification:")
+                logger.warning("'Vérification rapide' - 'Je ne suis pas un robot'")
+                logger.warning("Please complete the verification manually")
+                logger.warning("=" * 60)
+
+                # Take a screenshot for reference
+                try:
+                    screenshot_path = f"verification_popup_{int(time.time())}.png"
+                    driver.save_screenshot(screenshot_path)
+                    logger.info(f"Verification popup screenshot saved to {screenshot_path}")
+                except Exception as screenshot_error:
+                    logger.warning(f"Could not save verification screenshot: {screenshot_error}")
+
+                return True
+
+            return False
+
+        except Exception as e:
+            logger.debug(f"Error checking for verification popup: {e}")
+            return False
+
     def check_availability(self, driver):
         """
         Check if card packs are available.
@@ -251,18 +290,105 @@ class CardDeckHandler:
         logger.info("Starting card opening sequence...")
         wait = WebDriverWait(driver, EXPLICIT_WAIT_TIMEOUT)
 
-        # Step 1: Click "Ouvrir" button
-        logger.debug("Looking for 'Ouvrir' button...")
-        ouvrir_btn = wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'Ouvrir')]"))
-        )
-        ouvrir_btn.click()
-        logger.debug("Clicked 'Ouvrir' button")
+        # PRE-CHECK: Verify packs are still available RIGHT before clicking
+        logger.debug("Pre-check: Verifying packs are available immediately before click...")
+        try:
+            # Find the pack count element using CSS selector (more reliable)
+            import re
+            pack_count_found = False
+
+            # Try to find text containing pack count
+            all_text_elements = driver.find_elements(By.XPATH, "//*[contains(text(), '/')]")
+            for elem in all_text_elements:
+                text = elem.text.strip()
+                # Match pattern like "0 / 10", "8 / 10", etc.
+                if '/' in text and '10' in text:
+                    logger.debug(f"Pack count element found: '{text}'")
+                    pack_count_found = True
+
+                    # Extract the first number
+                    match = re.search(r'(\d+)\s*/\s*10', text)
+                    if match:
+                        count = int(match.group(1))
+                        logger.debug(f"Extracted pack count: {count}")
+
+                        if count == 0:
+                            logger.warning("NO PACKS AVAILABLE (0/10) - aborting sequence to avoid wasted clicks")
+                            raise Exception("No packs available - race condition detected")
+                        else:
+                            logger.debug(f"Packs available: {count}/10 - proceeding")
+                    break
+
+            if not pack_count_found:
+                logger.warning("Could not find pack count - proceeding with caution (may fail)")
+
+        except Exception as e:
+            if "race condition" in str(e):
+                raise  # Re-raise to be caught by outer handler
+            logger.warning(f"Pre-check error: {e}, attempting to proceed anyway")
+
+        # Step 1: Try multiple strategies to click the pack
+        logger.debug("Looking for pack opening element...")
+
+        # Strategy 1: Try to click the pack image directly (more reliable than button text)
+        try:
+            logger.debug("Strategy 1: Looking for pack image...")
+            pack_image = driver.find_element(By.XPATH, "//img[contains(@src, 'pack') or contains(@alt, 'pack')]")
+            logger.debug(f"Found pack image: {pack_image.get_attribute('src')}")
+            # Scroll into view and click with JavaScript
+            driver.execute_script("arguments[0].scrollIntoView(true);", pack_image)
+            random_delay(0.5, 1.0)
+            driver.execute_script("arguments[0].click();", pack_image)
+            logger.debug("Clicked pack image using JavaScript")
+        except NoSuchElementException:
+            logger.debug("Strategy 1 failed - pack image not found")
+
+            # Strategy 2: Click the "Ouvrir" button with JavaScript
+            logger.debug("Strategy 2: Looking for 'Ouvrir' button...")
+            ouvrir_btn = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Ouvrir')]"))
+            )
+            logger.debug(f"Found Ouvrir element - tag: {ouvrir_btn.tag_name}, enabled: {ouvrir_btn.is_enabled()}")
+
+            # Click with JavaScript (more reliable than Selenium click)
+            driver.execute_script("arguments[0].scrollIntoView(true);", ouvrir_btn)
+            random_delay(0.5, 1.0)
+            driver.execute_script("arguments[0].click();", ouvrir_btn)
+            logger.debug("Clicked 'Ouvrir' button using JavaScript")
+
+        # DIAGNOSTIC: Log page state after click
+        logger.debug(f"Page title after Ouvrir click: {driver.title}")
+        logger.debug(f"Current URL: {driver.current_url}")
+
+        # Wait for page transition - look for elements that disappear/appear
+        logger.debug("Waiting for pack opening animation to complete...")
+        try:
+            # Wait for the "Ouvrir" button to disappear (indicates transition started)
+            WebDriverWait(driver, 5).until(
+                EC.invisibility_of_element_located((By.XPATH, "//*[contains(text(), 'Ouvrir')]"))
+            )
+            logger.debug("Pack opening transition detected")
+        except TimeoutException:
+            logger.warning("Ouvrir button still visible after 5 seconds - transition may not have started")
+            # Take a diagnostic screenshot
+            driver.save_screenshot("diagnostic_after_ouvrir.png")
+            logger.debug("Diagnostic screenshot saved to diagnostic_after_ouvrir.png")
+
         random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
 
         # Step 2: Click right arrow 4 times
         logger.debug("Clicking right arrow 4 times...")
         for i in range(4):
+            # DIAGNOSTIC: Check what's on the page before looking for arrow
+            if i == 0:
+                logger.debug("Looking for first arrow button...")
+                # Log visible buttons for debugging
+                try:
+                    buttons = driver.find_elements(By.TAG_NAME, "button")
+                    logger.debug(f"Found {len(buttons)} button elements on page")
+                except:
+                    logger.debug("Could not enumerate buttons")
+
             # Find arrow button by SVG polyline points
             arrow_btn = wait.until(
                 EC.element_to_be_clickable((
@@ -340,12 +466,72 @@ class WikiMastersBot:
                     time.sleep(wait_minutes * 60)
                     logger.info("Wait completed - checking again...")
                 else:
-                    # Packs available - execute sequence
-                    self.card_handler.execute_card_sequence(self.driver)
-                    logger.info("Sequence completed - returning to pulls page...")
-                    self.driver.get(PULLS_URL)
-                    random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
-                    logger.info("Ready to check again...")
+                    # Packs available - check for verification popup before executing sequence
+                    if self.card_handler.check_verification_popup(self.driver):
+                        # Popup detected - click check box to navigate away
+                        logger.info("Verification popup detected")
+                        try:
+                            wait = WebDriverWait(self.driver, EXPLICIT_WAIT_TIMEOUT)
+                            profil_link = wait.until(
+                                EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/main/div/div[1]/div[1]/label[2]"))
+                            )
+                            profil_link.click()
+                            logger.debug("Clicked Checkbox")
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+                            # Popup detected - click "continuer" button
+                            wait = WebDriverWait(self.driver, EXPLICIT_WAIT_TIMEOUT)
+                            profil_link = wait.until(
+                                EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/main/div/div[1]/div[1]/button"))
+                            )
+                            profil_link.click()
+                            logger.debug("Clicked 'continuer' button")
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+
+                            # Navigate back to pulls page
+                            logger.info("Returning to pulls page...")
+                            self.driver.get(PULLS_URL)
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                            continue  # Skip this iteration and check again
+                        except Exception as profil_error:
+                            logger.warning(f"Could not execute command: {profil_error}")
+                            # If clicking check box fails, wait and try again
+                            time.sleep(30)
+                            self.driver.get(PULLS_URL)
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                            continue
+
+                    # No popup - execute sequence normally
+                    try:
+                        self.card_handler.execute_card_sequence(self.driver)
+                        logger.info("Sequence completed - returning to pulls page...")
+                        self.driver.get(PULLS_URL)
+                        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                        logger.info("Ready to check again...")
+                    except TimeoutException as timeout_error:
+                        # Timeout during sequence - likely animation didn't start or element missing
+                        logger.warning(f"Timeout during card sequence: {timeout_error}")
+                        logger.info("Pack opening may have failed - returning to pulls page to re-check...")
+                        self.driver.save_screenshot("timeout_error.png")
+                        logger.debug("Timeout screenshot saved to timeout_error.png")
+                        self.driver.get(PULLS_URL)
+                        random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                    except Exception as seq_error:
+                        # Handle race condition or other errors during sequence
+                        error_msg = str(seq_error)
+                        if "race condition" in error_msg or "No packs available" in error_msg:
+                            logger.warning(f"Pack availability changed during sequence: {error_msg}")
+                            logger.info("Returning to pulls page to re-check availability...")
+                            self.driver.get(PULLS_URL)
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                        elif "disabled" in error_msg:
+                            logger.warning(f"Button interaction failed: {error_msg}")
+                            logger.info("Returning to pulls page to re-check...")
+                            self.driver.get(PULLS_URL)
+                            random_delay(ACTION_DELAY_MIN, ACTION_DELAY_MAX)
+                        else:
+                            # Unknown error - re-raise to trigger shutdown
+                            raise
 
         except KeyboardInterrupt:
             # User pressed Ctrl+C - graceful shutdown

@@ -37,9 +37,11 @@
   - Room management (user rooms, match rooms)
   - Helper methods for event broadcasting
   
-- **⚠️ Requires Dependencies:**
+- **⚠️ Requires Dependencies (NestJS 10.x compatible):**
   ```bash
-  npm install @nestjs/websockets @nestjs/platform-socket.io socket.io --legacy-peer-deps
+  pnpm install --filter @quiz/backend
+  # ou
+  npm install @nestjs/websockets@^10.4.22 @nestjs/platform-socket.io@^10.4.22 socket.io --ignore-scripts
   ```
 
 #### ✅ Task 4: Matchmaking Queue Service
@@ -197,7 +199,8 @@
 
 ```bash
 cd apps/backend
-npm install @nestjs/websockets @nestjs/platform-socket.io socket.io --legacy-peer-deps
+pnpm install --filter @quiz/backend
+# Les dépendances WebSocket sont déjà dans package.json
 ```
 
 ### 2. Environment Variables

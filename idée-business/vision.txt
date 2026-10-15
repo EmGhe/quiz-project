@@ -1,0 +1,534 @@
+SIGNAL ENGINE
+Document maître — Vision, produit, architecture et état du développement
+Date : 7 octobre 2026
+
+1. 🎯 Vision
+Signal Engine est un moteur de prospection intelligente destiné aux freelances.
+L’objectif n’est pas simplement de trouver des entreprises correspondant à un profil client idéal.
+L’objectif est de répondre à une question beaucoup plus commerciale :
+« Quelles entreprises ont probablement besoin de mes services maintenant ? »
+Le système doit identifier des entreprises pertinentes, détecter les événements récents qui créent une possibilité commerciale, calculer un score d’opportunité et expliquer clairement pourquoi cette entreprise mérite l’attention du freelance.
+
+2. 💡 Idée et proposition de valeur
+Les outils classiques de prospection fournissent principalement des listes de prospects.
+Signal Engine veut fournir :
+peu d’entreprises ;
+mais très pertinentes ;
+avec des événements récents ;
+des preuves vérifiables ;
+un score ;
+une explication ;
+et, à terme, une action commerciale recommandée.
+Exemple
+Au lieu de :
+« Acme est une entreprise SaaS de 50 employés. »
+Le produit doit pouvoir dire :
+« Acme est une opportunité intéressante maintenant : l’entreprise vient de lancer un nouveau produit et vient de recruter un Head of Marketing. Ces événements indiquent une phase d’accélération marketing qui peut rendre une nouvelle landing page ou une refonte du site pertinente. »
+
+3. 🧠 Le concept de Signal
+Un signal est défini comme :
+Une information observable, datée et vérifiable qui augmente ou diminue la probabilité qu’une entreprise soit actuellement une bonne opportunité commerciale pour un freelance.
+Il faut distinguer trois niveaux :
+Signal
+Un événement réel.
+Exemple :
+Acme recrute un Head of Marketing.
+Interprétation
+Ce que cet événement peut signifier.
+Le nouveau responsable marketing pourrait revoir le positionnement ou le site.
+Opportunité
+La conclusion commerciale.
+Acme pourrait être une bonne cible pour un freelance spécialisé en sites web et landing pages.
+Cette distinction est fondamentale pour éviter que l’IA invente des opportunités sans preuve.
+
+4. 📡 Types de signaux
+Les premiers types définis sont :
+Type
+Exemple
+Poids actuel
+Funding
+Levée de fonds
+30
+Hiring
+Recrutement stratégique
+40
+Product launch
+Nouveau produit
+35
+Leadership change
+Nouveau CMO/CEO
+45
+Expansion
+Nouveau marché/pays
+45
+Rebranding
+Nouvelle identité
+50
+Website issue
+Problème du site
+40
+Growth
+Forte croissance
+35
+
+Les signaux négatifs pourront également être intégrés :
+licenciements ;
+réduction d’activité ;
+fermeture d’un marché ;
+réduction des dépenses ;
+perte de financement ;
+etc.
+
+5. ⏱️ Fraîcheur des signaux
+Un événement récent doit avoir plus de poids qu’un événement ancien.
+Règle actuelle :
+Âge
+Multiplicateur
+≤ 7 jours
+×1
+≤ 30 jours
+×0,8
+≤ 90 jours
+×0,5
+> 90 jours
+×0,2
+
+Ainsi, une levée de fonds datant d’hier est beaucoup plus pertinente qu’une levée datant de neuf mois.
+
+6. 📊 Système de scoring
+Le système est volontairement séparé en trois scores.
+Fit Score
+Il mesure la correspondance entre l’entreprise et le profil du freelance.
+Actuellement :
+secteur compatible : +50 ;
+taille compatible : +50.
+Maximum : 100.
+
+Signal Score
+Il mesure la force des événements observés chez l’entreprise.
+Chaque signal utilise :
+Poids du signal × fraîcheur
+Le total est plafonné à 100.
+
+Opportunity Score
+Il combine les deux.
+Formule actuelle :
+Opportunity Score = Fit Score × 40 % + Signal Score × 60 %
+L’idée est de donner plus d’importance aux événements actuels qu’à la simple correspondance avec l’ICP.
+
+7. 🤖 Rôle de l’IA
+L’IA ne doit pas être la source de vérité.
+Les informations factuelles doivent être conservées séparément :
+type du signal ;
+date ;
+source URL ;
+preuve ;
+force du signal.
+Le LLM intervient ensuite pour :
+interpréter les signaux ;
+regrouper plusieurs événements ;
+expliquer leur importance ;
+générer le « Pourquoi maintenant ? » ;
+éventuellement proposer une action commerciale.
+Le principe est :
+Les données fournissent les faits. L’IA explique les faits.
+
+8. 🔎 Le « Why Now? »
+C’est l’une des fonctionnalités centrales du produit.
+L’utilisateur ne doit pas seulement voir :
+Opportunity Score : 89
+Il doit comprendre pourquoi.
+Exemple :
+Pourquoi maintenant ?
+Acme vient de lancer un nouveau produit et recrute actuellement un Head of Marketing. Ces deux événements suggèrent une phase d’accélération marketing. Pour un freelance spécialisé en sites web et landing pages, cette situation peut rendre une intervention particulièrement pertinente.
+L’explication doit toujours pouvoir être reliée aux sources ayant produit les signaux.
+
+9. 👤 Profil du freelance
+Le système doit commencer avec un profil contenant notamment :
+nom ;
+services ;
+secteurs cibles ;
+taille minimale d’entreprise ;
+taille maximale d’entreprise ;
+prix moyen.
+Exemple actuel :
+Services
+Création de sites web
+Landing pages
+Secteurs
+SaaS
+Tech
+Taille
+10 à 100 employés
+Prix moyen
+8 000 €
+À terme, le profil pourra devenir beaucoup plus riche.
+
+10. 🏗️ Architecture produit
+Architecture imaginée :
+Freelancer Profile
+        ↓
+ICP Inference
+        ↓
+Company Database
+        ↓
+Signal Collection
+        ↓
+Signal Engine
+        ↓
+Freshness + Scoring
+        ↓
+Why Now
+        ↓
+Top Opportunities
+        ↓
+Freelancer Feedback
+        ↓
+Improved Ranking
+L’idée à long terme est que le système apprenne progressivement quelles opportunités sont réellement bonnes pour chaque freelance.
+
+11. 🏆 Différenciation
+Le marché possède déjà des solutions autour :
+de la prospection freelance ;
+de l’ICP ;
+des intent signals ;
+du scoring ;
+du « why now ».
+La différenciation ne doit donc pas être :
+« Personne ne fait ça. »
+Les axes possibles sont plutôt :
+Personnalisation
+Chaque freelance possède son propre moteur d’opportunités.
+Qualité des signaux
+Les événements doivent être datés, vérifiables et réellement utiles commercialement.
+Why Now
+Le produit doit expliquer concrètement pourquoi l’opportunité existe maintenant.
+Petit nombre d’opportunités
+L’objectif est de trouver 10 excellentes opportunités plutôt que 1 000 prospects moyens.
+Apprentissage
+Les résultats réels du freelance doivent progressivement améliorer le classement.
+
+12. 🧪 Stratégie MVP
+Le MVP doit rester simple.
+Objectif :
+Donner à un freelance une dizaine d’entreprises pertinentes et expliquer pourquoi elles sont intéressantes maintenant.
+Il n’est pas nécessaire de commencer directement par :
+scraping massif ;
+machine learning ;
+énorme base de données ;
+automatisation complète.
+La première version peut être semi-manuelle.
+
+13. 💻 Architecture technique actuelle
+Stack actuelle :
+Next.js
+TypeScript
+Node.js
+tsx pour les tests
+Python/FastAPI a été envisagé mais volontairement repoussé afin de conserver une architecture simple pendant le développement du V0.
+
+14. 📁 Structure actuelle du code
+Le dossier principal du moteur est :
+lib/
+└── signal-engine/
+    ├── types.ts
+    ├── scoring.ts
+    ├── fit.ts
+    ├── opportunity.ts
+    └── test.ts
+types.ts
+Contient les types partagés :
+SignalType
+Signal
+Company
+FreelancerProfile
+scoring.ts
+Contient :
+les poids des signaux ;
+le calcul de fraîcheur ;
+le Signal Score.
+fit.ts
+Contient le calcul du Fit Score.
+opportunity.ts
+Combine :
+Fit Score ;
+Signal Score.
+test.ts
+Permet de tester le moteur avec une entreprise fictive.
+
+15. 🧱 Types actuellement définis
+SignalType
+funding
+hiring
+product_launch
+leadership_change
+expansion
+rebranding
+website_issue
+growth
+Signal
+id
+type
+title
+description
+observedAt
+sourceUrl
+evidence
+strength
+Company
+id
+name
+website
+industry
+employees
+country
+signals
+FreelancerProfile
+id
+name
+services
+targetIndustries
+minEmployees
+maxEmployees
+averagePrice
+
+16. 🛠️ Étapes de développement réalisées
+Étape 1
+Création du projet Next.js :
+npx create-next-app@latest signal-engine -e with-supabase
+Étape 2
+Installation/correction de Node.js lorsque npx n’était pas disponible.
+Étape 3
+Lancement réussi du projet :
+npm run dev
+Étape 4
+Création :
+lib/signal-engine
+Étape 5
+Création de types.ts.
+Étape 6
+Premier contrôle :
+npx tsc --noEmit
+Le typage était correct.
+Étape 7
+Création du calcul du Signal Score.
+Étape 8
+Ajout de la fraîcheur des signaux.
+Étape 9
+Création du Fit Score.
+Étape 10
+Création de l’Opportunity Score.
+Étape 11
+Installation de tsx :
+npm install -D tsx
+Étape 12
+Création du test :
+npx tsx lib/signal-engine/test.ts
+Étape 13
+Correction des imports et de l’appel de calculateOpportunityScore.
+Étape 14
+Ajout de poids différents pour les types de signaux.
+Étape 15
+Affichage séparé du Signal Score.
+
+17. 🧪 Entreprise de test : Acme
+Entreprise :
+Acme
+Industrie : SaaS
+Employés : 50
+Pays : France
+Freelance :
+Services : sites web + landing pages
+Secteurs : SaaS + Tech
+Taille cible : 10–100
+Prix moyen : 8 000 €
+
+18. 📡 Signaux de test
+Signal 1
+Levée de fonds
+3 M€
+Date : 2026-03-01
+Force initiale : 30
+Comme le signal est ancien, sa valeur est fortement réduite par la fraîcheur.
+Signal 2
+Recrutement marketing
+Head of Marketing
+Date : 2026-10-03
+Poids : 40
+Signal 3
+Nouveau produit
+Nouveau produit lancé
+Date : 2026-10-05
+Poids : 35
+
+19. 📈 Résultat actuel
+Le moteur affiche :
+Entreprise : Acme
+Fit Score : 100
+Signal Score : 81
+Opportunity Score : 89
+Le calcul final est :
+100 × 0,4 = 40
+
+81 × 0,6 = 48,6
+
+40 + 48,6 = 88,6
+
+→ 89
+Le moteur fonctionne donc correctement sur notre cas de test.
+
+20. ⚠️ Ce qui est encore fictif
+Le moteur n’est pas encore connecté à de vraies données.
+Nous utilisons actuellement :
+Acme
+https://example.com
+Les sources sont donc des placeholders.
+Il n’existe pas encore de collecte automatique de :
+levées ;
+recrutements ;
+lancements ;
+changements de dirigeants ;
+expansions ;
+problèmes de site ;
+croissance.
+
+21. 🚧 Ce qu’il reste à construire
+Phase 1 — Scoring
+🟢 Presque terminée.
+Déjà présent :
+types ;
+Fit Score ;
+Signal Score ;
+fraîcheur ;
+poids ;
+Opportunity Score.
+Phase 2 — Explication
+🟡 Prochaine étape.
+Afficher le détail de chaque contribution :
+Nouveau produit → +35
+Recrutement → +40
+Levée ancienne → +6
+Phase 3 — Données réelles
+Construire une vraie base d’entreprises.
+Phase 4 — Collecte des signaux
+Connecter le moteur à de vraies sources.
+Chaque signal devra conserver :
+type
+date
+source
+preuve
+Phase 5 — Why Now
+Faire produire une explication commerciale à partir des preuves.
+Phase 6 — Interface
+Créer le dashboard avec :
+opportunités ;
+scores ;
+signaux ;
+sources ;
+Why Now.
+Phase 7 — Feedback
+Ajouter :
+intéressant ;
+pas intéressant ;
+contacté ;
+réponse ;
+client gagné.
+Phase 8 — Ranking personnalisé
+Utiliser l’historique réel pour améliorer les recommandations.
+
+22. 🗺️ Roadmap synthétique
+[FAIT]
+Types
+  ↓
+Signal Score
+  ↓
+Fraîcheur
+  ↓
+Fit Score
+  ↓
+Opportunity Score
+  ↓
+Poids des signaux
+
+[MAINTENANT]
+  ↓
+Explication du score
+  ↓
+Why Now
+
+[ENSUITE]
+  ↓
+Entreprises réelles
+  ↓
+Signaux réels
+  ↓
+Sources
+  ↓
+Dashboard
+
+[PLUS TARD]
+  ↓
+Feedback
+  ↓
+Historique
+  ↓
+Ranking personnalisé
+  ↓
+Learning Engine
+
+23. 🚀 Vision finale
+Signal Engine doit devenir un radar commercial personnel pour freelances.
+La question centrale :
+« Qui est probablement en train d’avoir besoin de moi maintenant ? »
+Le résultat final pourrait ressembler à :
+ACME
+Opportunity Score : 89/100
+
+FIT
+100/100
+
+SIGNALS
+81/100
+
+Pourquoi maintenant ?
+
+• Nouveau produit lancé il y a 2 jours
+• Head of Marketing recruté il y a 4 jours
+• Levée de fonds récente mais plus ancienne
+
+Preuves
+[Source 1]
+[Source 2]
+[Source 3]
+
+Action recommandée
+
+Contacter le Head of Marketing avec une proposition
+liée au lancement du nouveau produit.
+Le produit ne serait donc pas simplement un outil de génération de prospects.
+Ce serait un système qui tente de répondre à :
+« Où existe-t-il aujourd’hui une raison crédible pour qu’un prospect achète ce que je vends ? »
+
+24. État exact du projet aujourd’hui
+Le moteur possède maintenant sa première architecture fonctionnelle.
+Il sait prendre :
+Profil freelance
++
+Entreprise
++
+Signaux
++
+Fraîcheur
++
+Poids
+et produire :
+Fit Score
++
+Signal Score
+=
+Opportunity Score
+Le prochain objectif technique est de rendre ce résultat explicable, avant de passer aux vraies données.
+PROCHAINE ÉTAPE
+Créer le détail des contributions de chaque signal afin de pouvoir construire ensuite le véritable :
+WHY NOW?
+
