@@ -34,8 +34,8 @@ class WebSocketService {
       console.error('[WebSocket] ❌ Connection error:', error);
       console.error('[WebSocket] Error details:', {
         message: error.message,
-        type: error.type,
-        description: error.description,
+        type: (error as any).type,
+        description: (error as any).description,
       });
       this.reconnectAttempts++;
 
