@@ -274,7 +274,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 **Goal:** Competitive layer for engagement and depth
 
-**Status:** 🚧 In Progress (60% complete)
+**Status:** 🚧 In Progress (67% complete)
 
 **Plan:** `docs/superpowers/plans/2026-10-09-mvp2-pvp-competition.md`
 
@@ -294,8 +294,8 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 **Frontend (Tasks 10-13):** 🚧 In Progress
 - ✅ Task 10: Matchmaking UI (Find Match button, queue status, WebSocket connection)
-- ⏳ Task 11: Category Ban UI (⏸️ skipped - on stand by)
-- ⏳ Task 12: PvP Match UI (play match, answer questions)
+- ⏸️ Task 11: Category Ban UI (on stand by - skipped for simplified flow)
+- ✅ Task 12: PvP Match UI (synchronized gameplay, MCQ choices, timer, results)
 - ⏳ Task 13: Ranks & Missions UI (display progression)
 
 **Backend Advanced (Tasks 7-9):** 📋 Planned
@@ -586,12 +586,13 @@ Start free, scale only when users validate the product.
 **Status:** 
 - MVP1 implementation complete ✅
 - POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
-- **MVP2 PvP Competition in progress (60% complete)** 🚧
+- **MVP2 PvP Competition in progress (67% complete)** 🚧
   - Backend core complete: Schema, ELO, WebSocket, Matchmaking, Match Flow ✅
   - Frontend matchmaking UI complete ✅
+  - Frontend match UI complete (synchronized gameplay, MCQ, timer, results) ✅
   - NestJS upgraded to v12 for security & compatibility ✅
   - Match flow simplified (category ban on stand by) ✅
-  - Next: PvP Match UI, Seasons, Missions
+  - Next: Ranks & Missions UI, Seasons System, Weekly Missions
 - Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
 - Task 12 (Image Pipeline Infrastructure) added with design spec 📋
 - Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
