@@ -76,7 +76,9 @@ class WebSocketService {
 
   // Match events
   submitAnswer(matchId: string, questionIndex: number, choice: string, timeMs: number) {
+    console.log('[WebSocket] 📤 Emitting answer:submit', { matchId, questionIndex, choice, timeMs });
     this.socket?.emit('answer:submit', { matchId, questionIndex, choice, timeMs });
+    console.log('[WebSocket] ✅ answer:submit emitted');
   }
 
   // Rematch events

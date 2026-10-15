@@ -209,19 +209,31 @@ export default function PvpMatchPage() {
   };
 
   const handleChoiceClick = (choice: string) => {
-    if (playerAnswer || isRevealing) return;
+    if (playerAnswer || isRevealing) {
+      console.log('[Match] Click ignored - already answered or revealing');
+      return;
+    }
 
     const timeTaken = Date.now() - questionStartTime;
+
+    console.log('[Match] ✅ Choice clicked:', {
+      choice,
+      matchId: currentMatch!.id,
+      questionIndex: currentQuestionIndex,
+      timeTaken,
+    });
 
     setPlayerAnswer(choice);
 
     // Submit to backend
+    console.log('[Match] 📤 Submitting answer to backend...');
     websocketService.submitAnswer(
       currentMatch!.id,
       currentQuestionIndex,
       choice,
       timeTaken,
     );
+    console.log('[Match] ✅ Answer submitted');
   };
 
   if (!currentMatch) {

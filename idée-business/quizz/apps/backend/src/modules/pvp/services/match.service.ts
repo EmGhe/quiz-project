@@ -196,8 +196,16 @@ export class MatchService {
     const player1Answer = playerAnswers[match.player1Id]?.[questionIndex];
     const player2Answer = playerAnswers[match.player2Id]?.[questionIndex];
 
-    // Send revelation to both players
-    this.pvpGateway.sendToMatch(matchId, 'match:question_end', {
+    console.log('[MatchService] 📋 Retrieved answers from metadata:', {
+      questionIndex,
+      player1Id: match.player1Id,
+      player2Id: match.player2Id,
+      player1Answer,
+      player2Answer,
+      allPlayerAnswers: playerAnswers,
+    });
+
+    const questionEndData = {
       questionIndex,
       correctAnswer: currentQuestion.correctAnswer,
       player1Answer: player1Answer?.choice || null,
@@ -206,7 +214,12 @@ export class MatchService {
       player2Answer: player2Answer?.choice || null,
       player2Time: player2Answer?.timeMs || null,
       player2Correct: player2Answer?.choice === currentQuestion.correctAnswer,
-    });
+    };
+
+    console.log('[MatchService] 📤 Sending question_end event:', questionEndData);
+
+    // Send revelation to both players
+    this.pvpGateway.sendToMatch(matchId, 'match:question_end', questionEndData);
 
     // Move to next question or complete match
     if (questionIndex < 9) {
@@ -240,9 +253,17 @@ export class MatchService {
     choice: string,
     timeMs: number,
   ): Promise<void> {
+    console.log('[MatchService] 📥 submitAnswer called:', {
+      matchId,
+      playerId,
+      questionIndex,
+      choice,
+      timeMs,
+    });
+
     // Validate time (must be <= 10 seconds)
     if (timeMs > 10000) {
-      console.warn(`Player ${playerId} submitted answer after timeout: ${timeMs}ms`);
+      console.warn(`[MatchService] ⏱️ Player ${playerId} submitted answer after timeout: ${timeMs}ms`);
       return;
     }
 
@@ -250,16 +271,31 @@ export class MatchService {
       where: { id: matchId },
     });
 
-    if (!match || match.status !== 'in_progress') return;
+    if (!match) {
+      console.error('[MatchService] ❌ Match not found:', matchId);
+      return;
+    }
+
+    if (match.status !== 'in_progress') {
+      console.error('[MatchService] ❌ Match not in_progress:', match.status);
+      return;
+    }
 
     const metadata = (match.metadata as any) || {};
     const questions = metadata.questions || [];
     const currentQuestion = questions[questionIndex];
 
     if (!currentQuestion) {
-      console.error(`Question ${questionIndex} not found in match ${matchId}`);
+      console.error(`[MatchService] ❌ Question ${questionIndex} not found in match ${matchId}`);
       return;
     }
+
+    console.log('[MatchService] ✅ Question found:', {
+      questionIndex,
+      correctAnswer: currentQuestion.correctAnswer,
+      playerChoice: choice,
+      isCorrect: choice === currentQuestion.correctAnswer,
+    });
 
     // Store player answer in metadata
     if (!metadata.playerAnswers) {
@@ -275,6 +311,13 @@ export class MatchService {
       timestamp: new Date().toISOString(),
     };
 
+    console.log('[MatchService] 💾 Answer stored in metadata:', {
+      playerId,
+      questionIndex,
+      choice,
+      timeMs,
+    });
+
     // Check if answer is correct
     const isCorrect = choice === currentQuestion.correctAnswer;
 
@@ -284,8 +327,20 @@ export class MatchService {
       points = this.calculatePoints(timeMs);
     }
 
+    console.log('[MatchService] 🎯 Answer validation:', {
+      isCorrect,
+      points,
+      timeMs,
+    });
+
     // Update score and time
     const isPlayer1 = match.player1Id === playerId;
+
+    console.log('[MatchService] 📊 Updating DB scores:', {
+      isPlayer1,
+      scoreIncrement: points,
+      timeIncrement: timeMs,
+    });
 
     await this.prisma.pvpMatch.update({
       where: { id: matchId },
@@ -303,11 +358,15 @@ export class MatchService {
       },
     });
 
+    console.log('[MatchService] ✅ DB updated successfully');
+
     // Notify that player answered (but don't reveal if correct yet)
     this.pvpGateway.sendToMatch(matchId, 'match:player_answered', {
       playerId,
       questionIndex,
     });
+
+    console.log('[MatchService] ✅ Notified match room that player answered');
   }
 
   /**

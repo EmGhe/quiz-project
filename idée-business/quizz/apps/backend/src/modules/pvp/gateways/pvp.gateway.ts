@@ -258,11 +258,21 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
       timeMs: number;
     },
   ) {
+    console.log('[Gateway] 📥 Received answer:submit', {
+      userId: client.userId,
+      matchId: data.matchId,
+      questionIndex: data.questionIndex,
+      choice: data.choice,
+      timeMs: data.timeMs,
+    });
+
     if (!client.userId) {
+      console.error('[Gateway] ❌ Unauthorized - no userId');
       return { error: 'Unauthorized' };
     }
 
     if (this.matchService) {
+      console.log('[Gateway] ✅ Calling matchService.submitAnswer');
       await this.matchService.submitAnswer(
         data.matchId,
         client.userId,
@@ -270,6 +280,9 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
         data.choice,
         data.timeMs,
       );
+      console.log('[Gateway] ✅ Answer submitted successfully');
+    } else {
+      console.error('[Gateway] ❌ matchService not available');
     }
   }
 
