@@ -198,7 +198,7 @@ export default function PvpMatchmakingPage() {
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white text-xl font-bold rounded-lg shadow-lg transform transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   disabled={!connected || connecting}
                 >
-                  {connecting ? '🔄 Connexion...' : connected ? '🎮 Trouver un adversaire' : '⏳ Connexion WebSocket...'}
+                  {connecting ? '🔄 Connexion...' : connected ? '🎮 Trouver un adversaire' : '⏳ En attente de synchronisation...'}
                 </button>
 
                 {connected && (
