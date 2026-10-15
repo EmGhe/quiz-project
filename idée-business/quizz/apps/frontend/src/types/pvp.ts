@@ -1,5 +1,13 @@
 export type MatchStatus = 'waiting' | 'in_progress' | 'completed' | 'cancelled';
 
+export interface PlayerProfile {
+  id: string;
+  username: string;
+  elo: number;
+  rank: string;
+  division: number;
+}
+
 export interface PvpMatch {
   id: string;
   player1Id: string;
@@ -13,6 +21,8 @@ export interface PvpMatch {
   questionIds: string[];
   startedAt: Date | null;
   completedAt: Date | null;
+  player1?: PlayerProfile;
+  player2?: PlayerProfile;
 }
 
 export interface MatchmakingStatus {

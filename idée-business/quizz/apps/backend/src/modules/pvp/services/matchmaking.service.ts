@@ -147,6 +147,20 @@ export class MatchmakingService {
     player1Id: string,
     player2Id: string,
   ): Promise<void> {
+    // Get player profiles with ELO info
+    const [player1, player2, player1Elo, player2Elo] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: player1Id },
+        select: { id: true, username: true },
+      }),
+      this.prisma.user.findUnique({
+        where: { id: player2Id },
+        select: { id: true, username: true },
+      }),
+      this.prisma.userElo.findUnique({ where: { userId: player1Id } }),
+      this.prisma.userElo.findUnique({ where: { userId: player2Id } }),
+    ]);
+
     const match = await this.prisma.pvpMatch.create({
       data: {
         player1Id,
@@ -169,6 +183,20 @@ export class MatchmakingService {
       player1Id,
       player2Id,
       status: 'waiting',
+      player1: {
+        id: player1!.id,
+        username: player1!.username,
+        elo: player1Elo?.elo || 1200,
+        rank: player1Elo?.rank || 'Bronze',
+        division: player1Elo?.division || 3,
+      },
+      player2: {
+        id: player2!.id,
+        username: player2!.username,
+        elo: player2Elo?.elo || 1200,
+        rank: player2Elo?.rank || 'Bronze',
+        division: player2Elo?.division || 3,
+      },
     });
 
     // Start match immediately (skip ban phase)

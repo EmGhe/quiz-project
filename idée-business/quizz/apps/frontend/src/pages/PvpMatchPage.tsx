@@ -25,6 +25,7 @@ export default function PvpMatchPage() {
   } = usePvpStore();
 
   const [timeLeft, setTimeLeft] = useState(10);
+  const [matchPhase, setMatchPhase] = useState<'waiting' | 'ready' | 'playing'>('waiting');
   const [isRevealing, setIsRevealing] = useState(false);
   const [revealData, setRevealData] = useState<any>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
@@ -105,18 +106,36 @@ export default function PvpMatchPage() {
     setOpponentAnswered(false);
     setQuestionStartTime(Date.now());
 
-    // Start countdown timer
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setTimerInterval(interval);
+    // First question: show "Go!" then start timer
+    if (data.questionIndex === 0) {
+      setMatchPhase('ready');
+      setTimeout(() => {
+        setMatchPhase('playing');
+        // Start countdown timer after "Go!" message
+        const interval = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        setTimerInterval(interval);
+      }, 1000); // Show "Go!" for 1 second
+    } else {
+      // Subsequent questions: start timer immediately
+      const interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setTimerInterval(interval);
+    }
   };
 
   const handleQuestionEnd = (data: any) => {
@@ -203,6 +222,8 @@ export default function PvpMatchPage() {
 
   const currentQuestion = matchQuestions[currentQuestionIndex];
   const isPlayer1 = currentMatch.player1Id === user?.id;
+  const myProfile = isPlayer1 ? currentMatch.player1 : currentMatch.player2;
+  const opponentProfile = isPlayer1 ? currentMatch.player2 : currentMatch.player1;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500">
@@ -212,12 +233,17 @@ export default function PvpMatchPage() {
           <div className="flex justify-between items-center">
             {/* Player 1 */}
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+              <div className="w-14 h-14 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
                 {isPlayer1 ? 'VOUS' : 'ADV'}
               </div>
               <div>
-                <div className="font-bold text-gray-800">{isPlayer1 ? user?.username : 'Adversaire'}</div>
-                <div className="text-2xl font-bold text-purple-600">{isPlayer1 ? playerScore : opponentScore} pts</div>
+                <div className="font-bold text-gray-800">
+                  {myProfile?.username || user?.username}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {myProfile?.rank} {myProfile?.division} • {myProfile?.elo} ELO
+                </div>
+                <div className="text-2xl font-bold text-purple-600">{playerScore} pts</div>
               </div>
             </div>
 
@@ -229,12 +255,17 @@ export default function PvpMatchPage() {
 
             {/* Player 2 */}
             <div className="flex items-center gap-3 flex-row-reverse">
-              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+              <div className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                 {!isPlayer1 ? 'VOUS' : 'ADV'}
               </div>
               <div className="text-right">
-                <div className="font-bold text-gray-800">{!isPlayer1 ? user?.username : 'Adversaire'}</div>
-                <div className="text-2xl font-bold text-blue-600">{!isPlayer1 ? playerScore : opponentScore} pts</div>
+                <div className="font-bold text-gray-800">
+                  {opponentProfile?.username || 'Adversaire'}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {opponentProfile?.rank} {opponentProfile?.division} • {opponentProfile?.elo} ELO
+                </div>
+                <div className="text-2xl font-bold text-blue-600">{opponentScore} pts</div>
               </div>
             </div>
           </div>
@@ -245,7 +276,7 @@ export default function PvpMatchPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Timer */}
-          <QuestionTimer timeLeft={timeLeft} />
+          <QuestionTimer timeLeft={timeLeft} matchPhase={matchPhase} />
 
           {/* Question card */}
           <div className="bg-white rounded-lg shadow-xl p-8 mt-6">
@@ -276,16 +307,6 @@ export default function PvpMatchPage() {
                   disabled={!!playerAnswer || isRevealing}
                 />
               ))}
-            </div>
-
-            {/* Status indicators */}
-            <div className="mt-6 flex justify-between text-sm">
-              <div className={`flex items-center gap-2 ${playerAnswer ? 'text-green-600' : 'text-gray-400'}`}>
-                {playerAnswer ? '✓' : '○'} Vous avez répondu
-              </div>
-              <div className={`flex items-center gap-2 ${opponentAnswered ? 'text-green-600' : 'text-gray-400'}`}>
-                {opponentAnswered ? '✓' : '○'} Adversaire a répondu
-              </div>
             </div>
 
             {/* Reveal phase - show points gained */}

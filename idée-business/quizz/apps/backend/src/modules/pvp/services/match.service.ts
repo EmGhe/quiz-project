@@ -30,22 +30,28 @@ export class MatchService {
 
       console.log(`[Match] Fetching questions...`);
 
-      // Get 10 random questions (no ban filtering for now)
+      // Get 10 random questions with varied categories
+      // Using raw SQL for true random selection across categories
+      const questionIds = await this.prisma.$queryRaw<
+        Array<{ id: string }>
+      >`
+        SELECT id
+        FROM questions
+        WHERE status = 'publie'
+          AND "enabledForMcq" = true
+        ORDER BY RANDOM()
+        LIMIT 10
+      `;
+
       const questions = await this.prisma.question.findMany({
         where: {
-          status: 'publie',
-          enabledForMcq: true,
+          id: { in: questionIds.map((q) => q.id) },
         },
-        take: 10,
         include: {
           acceptedAnswers: true,
           distractors: {
             orderBy: { order: 'asc' },
           },
-        },
-        orderBy: {
-          // Random selection (simple approach)
-          createdAt: 'desc',
         },
       });
 

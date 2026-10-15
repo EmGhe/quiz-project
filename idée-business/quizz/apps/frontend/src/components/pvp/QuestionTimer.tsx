@@ -1,10 +1,36 @@
 interface QuestionTimerProps {
   timeLeft: number;
+  matchPhase?: 'waiting' | 'ready' | 'playing';
 }
 
-export default function QuestionTimer({ timeLeft }: QuestionTimerProps) {
+export default function QuestionTimer({ timeLeft, matchPhase = 'playing' }: QuestionTimerProps) {
   const percentage = (timeLeft / 10) * 100;
   const isUrgent = timeLeft <= 3;
+
+  // Show "Ready?" when waiting, "Go!" when ready
+  if (matchPhase === 'waiting') {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="text-center">
+          <span className="text-6xl font-bold text-purple-600 animate-pulse">
+            Ready?
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (matchPhase === 'ready') {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="text-center">
+          <span className="text-6xl font-bold text-green-600 animate-bounce">
+            Go!
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
