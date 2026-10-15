@@ -16,59 +16,76 @@ export class MatchService {
    * Note: Category ban phase removed (stand by for future implementation)
    */
   async startMatch(matchId: string): Promise<void> {
-    const match = await this.prisma.pvpMatch.findUnique({
-      where: { id: matchId },
-    });
+    try {
+      console.log(`[Match] Starting match ${matchId}...`);
 
-    if (!match) return;
+      const match = await this.prisma.pvpMatch.findUnique({
+        where: { id: matchId },
+      });
 
-    // Get 10 random questions (no ban filtering for now)
-    const questions = await this.prisma.question.findMany({
-      where: {
-        status: 'publie',
-        enabledForMcq: true,
-      },
-      take: 10,
-      include: {
-        acceptedAnswers: true,
-        distractors: {
-          orderBy: { order: 'asc' },
+      if (!match) {
+        console.error(`[Match] Match ${matchId} not found`);
+        return;
+      }
+
+      console.log(`[Match] Fetching questions...`);
+
+      // Get 10 random questions (no ban filtering for now)
+      const questions = await this.prisma.question.findMany({
+        where: {
+          status: 'publie',
+          enabledForMcq: true,
         },
-      },
-      orderBy: {
-        // Random selection (simple approach)
-        createdAt: 'desc',
-      },
-    });
+        take: 10,
+        include: {
+          acceptedAnswers: true,
+          distractors: {
+            orderBy: { order: 'asc' },
+          },
+        },
+        orderBy: {
+          // Random selection (simple approach)
+          createdAt: 'desc',
+        },
+      });
 
-    if (questions.length < 10) {
-      // Not enough questions, cancel match
-      await this.cancelMatch(matchId, 'Not enough questions');
-      return;
-    }
+      console.log(`[Match] Found ${questions.length} questions`);
 
-    // Validate that all questions have distractors
-    const invalidQuestions = questions.filter((q) => q.distractors.length < 4);
-    if (invalidQuestions.length > 0) {
-      console.error(
-        `Invalid questions without enough distractors: ${invalidQuestions.map((q) => q.id).join(', ')}`,
-      );
-      await this.cancelMatch(matchId, 'Invalid questions');
-      return;
-    }
+      if (questions.length < 10) {
+        // Not enough questions, cancel match
+        console.error(`[Match] Not enough questions: ${questions.length}/10`);
+        await this.cancelMatch(matchId, 'Not enough questions');
+        return;
+      }
 
-    // Update match
-    await this.prisma.pvpMatch.update({
-      where: { id: matchId },
-      data: {
-        status: 'in_progress',
-        questionIds: questions.map((q) => q.id),
-        startedAt: new Date(),
-      },
-    });
+      // Validate that all questions have distractors
+      const invalidQuestions = questions.filter((q) => q.distractors.length < 4);
+      if (invalidQuestions.length > 0) {
+        console.error(
+          `[Match] Invalid questions without enough distractors: ${invalidQuestions.map((q) => q.id).join(', ')}`,
+        );
+        await this.cancelMatch(matchId, 'Invalid questions');
+        return;
+      }
 
-    // Prepare questions with shuffled choices
-    const questionsWithChoices = questions.map((q) => {
+      console.log(`[Match] All questions valid, preparing choices...`);
+
+      console.log(`[Match] Updating match status to in_progress...`);
+
+      // Update match
+      await this.prisma.pvpMatch.update({
+        where: { id: matchId },
+        data: {
+          status: 'in_progress',
+          questionIds: questions.map((q) => q.id),
+          startedAt: new Date(),
+        },
+      });
+
+      console.log(`[Match] Preparing questions with shuffled choices...`);
+
+      // Prepare questions with shuffled choices
+      const questionsWithChoices = questions.map((q) => {
       const correctAnswer = q.acceptedAnswers.find((a) => a.isPrimary)?.answer || q.acceptedAnswers[0]?.answer;
 
       if (!correctAnswer) {
@@ -81,34 +98,48 @@ export class MatchService {
       // Shuffle choices
       const shuffledChoices = this.shuffleArray([...allChoices]);
 
-      return {
-        id: q.id,
-        text: q.text,
-        questionType: q.questionType,
-        mediaUrl: q.mediaUrl,
-        choices: shuffledChoices,
-        correctAnswer, // Stored server-side for validation, not sent to client
-      };
-    });
+        return {
+          id: q.id,
+          text: q.text,
+          questionType: q.questionType,
+          mediaUrl: q.mediaUrl,
+          choices: shuffledChoices,
+          correctAnswer, // Stored server-side for validation, not sent to client
+        };
+      });
 
-    // Store questions data for later validation
-    await this.prisma.pvpMatch.update({
-      where: { id: matchId },
-      data: {
-        // Store as JSON for question validation
-        metadata: {
-          questions: questionsWithChoices,
-        } as any,
-      },
-    });
+      console.log(`[Match] Questions prepared (${questionsWithChoices.length}), storing metadata...`);
 
-    // Send questions to players (without correctAnswer)
-    this.pvpGateway.sendToMatch(matchId, 'match:start', {
-      questions: questionsWithChoices.map(({ correctAnswer, ...rest }) => rest),
-    });
+      // Store questions data for later validation
+      await this.prisma.pvpMatch.update({
+        where: { id: matchId },
+        data: {
+          // Store as JSON for question validation
+          metadata: {
+            questions: questionsWithChoices,
+          } as any,
+        },
+      });
 
-    // Start first question timer
-    setTimeout(() => this.startQuestionTimer(matchId, 0), 1000);
+      console.log(`[Match] Metadata stored successfully`);
+
+      console.log(`[Match] Sending questions to players...`);
+
+      // Send questions to players (without correctAnswer)
+      this.pvpGateway.sendToMatch(matchId, 'match:start', {
+        questions: questionsWithChoices.map(({ correctAnswer, ...rest }) => rest),
+      });
+
+      console.log(`[Match] Questions sent, starting first question timer...`);
+
+      // Start first question timer
+      setTimeout(() => this.startQuestionTimer(matchId, 0), 1000);
+
+      console.log(`[Match] Match ${matchId} started successfully`);
+    } catch (error) {
+      console.error(`[Match] Error starting match ${matchId}:`, error);
+      await this.cancelMatch(matchId, 'Server error');
+    }
   }
 
   /**

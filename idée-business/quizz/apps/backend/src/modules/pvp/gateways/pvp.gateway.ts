@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 // Note: Requires @nestjs/websockets @nestjs/platform-socket.io socket.io
 // Install with: npm install @nestjs/websockets @nestjs/platform-socket.io socket.io
@@ -33,6 +34,7 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     private jwtService: JwtService,
+    private prisma: PrismaService,
     // Services will be injected via setter to avoid circular dependency
   ) {}
 
@@ -62,36 +64,55 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const cookies = client.handshake.headers.cookie.split(';');
         const tokenCookie = cookies.find((c) => c.trim().startsWith('token='));
         if (tokenCookie) {
-          token = tokenCookie.split('=')[1];
+          token = tokenCookie.split('=')[1].trim();
         }
       }
 
       if (!token) {
-        console.error('[WebSocket] No token found in handshake');
+        console.error('[WebSocket] No token found in handshake', {
+          hasAuth: !!client.handshake.auth.token,
+          hasAuthHeader: !!client.handshake.headers.authorization,
+          hasCookie: !!client.handshake.headers.cookie,
+          cookies: client.handshake.headers.cookie,
+        });
         client.disconnect();
         return;
       }
 
+      console.log('[WebSocket] Token found, verifying...');
+
       // Verify JWT
       const payload = await this.jwtService.verifyAsync(token);
 
-      if (!payload.sub || !payload.username) {
+      if (!payload.sub) {
+        console.error('[WebSocket] Invalid JWT payload - no sub:', payload);
         client.disconnect();
         return;
       }
 
       const userId = payload.sub;
-      const username = payload.username;
 
-      client.userId = userId;
-      client.username = username;
+      // Get user from database
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, username: true },
+      });
 
-      this.connectedUsers.set(client.id, userId);
+      if (!user) {
+        console.error('[WebSocket] User not found:', userId);
+        client.disconnect();
+        return;
+      }
 
-      console.log(`User ${username} (${userId}) connected`);
+      client.userId = user.id;
+      client.username = user.username;
+
+      this.connectedUsers.set(client.id, user.id);
+
+      console.log(`[WebSocket] User ${user.username} (${user.id}) connected`);
 
       // Join user to their personal room
-      client.join(`user:${userId}`);
+      client.join(`user:${user.id}`);
     } catch (error) {
       console.error('WebSocket authentication failed:', error);
       client.disconnect();

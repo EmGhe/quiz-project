@@ -7,10 +7,12 @@ class WebSocketService {
 
   connect(): Socket {
     if (this.socket?.connected) {
+      console.log('[WebSocket] Already connected, reusing socket');
       return this.socket;
     }
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    console.log('[WebSocket] Connecting to:', BACKEND_URL);
 
     this.socket = io(BACKEND_URL, {
       withCredentials: true, // Send cookies automatically (for HTTP-only token cookie)
@@ -20,16 +22,21 @@ class WebSocketService {
     });
 
     this.socket.on('connect', () => {
-      console.log('[WebSocket] Connected:', this.socket?.id);
+      console.log('[WebSocket] ✅ Connected successfully! Socket ID:', this.socket?.id);
       this.reconnectAttempts = 0;
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('[WebSocket] Disconnected:', reason);
+      console.log('[WebSocket] ❌ Disconnected:', reason);
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('[WebSocket] Connection error:', error.message);
+      console.error('[WebSocket] ❌ Connection error:', error);
+      console.error('[WebSocket] Error details:', {
+        message: error.message,
+        type: error.type,
+        description: error.description,
+      });
       this.reconnectAttempts++;
 
       if (this.reconnectAttempts >= this.maxReconnectAttempts) {
@@ -38,6 +45,7 @@ class WebSocketService {
       }
     });
 
+    console.log('[WebSocket] Socket instance created, waiting for connection...');
     return this.socket;
   }
 
