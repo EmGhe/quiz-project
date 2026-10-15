@@ -170,7 +170,7 @@ export default function PvpResultsPage() {
             <div>
               <div className="text-sm text-gray-600">Questions réussies</div>
               <div className="text-xl font-bold text-gray-800">
-                {Math.round((myScore / 200) * 10)}/10
+                {isPlayer1 ? matchResults.player1CorrectAnswers : matchResults.player2CorrectAnswers}/10
               </div>
             </div>
           </div>

@@ -428,6 +428,35 @@ export class MatchService {
         ? eloUpdate.winner.change
         : eloUpdate.loser.change;
 
+    // Calculate correct answers count for each player
+    const metadata = (match.metadata as any) || {};
+    const questions = metadata.questions || [];
+    const playerAnswers = metadata.playerAnswers || {};
+
+    let player1CorrectAnswers = 0;
+    let player2CorrectAnswers = 0;
+
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      const player1Answer = playerAnswers[match.player1Id]?.[i];
+      const player2Answer = playerAnswers[match.player2Id]?.[i];
+
+      if (player1Answer?.choice === question.correctAnswer) {
+        player1CorrectAnswers++;
+      }
+      if (player2Answer?.choice === question.correctAnswer) {
+        player2CorrectAnswers++;
+      }
+    }
+
+    console.log(`[Match] ${matchId} completed:`, {
+      player1Score: match.player1Score,
+      player2Score: match.player2Score,
+      player1CorrectAnswers,
+      player2CorrectAnswers,
+      totalQuestions: questions.length,
+    });
+
     // Update match
     await this.prisma.pvpMatch.update({
       where: { id: matchId },
@@ -448,6 +477,8 @@ export class MatchService {
       player2Score: match.player2Score,
       player1Time: match.player1Time,
       player2Time: match.player2Time,
+      player1CorrectAnswers,
+      player2CorrectAnswers,
       eloChanges: {
         [match.player1Id]: player1EloChange,
         [match.player2Id]: player2EloChange,
