@@ -1,21 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCollectionStore } from '../stores/collectionStore';
 import CardGrid from '../components/collection/CardGrid';
 import AlbumFilter from '../components/collection/AlbumFilter';
 import RarityFilter from '../components/collection/RarityFilter';
 import SearchInput from '../components/collection/SearchInput';
+import CardDetailModal from '../components/collection/CardDetailModal';
 import { Card } from '../types/collection';
 
 export default function CollectionPage() {
   const { fetchAll, loading, error, cards, albums, filters, setFilter } = useCollectionStore();
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     fetchAll();
   }, []);
 
   const handleCardClick = (card: Card) => {
-    // Modal will be added in next task
-    console.log('Card clicked:', card.entity.label);
+    setSelectedCard(card);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCard(null);
   };
 
   if (loading) {
@@ -73,6 +78,11 @@ export default function CollectionPage() {
 
         <CardGrid cards={cards} onCardClick={handleCardClick} />
       </div>
+
+      {/* Modal */}
+      {selectedCard && (
+        <CardDetailModal card={selectedCard} onClose={handleCloseModal} />
+      )}
     </div>
   );
 }
