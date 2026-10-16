@@ -6,12 +6,38 @@ export class AlbumsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    // TODO: implement in Task 5
-    return [];
+    const albums = await this.prisma.album.findMany({
+      orderBy: { displayOrder: 'asc' },
+      include: {
+        cards: {
+          include: {
+            card: true,
+          },
+        },
+      },
+    });
+
+    // Add card count to each album
+    return albums.map((album) => ({
+      ...album,
+      cardCount: album.cards.length,
+    }));
   }
 
   async findBySlug(slug: string) {
-    // TODO: implement in Task 5
-    return null;
+    return this.prisma.album.findUnique({
+      where: { slug },
+      include: {
+        cards: {
+          include: {
+            card: {
+              include: {
+                entity: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
