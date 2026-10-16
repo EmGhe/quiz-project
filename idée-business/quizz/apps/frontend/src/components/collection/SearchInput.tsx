@@ -16,7 +16,8 @@ export default function SearchInput({ value, onChange, placeholder = 'Rechercher
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [localValue, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localValue]);
 
   // Sync with external value
   useEffect(() => {
