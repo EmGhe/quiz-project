@@ -7,6 +7,7 @@ import { QuestionsModule } from './modules/questions/questions.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DailyModule } from './modules/daily/daily.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { CollectionModule } from './modules/collection/collection.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AdminModule } from './modules/admin/admin.module';
     AuthModule,
     DailyModule,
     AdminModule,
+    CollectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
