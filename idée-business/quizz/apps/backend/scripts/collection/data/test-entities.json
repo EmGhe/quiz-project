@@ -1,0 +1,52 @@
+[
+  {
+    "wikidataId": "Q517",
+    "expectedAlbum": "personnalites",
+    "comment": "Napoléon Bonaparte - historical figure"
+  },
+  {
+    "wikidataId": "Q956",
+    "expectedAlbum": "personnalites",
+    "comment": "Pékin - capitale (for testing capital category)"
+  },
+  {
+    "wikidataId": "Q12544",
+    "expectedAlbum": "culture",
+    "comment": "La Joconde - painting"
+  },
+  {
+    "wikidataId": "Q3464665",
+    "expectedAlbum": "culture",
+    "comment": "Intouchables - film"
+  },
+  {
+    "wikidataId": "Q243",
+    "expectedAlbum": "lieux",
+    "comment": "Tour Eiffel - monument"
+  },
+  {
+    "wikidataId": "Q142",
+    "expectedAlbum": "lieux",
+    "comment": "France - country"
+  },
+  {
+    "wikidataId": "Q1929607",
+    "expectedAlbum": "symboles",
+    "comment": "Drapeau de la France"
+  },
+  {
+    "wikidataId": "Q188593",
+    "expectedAlbum": "divers",
+    "comment": "Rayman - jeu vidéo"
+  },
+  {
+    "wikidataId": "Q10305",
+    "expectedAlbum": "personnalites",
+    "comment": "Zidane - sportif (testing different type)"
+  },
+  {
+    "wikidataId": "Q7374",
+    "expectedAlbum": "personnalites",
+    "comment": "Victor Hugo - écrivain"
+  }
+]
