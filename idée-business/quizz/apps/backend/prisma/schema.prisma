@@ -252,3 +252,78 @@ model DailySubmission {
   @@index([dailyId, score])
   @@map("daily_submissions")
 }
+
+model Entity {
+  id              String   @id @default(uuid())
+  wikidataId      String   @unique
+  label           String
+  type            String
+
+  pageviewsMonth  Int
+  wikiTextLength  Int
+  rarityScore     Float
+
+  description     String   @db.Text
+  wikidataUrl     String
+  wikipediaUrl    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  card            Card?
+
+  @@map("entities")
+}
+
+model Card {
+  id          String   @id @default(uuid())
+  entityId    String   @unique
+
+  rarity      String
+  imageUrl    String
+  imageWidth  Int
+  imageHeight Int
+
+  imageLicenseAuthor  String?
+  imageLicenseType    String?
+  imageLicenseUrl     String?
+  imageSourceUrl      String?
+
+  displayOrder Int?
+  active       Boolean @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entity      Entity      @relation(fields: [entityId], references: [id])
+  albums      CardAlbum[]
+
+  @@map("cards")
+}
+
+model Album {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String?
+  icon        String?
+  displayOrder Int
+
+  createdAt   DateTime @default(now())
+
+  cards       CardAlbum[]
+
+  @@map("albums")
+}
+
+model CardAlbum {
+  id       String @id @default(uuid())
+  cardId   String
+  albumId  String
+
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  album    Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, albumId])
+  @@map("card_albums")
+}
