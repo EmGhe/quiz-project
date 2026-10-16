@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useCollectionStore } from '../store/collectionStore';
+import { useCollectionStore } from '../stores/collectionStore';
 
 export default function CollectionPage() {
   const { fetchAll, loading, error, cards } = useCollectionStore();
