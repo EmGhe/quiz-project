@@ -1,12 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCollectionStore } from '../stores/collectionStore';
+import CardGrid from '../components/collection/CardGrid';
+import { Card } from '../types/collection';
 
 export default function CollectionPage() {
   const { fetchAll, loading, error, cards } = useCollectionStore();
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     fetchAll();
   }, []);
+
+  const handleCardClick = (card: Card) => {
+    setSelectedCard(card);
+    // Modal will be added in next task
+    console.log('Card clicked:', card.entity.label);
+  };
 
   if (loading) {
     return (
@@ -29,15 +38,7 @@ export default function CollectionPage() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Collection</h1>
 
-        {/* Placeholder - will add components in next tasks */}
-        <div className="text-center py-20 bg-white rounded-lg shadow">
-          <p className="text-2xl font-semibold mb-4">
-            {cards.length} cartes chargées
-          </p>
-          <p className="text-gray-600">
-            Les composants de la galerie seront ajoutés dans les prochaines tâches
-          </p>
-        </div>
+        <CardGrid cards={cards} onCardClick={handleCardClick} />
       </div>
     </div>
   );
