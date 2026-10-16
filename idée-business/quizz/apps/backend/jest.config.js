@@ -10,4 +10,10 @@ module.exports = {
   ],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@nestjs/jwt)/)',
+  ],
 };
