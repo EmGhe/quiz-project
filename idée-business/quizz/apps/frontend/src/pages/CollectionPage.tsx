@@ -1,18 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useCollectionStore } from '../stores/collectionStore';
 import CardGrid from '../components/collection/CardGrid';
 import { Card } from '../types/collection';
 
 export default function CollectionPage() {
   const { fetchAll, loading, error, cards } = useCollectionStore();
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     fetchAll();
   }, []);
 
   const handleCardClick = (card: Card) => {
-    setSelectedCard(card);
     // Modal will be added in next task
     console.log('Card clicked:', card.entity.label);
   };
