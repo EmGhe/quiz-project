@@ -16,4 +16,12 @@ export const dailyApi = {
     const response = await apiClient.get('/api/daily/leaderboard');
     return response.data;
   },
+
+  async reportQuestion(questionId: string, reason: string, comment?: string): Promise<void> {
+    await apiClient.post('/api/daily/report-question', {
+      questionId,
+      reason,
+      comment,
+    });
+  },
 };

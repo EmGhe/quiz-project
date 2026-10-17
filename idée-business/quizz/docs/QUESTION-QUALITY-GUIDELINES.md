@@ -1,230 +1,374 @@
 # Guidelines de Qualité des Questions
 
-**⚠️ IMPORTANT : Lire ce document AVANT chaque génération de questions**
-
-Ce document recense tous les problèmes identifiés lors de la création de questions et les solutions à appliquer systématiquement.
+**⚠️ LIRE AVANT chaque génération de questions**
 
 ---
 
-## ❌ Problèmes à Éviter Absolument
+## 📋 Règles Fondamentales
 
-### 1. Questions vagues/imprécises
-**Détecté en :** Phase 4 - Cinéma, Phase 9 - Culture Internet
+### ✅ Une bonne question doit être :
 
-**Exemples incorrects :**
-- ❌ "Quel acteur joue dans Intouchables?"
-  - Problème : Plusieurs acteurs jouent dans le film, réponse ambiguë
-- ❌ "YouTubeur français humoristique, l'un des pionniers de YouTube France. Quel est ce YouTubeur ?"
-  - Problème : Cette description s'applique à plusieurs YouTubeurs (Cyprien, Norman, etc.)
-
-**Solutions :**
-- ✅ "Quel acteur joue Driss dans Intouchables?"
-- ✅ "YouTubeur français gaming et divertissement, créateur du GP Explorer. Quel est ce YouTubeur ?" (le GP Explorer est unique à Squeezie)
-- **Règle :** Les questions descriptives doivent contenir au moins UN élément UNIQUE qui distingue la personne de toutes les autres
-  - Acteurs : préciser le personnage/rôle spécifique
-  - YouTubeurs/Créateurs : mentionner un projet/événement/format unique (ex: GP Explorer, Z Event, etc.)
-  - Sportifs : mentionner un accomplissement spécifique unique
-  - Ne JAMAIS utiliser uniquement des caractéristiques génériques (humoristique, pionnier, célèbre, etc.)
+1. **Objective** : Une seule réponse possible
+2. **Claire** : Français naturel, pas d'ambiguïté
+3. **Vérifiable** : Basée sur un fait sourcé
+4. **Intéressante** : Suffisamment stimulante
+5. **Unique** : Aucun doublon
 
 ---
 
-### 2. Réponse révélée dans la question
-**Détecté en :** Phase 4 - Cinéma (questions visuelles)
+## ❌ À Éviter Absolument
 
-**Exemple incorrect :**
-- ❌ "Qui est ce réalisateur ? (Olivier Nakache et Éric Toledano)"
-- Problème : La réponse apparaît directement dans le texte de la question
+### 1. Questions vagues
 
-**Solution :**
-- ✅ "Qui est ce réalisateur ? [8]"
-- **Règle :** Utiliser un système de numérotation unique `[1]`, `[2]`, etc. pour les questions visuelles
-- **Règle :** Ne JAMAIS inclure d'indices sur la réponse dans le texte de la question
+**Interdit :**
+```
+❌ "Quel acteur joue dans Intouchables ?"
+   → Plusieurs acteurs, réponse ambiguë
 
----
+❌ "YouTubeur français humoristique, pionnier de YouTube"
+   → S'applique à Cyprien, Norman, Squeezie...
+```
 
-### 3. Images non affichées (URLs Wikimedia)
-**Détecté en :** Phase 4 - Cinéma
+**Correct :**
+```
+✅ "Quel acteur joue Driss dans Intouchables ?"
+   → Rôle spécifique = réponse unique
 
-**Exemple incorrect :**
-- ❌ `https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/File.jpg/800px-File.jpg`
-- Problème : URLs avec `/thumb/` et tailles spécifiques ne fonctionnent pas
-- Erreur serveur : "Use thumbnail sizes listed on https://w.wiki/GHai"
+✅ "Créateur du GP Explorer. Quel est ce YouTubeur ?"
+   → Élément distinctif unique
+```
 
-**Solution :**
-- ✅ `https://upload.wikimedia.org/wikipedia/commons/9/95/File.jpg`
-- **Règle :** Toujours utiliser les URLs directes des fichiers (pas de `/thumb/`, pas de taille)
-- **Règle :** Pour les SVG, utiliser directement les fichiers .svg (pas de conversion PNG)
+**Règle :** Les descriptions doivent contenir **au moins UN élément UNIQUE** (rôle, projet, accomplissement).
 
 ---
 
-### 4. Questions temporelles (années)
-**Détecté en :** Phase 4 - Cinéma
+### 2. Questions subjectives
 
-**Exemples incorrects :**
-- ❌ "En quelle année est sorti Intouchables ?"
-- ❌ "Quand est né Victor Hugo ?"
-- Problème : Dates trop précises, difficiles à deviner, peu intéressantes
-
-**Solution :**
-- ✅ Privilégier les questions sur les personnages, acteurs, réalisateurs, répliques, œuvres
-- **Exception :** Événements historiques majeurs où l'année est culturellement connue (ex: "En quelle année a eu lieu la Révolution française ?")
+**Interdit :**
+```
+❌ "Pourquoi..."
+❌ "Comment..."
+❌ "Expliquez..."
+❌ "Quel est le meilleur..."
+```
 
 ---
 
-### 5. Mauvaise catégorisation
-**Détecté en :** Phase 4 - Cinéma
+### 3. Précisions numériques
 
-**Exemple incorrect :**
-- ❌ Question "Qui a réalisé Intouchables ?" dans catégorie "cinéma-films"
-- Problème : Logique de catégorisation incohérente
+**Interdit :**
+- Population exacte
+- Altitude précise
+- Distance/Surface exacte
+- Poids/Taille précis
+- Température/Vitesse exacte
 
-**Solution :**
-- ✅ "Qui a réalisé..." → catégorie "cinéma-réalisateurs"
-- **Règle :** Catégoriser selon le TYPE de réponse attendue, pas le sujet de la question
-  - Question sur un acteur → catégorie acteurs
-  - Question sur un réalisateur → catégorie réalisateurs
-  - Question sur un film → catégorie films
-  - etc.
+**Exception :** Dates d'événements historiques majeurs (1789, 1945, etc.)
 
 ---
 
-### 6. Questions avec chiffres trop grands/précis ⚠️ CRITIQUE
-**Détecté en :** Phases 1-3 (Géographie, Sciences)
+### 4. Réponse révélée dans la question
 
-**Exemples incorrects :**
-- ❌ "Quelle est la population de la France ?"
-- ❌ "Quelle est l'altitude du Mont Blanc ?"
-- ❌ "Quelle est la distance entre Paris et Lyon ?"
-- ❌ "Quelle est la taille de la Tour Eiffel ?"
-- ❌ "Quelle est la superficie de l'Amazonie ?"
-- Problème : Réponses trop précises, impossibles à deviner exactement, frustrant pour l'utilisateur
+**Interdit :**
+```
+❌ "Qui est ce réalisateur ? (Olivier Nakache et Éric Toledano)"
+```
 
-**Solution :**
-- ✅ "Combien de côtés possède un triangle ?" (petit chiffre simple, réponse unique évidente)
-- ✅ "Combien de planètes dans le système solaire ?" (petit chiffre, connaissance générale)
-- **Règle :** INTERDIRE toutes questions nécessitant des chiffres précis :
-  - Population
-  - Altitude
-  - Distance
-  - Taille/Hauteur/Longueur
-  - Superficie/Surface
-  - Poids/Masse
-  - Température
-  - Vitesse
-- **Exception :** Petits chiffres simples (<20) avec réponse unique évidente
+**Correct :**
+```
+✅ "Qui est ce réalisateur ? [1]"
+```
 
 ---
 
-### 7. Questions trop ouvertes/subjectives ⚠️ CRITIQUE
-**Détecté en :** Phases 1-3 (Histoire)
+## 🖼️ Questions Visuelles (Images)
 
-**Exemples incorrects :**
-- ❌ "Pourquoi il y a eu la Première Guerre mondiale ?"
-- ❌ "Comment Napoléon a-t-il conquis l'Europe ?"
-- ❌ "Pourquoi la Renaissance a-t-elle commencé en Italie ?"
-- Problème : Plusieurs réponses possibles, pas de réponse unique et objective, trop complexe
+### Format des questions
 
-**Solution :**
-- ✅ "Qui a déclenché la Première Guerre mondiale ?" (si réponse unique claire)
-- ✅ "Où a commencé la Renaissance ?" (réponse factuelle)
-- ✅ "Quel pays Napoléon a-t-il dirigé ?" (réponse factuelle)
-- **Règle :** INTERDIRE les questions ouvertes :
-  - "Pourquoi..." (sauf si réponse unique très évidente)
-  - "Comment..." (mécanismes complexes)
-  - "Expliquez..."
-  - Questions nécessitant une dissertation
-- **Règle :** Privilégier les questions factuelles avec réponse unique :
-  - "Qui..." (personne)
-  - "Quel/Quelle..." (élément spécifique)
-  - "Où..." (lieu)
-  - "Quand..." (si date précise culturellement connue)
+Utiliser `[N]` pour distinguer les questions similaires :
+```
+Qui est cet acteur ? [1]
+Qui est cet acteur ? [2]
+...
+```
+
+**Ne JAMAIS révéler la réponse dans le texte.**
 
 ---
 
-## ✅ Bonnes Pratiques
+### Sources d'images recommandées
 
-### Questions visuelles
-- Utiliser la numérotation `[1]`, `[2]`, `[3]`, etc. pour éviter les doublons dans le texte
-- Vérifier que l'image s'affiche correctement (URL directe, pas de thumbnail)
-- Pour les drapeaux : toujours en SVG
-- Pour les photos : JPG/PNG direct
+**✅ Fonctionnent bien (faible taux d'échec) :**
+- Drapeaux de pays (SVG Wikimedia Commons)
+- Animaux (photos naturelles)
+- Plantes et fleurs
+- Monuments et lieux géographiques
+- Tableaux de peinture (< 5 MB)
 
-### Réponses acceptées
-- Toujours générer des variantes :
-  - Avec/sans accents : "États-Unis" ↔ "Etats-Unis"
-  - Avec/sans articles : "France" ↔ "La France"
-  - Abréviations courantes : "USA" ↔ "États-Unis"
-- Définir un Levenshtein threshold approprié :
-  - 1 pour les mots courts (≤5 lettres)
-  - 2 pour les mots moyens (6-10 lettres)
-  - 3 pour les mots longs (>10 lettres)
+**⚠️ Problématiques (taux d'échec élevé) :**
+- Personnages d'anime/manga (copyright)
+- Personnages de jeux vidéo (copyright)
+- Photos récentes de célébrités (souvent supprimées)
+- Tableaux haute résolution (> 10 MB)
 
-### Distractors (MCQ)
-- Choisir des distractors plausibles mais incorrects
-- Même continent/catégorie pour les distractors géographiques
-- Même époque/genre pour les distractors culturels
-- Vérifier qu'aucun distractor n'est une variante de la bonne réponse
+**❌ À éviter complètement :**
+- URLs `wikipedia.org/en/` (non supportées)
+- Images copyrightées sans licence libre
+- Screenshots de films/séries
 
 ---
 
-## 📋 Checklist avant génération
+### Specs techniques des images
 
-Avant de générer des questions, vérifier :
+**URLs acceptées :**
+```
+✅ https://upload.wikimedia.org/wikipedia/commons/a/b/File.jpg
+✅ https://upload.wikimedia.org/wikipedia/commons/a/b/File.svg
+```
 
-- [ ] Aucune question avec chiffres précis (population, altitude, distance, etc.)
-- [ ] Aucune question temporelle (sauf événements historiques majeurs)
-- [ ] Aucune question ouverte/subjective ("Pourquoi...", "Comment...")
-- [ ] Toutes les questions ont une réponse unique et objective
-- [ ] Les questions visuelles utilisent la numérotation `[1]`, `[2]`, etc.
-- [ ] Les URLs Wikimedia sont directes (pas de `/thumb/`)
-- [ ] La catégorisation suit le type de RÉPONSE, pas le sujet
-- [ ] Les questions sont précises et non ambiguës
-- [ ] Chaque question a été testée mentalement : "Puis-je répondre de manière unique et certaine ?"
+**URLs refusées :**
+```
+❌ https://upload.wikimedia.org/wikipedia/commons/thumb/...
+❌ https://upload.wikimedia.org/wikipedia/en/...
+❌ http://localhost:3000/api/proxy/...
+```
 
----
+**Formats supportés :**
+- **SVG** : Pas d'optimisation (gardé tel quel)
+- **JPG** : Resize 800px max + quality 85%
+- **PNG** : Resize 800px max + compression level 8
 
-### 8. Double préfixe dans les questions descriptives ⚠️
-**Détecté en :** Phase 12 - Gastronomie
-
-**Exemples incorrects :**
-- ❌ "Quel plat Plat de riz crémeux cuit progressivement dans un bouillon ?"
-- ❌ "Quel pain Pain plat indien cuit au four tandoor ?"
-- Problème : Duplication du préfixe "Quel plat/pain" + point d'interrogation inutile
-
-**Solution :**
-- ✅ "Plat de riz crémeux cuit progressivement dans un bouillon"
-- ✅ "Pain plat indien cuit au four tandoor"
-- **Règle :** Pour les questions descriptives gastronomie, enlever le préfixe "Quel plat/pain/dessert" et le point d'interrogation final
-- Script de correction : `scripts/fixes/fix-gastronomie-syntax.ts`
+**Taille maximale :** 5 MB (les images > 10 MB seront rejetées)
 
 ---
 
-### 9. Mauvaise catégorisation Film vs Livre ⚠️ CRITIQUE
-**Détecté en :** Phase 17-18 - Films/Livres résumés et auteurs
+## 📊 Pipeline d'Images (Automatique)
 
-**Exemples incorrects :**
-- ❌ "Quel livre raconte l'histoire..." dans catégorie "Cinéma - Films"
-- ❌ "Qui a écrit le livre..." dans catégorie "Cinéma - Films"
-- Problème : Questions de littérature placées dans la catégorie Cinéma
+Le script `download-and-store-all-images.ts` gère automatiquement :
 
-**Solution :**
-- ✅ Questions "Quel livre..." → Littérature (Française ou Internationale)
-- ✅ Questions "Qui a écrit le livre..." → Littérature (Française ou Internationale)
-- ✅ Questions "Quel film..." → Cinéma - Films
-- ✅ Questions "Qui a réalisé..." → Cinéma - Réalisateurs
-- **Règle :** TOUJOURS catégoriser selon le TYPE de réponse attendue (livre → Littérature, film → Cinéma)
-- Script de correction : `scripts/fixes/move-books-to-literature.ts`
+### Phase 1 : Téléchargements normaux
+1. Skip les images déjà locales
+2. Télécharge les images disponibles
+3. Si 404 → Recherche automatique de remplacement via API
+4. Si pas trouvé → Désactive la question
+
+### Phase 2 : Téléchargement remplacements
+1. Batch pre-fetch métadonnées (50 par lot)
+2. Télécharge séquentiellement (délai 30s)
+3. Optimise avec Sharp
+4. Met à jour DB avec métadonnées de licence
+
+### Rapport automatique
+
+Fichier : `scripts/images/failed-images-report.json`
+
+Contient :
+- Questions désactivées
+- URLs originales
+- Raisons d'échec
+- Tentatives de remplacement
 
 ---
 
-## 🔄 Évolution du document
+## 🔧 Maintenance des Images
 
-Ce document est vivant. À chaque nouveau problème identifié sur les questions, l'ajouter ici avec :
-- Phase de détection
-- Exemple incorrect
-- Explication du problème
-- Solution appliquée
-- Règle générale à suivre
+### Problèmes fréquents et solutions
 
-**Dernière mise à jour :** 2026-10-13  
-**Nombre de problèmes documentés :** 9
+#### 1. SVG corrompus (données binaires)
+
+**Symptôme** : Image ne s'affiche pas, fichier contient du binaire au lieu de XML
+
+**Solution automatique** :
+```bash
+npx ts-node scripts/images/fix-corrupted-images.ts
+```
+
+**Ce qui est fait** :
+- Détecte SVG sans balise `<svg>`
+- Re-télécharge depuis `fact.data.flagUrl`
+- Sauvegarde proprement en UTF-8
+
+**Résultat** : 27 drapeaux réparés (2026-10-15)
+
+---
+
+#### 2. Photos de personnes mal cadrées
+
+**Symptôme** : Visage trop petit, difficile à identifier (entraîneurs, acteurs, réalisateurs)
+
+**Solution automatique** :
+```bash
+npx ts-node scripts/images/smart-crop-portraits.ts
+```
+
+**Ce qui est fait** :
+- Détecte questions avec "entraîneur", "acteur", "réalisateur", etc.
+- Crop intelligent 500×500 centré sur visage (Sharp "attention" strategy)
+- JPEG qualité 90 pour portraits
+- Backup automatique (`.backup`)
+
+**Résultat** :
+- 64 portraits optimisés (2026-10-15)
+- Réduction taille ~40-50%
+- Visages bien visibles et centrés
+
+**Restaurer originaux** :
+```bash
+cd apps/frontend/public/images/quiz
+for f in *.backup; do mv "$f" "${f%.backup}"; done
+```
+
+---
+
+#### 3. Images trop volumineuses
+
+**Symptôme** : Fichiers > 150 KB
+
+**Solution** :
+```bash
+npx ts-node scripts/images/fix-large-images.ts
+```
+
+---
+
+#### 4. URLs obsolètes ou proxy
+
+**Symptôme** : URLs `localhost:3000/api/proxy` ou liens cassés
+
+**Solution** :
+```bash
+npx ts-node scripts/images/fix-proxy-urls.ts
+npx ts-node scripts/images/refresh-wikimedia-urls.ts
+```
+
+---
+
+### Workflow de maintenance recommandé
+
+**Après génération de nouvelles questions** :
+1. `download-and-store-all-images.ts` → télécharge nouvelles images
+2. `fix-corrupted-images.ts` → répare corruptions
+3. `smart-crop-portraits.ts` → optimise portraits
+4. `fix-large-images.ts` → réduit tailles excessives
+
+**Inspection manuelle** : Tester aléatoirement 10-20 questions visuelles dans l'interface.
+
+---
+
+### Bonnes pratiques pour portraits
+
+**✅ Faire** :
+- Utiliser photos avec visage visible et centré
+- Préférer portraits officiels ou photos promotionnelles
+- Vérifier que le nom de la personne est dans l'URL Wikimedia (validation automatique)
+
+**❌ Éviter** :
+- Photos de groupe (ambiguïté)
+- Photos de dos ou de profil
+- Photos anciennes basse résolution
+- Photos recadrées par Wikimedia (préférer originales)
+
+**Script de crop** : Transforme automatiquement les photos problématiques en 500×500 centrées sur le visage.
+
+---
+
+## 📝 Catégories et Réponses
+
+### Daily (Texte)
+
+**Normalisation requise :**
+- Casse
+- Espaces
+- Ponctuation
+- Accents (si pertinent)
+
+**Distance Levenshtein :**
+- ≤ 4 caractères → distance 1
+- 5-8 caractères → distance 2
+- ≥ 9 caractères → distance 3
+
+**N'accepter que les variantes légitimes.**
+
+---
+
+### MCQ (Multiple Choice)
+
+**Structure :**
+- 1 bonne réponse
+- 4 distracteurs plausibles
+
+**Règles distracteurs :**
+- ✅ Même type/catégorie que la bonne réponse
+- ✅ Plausibles mais incorrects
+- ❌ Jamais une variante de la bonne réponse
+- ❌ Jamais évidemment absurdes
+- ❌ Jamais de doublons
+
+**Exemples :**
+```
+Question : Capitale de la France ?
+✅ Bonne : Paris
+✅ Distracteurs : Londres, Berlin, Rome, Madrid (capitales européennes)
+❌ Mauvais : New York, Tokyo (pas européennes)
+❌ Mauvais : Tour Eiffel (pas une ville)
+```
+
+---
+
+## 🎯 Catégories : Type de Réponse
+
+**La catégorie = TYPE de réponse attendu**, pas le sujet de la question.
+
+**Exemples :**
+```
+"Quelle est la capitale de l'Italie ?"
+→ Catégorie : VILLE (pas "Géographie")
+
+"En quelle année a eu lieu la Révolution française ?"
+→ Catégorie : DATE (pas "Histoire")
+
+"Qui a peint La Joconde ?"
+→ Catégorie : PERSONNE/PEINTRE (pas "Art")
+```
+
+---
+
+## ✅ Checklist Avant Publication
+
+- [ ] Source/fait vérifiable
+- [ ] Réponse unique et objective
+- [ ] Question non vague (élément distinctif unique)
+- [ ] Réponse non révélée dans la question
+- [ ] Français naturel et clair
+- [ ] Pas de précision numérique interdite
+- [ ] Pas de date inutilement précise
+- [ ] Bonne catégorie (type de réponse)
+- [ ] Réponses acceptées légitimes (Daily)
+- [ ] 4 distracteurs plausibles (MCQ)
+- [ ] Aucun doublon
+- [ ] Difficulté appropriée
+- [ ] Image vérifiée (questions visuelles)
+- [ ] URL Wikimedia Commons directe (pas de thumb)
+
+---
+
+## 📈 Statistiques Pipeline (Référence)
+
+**Résultat actuel :**
+- ✅ 169/180 images téléchargées (93.9%)
+- 🚫 21 questions désactivées (11.7%)
+- 💾 12.20 MB stockage total
+
+**Principales causes d'échec :**
+- 9 tableaux (trop lourds ou supprimés)
+- 4 personnages d'anime (copyright)
+- 3 artistes (photos récentes supprimées)
+- 2 jeux vidéo (copyright)
+- 3 autres (réalisateur, entraîneur)
+
+**Recommandation :** Privilégier drapeaux, animaux, plantes, monuments pour maximiser le taux de réussite.
+
+---
+
+**Dernière mise à jour :** 2026-10-15  
+**Pipeline version :** 2.0 (2 phases + fallback automatique)

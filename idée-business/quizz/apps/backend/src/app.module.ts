@@ -8,6 +8,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DailyModule } from './modules/daily/daily.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { CollectionModule } from './modules/collection/collection.module';
+import { ProxyModule } from './modules/proxy/proxy.module';
+import { PvpModule } from './modules/pvp/pvp.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { CollectionModule } from './modules/collection/collection.module';
     DailyModule,
     AdminModule,
     CollectionModule,
+    ProxyModule,
+    PvpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

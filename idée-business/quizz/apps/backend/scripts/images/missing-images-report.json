@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-15T12:49:45.828Z",
+  "totalIssues": 10,
+  "fixed": 4,
+  "failed": 6,
+  "details": [
+    {
+      "question": {
+        "id": "c44beaa0-25e4-4386-823c-5834ec1e84e0",
+        "text": "Qui est ce footballeur ? [1]",
+        "currentType": "image",
+        "currentMediaUrl": "/images/quiz/b28829951b0b221fdef7633dd77499dd.org&utm_campaign=imageinfo&utm_content=original"
+      },
+      "issue": "Corrupted mediaUrl",
+      "action": "Attempted re-download",
+      "result": "failed",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404"
+    },
+    {
+      "question": {
+        "id": "20a4d473-3692-4a66-8750-d66aa9764ff0",
+        "text": "À quel peintre correspond ce tableau ? [8]",
+        "currentType": "image",
+        "currentMediaUrl": "/images/quiz/9bb37b2471000a52840580ecbf37d6da.jpg"
+      },
+      "issue": "Missing file",
+      "action": "Disabled question (no original URL)",
+      "result": "failed",
+      "error": "Missing original URL"
+    },
+    {
+      "question": {
+        "id": "eb894ac6-ae17-4f97-915c-7298d08e5714",
+        "text": "À quel peintre correspond ce tableau ? [5]",
+        "currentType": "image",
+        "currentMediaUrl": "/images/quiz/530afc12184db0e008e869b5ff6a202a.jpg"
+      },
+      "issue": "Missing file",
+      "action": "Disabled question (no original URL)",
+      "result": "failed",
+      "error": "Missing original URL"
+    },
+    {
+      "question": {
+        "id": "c9a8541a-7dd3-41d1-bb70-3b9a5fc6fff2",
+        "text": "À quel peintre correspond ce tableau ? [6]",
+        "currentType": "image",
+        "currentMediaUrl": "/images/quiz/569294c79cd1a7196952563f2abfbfa7.jpg"
+      },
+      "issue": "Missing file",
+      "action": "Disabled question (no original URL)",
+      "result": "failed",
+      "error": "Missing original URL"
+    },
+    {
+      "question": {
+        "id": "90e3bfec-524e-40e9-a56d-7c416c592de5",
+        "text": "Attaquant français, champion du monde 2018, connu pour sa vitesse exceptionnelle. Qui est ce sportif ?",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Attempted conversion",
+      "result": "failed",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404"
+    },
+    {
+      "question": {
+        "id": "b332cf50-5636-41fb-9846-4741a5059b4e",
+        "text": "Légendaire meneur de jeu français, champion du monde 1998, numéro 10 emblématique surnommé \"Zizou\". Qui est ce sportif ?",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Converted to image + downloaded → c384fa357be3bdeb25a743d76c37b2eb.jpg",
+      "result": "success"
+    },
+    {
+      "question": {
+        "id": "910b762d-d222-4fdd-9443-1724c60e33d7",
+        "text": "Attaquant argentin, champion du monde 2022, surnommé \"La Pulga\" (La Puce) en espagnol. Qui est ce sportif ?",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Converted to image + downloaded → d93a4132d8e47092a97a6eacf96e7cf1.jpg",
+      "result": "success"
+    },
+    {
+      "question": {
+        "id": "ca8333a4-f01e-499b-979d-91704497b6f4",
+        "text": "Légende des Chicago Bulls, considéré comme le meilleur joueur de basket de tous les temps, surnommé \"His Airness\". Qui est ce sportif ?",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Converted to image + downloaded → 604d71d154a3baa62df77236194146f5.jpg",
+      "result": "success"
+    },
+    {
+      "question": {
+        "id": "093d57b7-d203-45c4-9a2f-ef248d84bda4",
+        "text": "Ailier polyvalent surnommé \"King James\", champion NBA avec trois franchises différentes. Qui est ce sportif ?",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Converted to image + downloaded → 1650235acf946dedc33efd8bf5605782.jpg",
+      "result": "success"
+    },
+    {
+      "question": {
+        "id": "a43f3dc8-30f4-4243-90c4-d055140d8836",
+        "text": "Qui est ce réalisateur ? [4]",
+        "currentType": "texte",
+        "currentMediaUrl": null
+      },
+      "issue": "Text question with image in fact.data",
+      "action": "Attempted conversion",
+      "result": "failed",
+      "error": "Failed to download after 3 attempts: Request failed with status code 404"
+    }
+  ]
+}

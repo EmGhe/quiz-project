@@ -138,7 +138,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link
             to="/admin/questions"
             className="bg-primary-600 text-white rounded-lg shadow p-6 hover:bg-primary-700 transition text-center"
@@ -146,6 +146,15 @@ export default function AdminDashboard() {
             <div className="text-4xl mb-2">📝</div>
             <h3 className="text-xl font-bold">Manage Questions</h3>
             <p className="text-sm opacity-90 mt-1">View, edit, and filter questions</p>
+          </Link>
+
+          <Link
+            to="/admin/reported"
+            className="bg-red-600 text-white rounded-lg shadow p-6 hover:bg-red-700 transition text-center"
+          >
+            <div className="text-4xl mb-2">🚨</div>
+            <h3 className="text-xl font-bold">Questions Signalées</h3>
+            <p className="text-sm opacity-90 mt-1">Review user reports</p>
           </Link>
 
           <Link

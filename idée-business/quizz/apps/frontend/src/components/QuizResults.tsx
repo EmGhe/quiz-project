@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { dailyApi } from '@/api/daily';
 import type { DailySubmission, DailyQuestion } from '@/types/daily';
 import ShareCard from './ShareCard';
+import ReportQuestionModal from './ReportQuestionModal';
 
 interface QuizResultsProps {
   submission: DailySubmission;
@@ -26,6 +27,10 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportQuestionId, setReportQuestionId] = useState<string | null>(null);
+  const [reportQuestionText, setReportQuestionText] = useState<string>('');
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   useEffect(() => {
     loadLeaderboard();
@@ -83,6 +88,15 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
           </div>
         </div>
 
+        {/* Report Success Message */}
+        {reportSuccess && (
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-700 text-center">
+              ✅ Question signalée avec succès. Merci pour votre contribution !
+            </p>
+          </div>
+        )}
+
         {/* Answer Breakdown */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold mb-4">Answer Breakdown</h2>
@@ -100,7 +114,7 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
                       : 'bg-red-50 border-red-200'
                   }`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
                       <div className="mb-2">
                         <span className={`font-bold ${ans.correct ? 'text-green-700' : 'text-red-700'}`}>
@@ -124,6 +138,21 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
                         <p className="text-green-700 font-bold">+{ans.pointsEarned} pts</p>
                       )}
                     </div>
+                  </div>
+                  <div className="flex justify-end pt-2 border-t border-gray-200">
+                    <button
+                      onClick={() => {
+                        setReportQuestionId(ans.questionId);
+                        setReportQuestionText(question?.text || 'Question text not available');
+                        setShowReportModal(true);
+                      }}
+                      className="text-xs text-gray-500 hover:text-red-600 flex items-center gap-1"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      Signaler cette question
+                    </button>
                   </div>
                 </div>
               );
@@ -217,6 +246,26 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
           </button>
         </div>
       </div>
+
+      {/* Report Question Modal */}
+      {showReportModal && reportQuestionId && (
+        <ReportQuestionModal
+          questionId={reportQuestionId}
+          questionText={reportQuestionText}
+          onClose={() => {
+            setShowReportModal(false);
+            setReportQuestionId(null);
+            setReportQuestionText('');
+          }}
+          onSuccess={() => {
+            setShowReportModal(false);
+            setReportQuestionId(null);
+            setReportQuestionText('');
+            setReportSuccess(true);
+            setTimeout(() => setReportSuccess(false), 5000);
+          }}
+        />
+      )}
     </div>
   );
 }

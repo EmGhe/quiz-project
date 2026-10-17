@@ -1,0 +1,3442 @@
+{
+  "summary": {
+    "total": 1453,
+    "coherent": 1321,
+    "incoherent": 132,
+    "percentage": "9.1"
+  },
+  "incoherentQuestions": [
+    {
+      "id": "965a18ca-182a-4491-b30b-984a81705a84",
+      "text": "Quel acteur joue Jack Dawson dans Titanic ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Leonardo DiCaprio",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Jean Dujardin",
+          "type": "person-name"
+        },
+        {
+          "text": "Kate Winslet",
+          "type": "person-name"
+        },
+        {
+          "text": "Gérard Jugnot",
+          "type": "person-name"
+        },
+        {
+          "text": "Gary Oldman",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "78369277-708b-4b9a-8b16-f4fa5b06ba65",
+      "text": "Quel acteur joue Dom Cobb dans Inception ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Leonardo DiCaprio",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Rumi Hiiragi",
+          "type": "person-name"
+        },
+        {
+          "text": "Robin Wright",
+          "type": "person-name"
+        },
+        {
+          "text": "Jean Reno",
+          "type": "person-name"
+        },
+        {
+          "text": "Audrey Tautou",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "b22b1eee-a2c7-436c-a3bd-688a32ae7664",
+      "text": "Quel acteur joue Park Dong-ik dans Parasite ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Lee Sun-kyun",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Samy Naceri",
+          "type": "person-name"
+        },
+        {
+          "text": "Uma Thurman",
+          "type": "person-name"
+        },
+        {
+          "text": "Russell Crowe",
+          "type": "person-name"
+        },
+        {
+          "text": "Gérard Jugnot",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "2fbe2e09-5502-464a-a6e5-6d403fedce26",
+      "text": "Quel livre raconte l'histoire suivante : Dans une société totalitaire où Big Brother surveille chaque citoyen, un homme travaillant au ministère de la Vérité commence à remettre en question le régime et tombe amoureux, ce qui est interdit ?",
+      "category": "Littérature - Internationale",
+      "answer": "1984",
+      "answerType": "number",
+      "distractors": [
+        {
+          "text": "Orgueil et Préjugés",
+          "type": "other"
+        },
+        {
+          "text": "L'Alchimiste",
+          "type": "title"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "Gabriel García Márquez",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "b5492dda-fad7-482f-943e-1235d0d32663",
+      "text": "Quelle œuvre a été créée par George Orwell ?",
+      "category": "Littérature - Française",
+      "answer": "1984",
+      "answerType": "number",
+      "distractors": [
+        {
+          "text": "La Ferme des animaux",
+          "type": "title"
+        },
+        {
+          "text": "Le Meilleur des mondes",
+          "type": "title"
+        },
+        {
+          "text": "Fahrenheit 451",
+          "type": "other"
+        },
+        {
+          "text": "La Peste",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "452dd84c-53fb-4d15-b6bc-482afa1f2bab",
+      "text": "Qui est cet acteur ? [22]",
+      "category": "Cinéma - Acteurs",
+      "answer": "Leonardo DiCaprio",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Monica Bellucci",
+          "type": "person-name"
+        },
+        {
+          "text": "Harrison Ford",
+          "type": "person-name"
+        },
+        {
+          "text": "Edward Norton",
+          "type": "person-name"
+        },
+        {
+          "text": "Roberto Benigni",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "757195b7-acde-4dd8-882b-37eaf10435f2",
+      "text": "Quel basketteur américain est surnommé \"King James\" ?",
+      "category": "Sports - NBA",
+      "answer": "LeBron James",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "Michael Jordan",
+          "type": "person-name"
+        },
+        {
+          "text": "Tony Parker",
+          "type": "person-name"
+        },
+        {
+          "text": "Los Angeles",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "23365853-add1-4421-9377-2e72dcf57117",
+      "text": "Combien de pays participent au Tournoi des Nations en rugby ?",
+      "category": "Sports - Rugby",
+      "answer": "6",
+      "answerType": "number",
+      "distractors": [
+        {
+          "text": "France",
+          "type": "single-word"
+        },
+        {
+          "text": "Nouvelle-Zélande",
+          "type": "other"
+        },
+        {
+          "text": "Stade de France",
+          "type": "other"
+        },
+        {
+          "text": "XV de France",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "47fc41f1-c2ca-45cd-b02c-e24f53631e9b",
+      "text": "Qui est ce réalisateur ? [9]",
+      "category": "Cinéma - Réalisateurs",
+      "answer": "Lana et Lilly Wachowski",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Roberto Benigni",
+          "type": "person-name"
+        },
+        {
+          "text": "Michel Hazanavicius",
+          "type": "person-name"
+        },
+        {
+          "text": "Mathieu Kassovitz",
+          "type": "person-name"
+        },
+        {
+          "text": "David Fincher",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "e0b3ee91-6bce-48c0-8f9a-6d0e15092031",
+      "text": "Qui est ce basketteur ? [5]",
+      "category": "Sports - NBA",
+      "answer": "LeBron James",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Michael Jordan",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "Los Angeles Lakers",
+          "type": "person-name"
+        },
+        {
+          "text": "Tony Parker",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 4
+    },
+    {
+      "id": "e1854a44-879f-44fe-af91-bd4c6a78028a",
+      "text": "Dans quel film apparaît le personnage Guido Orefice ?",
+      "category": "Cinéma - Personnages",
+      "answer": "La Vita è bella",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "The Dark Knight",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "93d78dec-37d0-4bba-bd65-753cf0b7be90",
+      "text": "De quel film provient cette réplique : \"Buongiorno, principessa\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "La Vita è bella",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "c9e22f35-7207-4232-a16b-974d7c9a22e4",
+      "text": "Quelle œuvre a été créée par Alexandre Dumas ?",
+      "category": "Littérature - Française",
+      "answer": "Les Trois Mousquetaires",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "La Tulipe noire",
+          "type": "title"
+        },
+        {
+          "text": "Le Vicomte de Bragelonne",
+          "type": "title"
+        },
+        {
+          "text": "Orgueil et Préjugés",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "385b4a0d-1a41-4a60-82ef-5bbfdeaa8320",
+      "text": "Quelle œuvre a été créée par Jean-Paul Sartre ?",
+      "category": "Littérature - Française",
+      "answer": "La Nausée",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "L'Être et le Néant",
+          "type": "title"
+        },
+        {
+          "text": "Les Mains sales",
+          "type": "title"
+        },
+        {
+          "text": "Huis clos",
+          "type": "other"
+        },
+        {
+          "text": "Le Vieil Homme et la Mer",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "459404bf-23db-4770-a8b4-6810b73151c3",
+      "text": "Quel livre raconte l'histoire suivante : Un homme indifférent et détaché assiste aux funérailles de sa mère sans pleurer, puis commet un meurtre absurde sur une plage et se retrouve jugé autant pour son attitude que pour son crime ?",
+      "category": "Littérature - Internationale",
+      "answer": "L'Étranger",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Hobbit",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        },
+        {
+          "text": "Les Misérables",
+          "type": "person-name"
+        },
+        {
+          "text": "F. Scott Fitzgerald",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "7c81ffe8-e4fc-4792-a617-8d8d0ba4ccff",
+      "text": "Qui a réalisé le film \"Matrix\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Lana et Lilly Wachowski",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Star Wars",
+          "type": "person-name"
+        },
+        {
+          "text": "James Cameron",
+          "type": "person-name"
+        },
+        {
+          "text": "Matrix",
+          "type": "single-word"
+        },
+        {
+          "text": "Steven Spielberg",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "ed288c21-6956-4fda-b6a9-c3f31203043f",
+      "text": "Qui a écrit le livre \"La Métamorphose\" ?",
+      "category": "Littérature - Internationale",
+      "answer": "Franz Kafka",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "093d57b7-d203-45c4-9a2f-ef248d84bda4",
+      "text": "Ailier polyvalent surnommé \"King James\", champion NBA avec trois franchises différentes. Qui est ce sportif ?",
+      "category": "Sports - NBA",
+      "answer": "LeBron James",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Michael Jordan",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "Tony Parker",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 3
+    },
+    {
+      "id": "b744d750-50bc-41f1-8234-1200b6665cd3",
+      "text": "Qui a réalisé Matrix ?",
+      "category": "Cinéma - Réalisateurs",
+      "answer": "Lana et Lilly Wachowski",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Olivier Nakache et Éric Toledano",
+          "type": "other"
+        },
+        {
+          "text": "Jean-Pierre Jeunet",
+          "type": "other"
+        },
+        {
+          "text": "Michel Hazanavicius",
+          "type": "person-name"
+        },
+        {
+          "text": "Mathieu Kassovitz",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "34e46b26-8a88-45c1-952d-83bb9481af0a",
+      "text": "Dans quel film apparaît le personnage Amélie Poulain ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Fabuleux Destin d'Amélie Poulain",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "25192efa-a605-40ca-9c45-834666fd7fa3",
+      "text": "Dans quel film apparaît le personnage Nino Quincampoix ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Fabuleux Destin d'Amélie Poulain",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "The Dark Knight",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "48f60a11-de21-4299-b9d6-ead794b923b2",
+      "text": "Dans quel film apparaît le personnage Hubert ?",
+      "category": "Cinéma - Personnages",
+      "answer": "La Haine",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "29f36e38-a8eb-44fd-8941-2aa9e99ce3f8",
+      "text": "Dans quel film apparaît le personnage Pierre Brochant ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Dîner de cons",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "357e68da-6abb-448f-aed3-d29b169f1947",
+      "text": "Dans quel film apparaît le personnage François Pignon ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Dîner de cons",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        },
+        {
+          "text": "Driss",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "638e65e1-2491-435a-9ed4-93cdef30bdfe",
+      "text": "Dans quel film apparaît le personnage Joker ?",
+      "category": "Cinéma - Personnages",
+      "answer": "The Dark Knight",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Les Choristes",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "9c20656a-1971-430a-aa33-41627fdc95e4",
+      "text": "Quel personnage joue Edward Norton dans Fight Club ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Narrateur",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "802de5f3-9c96-4f63-a65f-d93eb473bbfd",
+      "text": "Dans quel film apparaît le personnage Chihiro ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Voyage de Chihiro",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "c3cfc8bd-ff42-47f8-b95f-ba8070952a91",
+      "text": "Dans quel film apparaît le personnage Dora ?",
+      "category": "Cinéma - Personnages",
+      "answer": "La Vita è bella",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "The Dark Knight",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "b8b1353c-e9ad-4955-8ad1-4fc7f9ec3a8b",
+      "text": "De quel film provient cette réplique : \"Say what again\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "Pulp Fiction",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "La Vita è bella",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "6b5db0fd-6bef-410c-b307-c5761176b387",
+      "text": "Quelle œuvre a été créée par Albert Camus ?",
+      "category": "Littérature - Française",
+      "answer": "L'Étranger",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "La Peste",
+          "type": "person-name"
+        },
+        {
+          "text": "La Nausée",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Mythe de Sisyphe",
+          "type": "title"
+        },
+        {
+          "text": "Le Bourgeois gentilhomme",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "bb8fa876-d80a-49f7-a48b-eaa7620655ca",
+      "text": "Quelle œuvre a été créée par Honoré de Balzac ?",
+      "category": "Littérature - Française",
+      "answer": "Le Père Goriot",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "L'Avare",
+          "type": "title"
+        },
+        {
+          "text": "La Peau de chagrin",
+          "type": "title"
+        },
+        {
+          "text": "Illusions perdues",
+          "type": "other"
+        },
+        {
+          "text": "La Nausée",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "1b6c4d65-4d5b-41a2-b45c-f743c5c3fe4c",
+      "text": "Quelle œuvre a été créée par J.R.R. Tolkien ?",
+      "category": "Littérature - Française",
+      "answer": "Le Seigneur des Anneaux",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Hobbit",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Silmarillion",
+          "type": "person-name"
+        },
+        {
+          "text": "Les Enfants de Húrin",
+          "type": "title"
+        },
+        {
+          "text": "Cent ans de solitude",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "404ce0d2-a036-41d2-ba78-3125e350d1fa",
+      "text": "Quelle œuvre a été créée par Molière ?",
+      "category": "Littérature - Française",
+      "answer": "Le Malade imaginaire",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Cid",
+          "type": "person-name"
+        },
+        {
+          "text": "Phèdre",
+          "type": "single-word"
+        },
+        {
+          "text": "Andromaque",
+          "type": "single-word"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "c118b08f-8ba9-4df7-b383-89bc2df65218",
+      "text": "De quelle animation japonaise provient ce personnage ? [4]",
+      "category": "Animation Japonaise",
+      "answer": "L'Attaque des Titans",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Seven Deadly Sins",
+          "type": "person-name"
+        },
+        {
+          "text": "Dragon Ball",
+          "type": "person-name"
+        },
+        {
+          "text": "Naruto",
+          "type": "single-word"
+        },
+        {
+          "text": "Saitama",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "0c6297f6-7562-4d1c-8d1e-ffef8971ebfd",
+      "text": "Quel livre raconte l'histoire suivante : Un paisible habitant d'un trou confortable est entraîné malgré lui dans une aventure avec un groupe de nains qui cherchent à reprendre leur royaume et leur trésor à un dragon redoutable ?",
+      "category": "Littérature - Internationale",
+      "answer": "Le Hobbit",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        },
+        {
+          "text": "Les Misérables",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "1234170a-7df8-42d7-9033-6fa1ae939ed9",
+      "text": "Quel livre raconte l'histoire suivante : Un aviateur en panne dans le désert rencontre un jeune prince venu d'une autre planète qui lui raconte ses voyages et ses rencontres, délivrant des leçons sur l'amour, l'amitié et le sens de la vie ?",
+      "category": "Littérature - Internationale",
+      "answer": "Le Petit Prince",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Crime et Châtiment",
+          "type": "other"
+        },
+        {
+          "text": "Roméo et Juliette",
+          "type": "other"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "190929a6-5e87-44eb-9a56-0ba17207c16e",
+      "text": "Qui a réalisé le film \"Pulp Fiction\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Quentin Tarantino",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        },
+        {
+          "text": "Peter Jackson",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "e4ba292e-78f2-4c21-989d-4d0dc0b7335a",
+      "text": "Qui a réalisé le film \"La Liste de Schindler\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Steven Spielberg",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        },
+        {
+          "text": "George Lucas",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Inception",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "02bfa9e2-3445-4dca-9df4-4564da990157",
+      "text": "Qui a réalisé le film \"Taxi Driver\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Martin Scorsese",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Damien Chazelle",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Matrix",
+          "type": "single-word"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "ea4b6fb4-3531-4a98-8749-17fb9fa204cc",
+      "text": "Qui a réalisé le film \"La La Land\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Damien Chazelle",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Peter Jackson",
+          "type": "person-name"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Titanic",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "70cdb056-fa13-4004-b49c-fb1972e49107",
+      "text": "Qui a écrit le livre \"Madame Bovary\" ?",
+      "category": "Littérature - Française",
+      "answer": "Gustave Flaubert",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Malade imaginaire",
+          "type": "title"
+        },
+        {
+          "text": "Candide",
+          "type": "single-word"
+        },
+        {
+          "text": "Stendhal",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Bourgeois gentilhomme",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "c93fa469-d251-422b-89d5-bd07187def87",
+      "text": "Dans quel roman de Alexandre Dumas trouve-t-on le personnage de Edmond Dantès ?",
+      "category": "Littérature - Française",
+      "answer": "Le Comte de Monte-Cristo",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Une Saison en Enfer",
+          "type": "title"
+        },
+        {
+          "text": "Les Misérables",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        },
+        {
+          "text": "Arthur Rimbaud",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "f81309fa-7b46-4bde-be44-da0486c896db",
+      "text": "Dans quel roman de Molière trouve-t-on le personnage de Alceste ?",
+      "category": "Littérature - Française",
+      "answer": "Le Misanthrope",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "La Peste",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Deuxième Sexe",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        },
+        {
+          "text": "Le Rouge et le Noir",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "148d9f25-9874-4566-ac28-8d0c118ba7e7",
+      "text": "Dans quel roman de Molière trouve-t-on le personnage de Harpagon ?",
+      "category": "Littérature - Française",
+      "answer": "L'Avare",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Rouge et le Noir",
+          "type": "title"
+        },
+        {
+          "text": "Une Saison en Enfer",
+          "type": "title"
+        },
+        {
+          "text": "Le Deuxième Sexe",
+          "type": "person-name"
+        },
+        {
+          "text": "Gustave Flaubert",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "f422274a-89d3-4de2-9d5c-3478306892d1",
+      "text": "Dans quel roman de Stendhal trouve-t-on le personnage de Julien Sorel ?",
+      "category": "Littérature - Française",
+      "answer": "Le Rouge et le Noir",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Misanthrope",
+          "type": "person-name"
+        },
+        {
+          "text": "Notre-Dame de Paris",
+          "type": "other"
+        },
+        {
+          "text": "La Nausée",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "175d5fcf-b67c-43dc-b524-4516335590d6",
+      "text": "Dans quel roman de Honoré de Balzac trouve-t-on le personnage de Père Goriot ?",
+      "category": "Littérature - Française",
+      "answer": "Le Père Goriot",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Bourgeois gentilhomme",
+          "type": "title"
+        },
+        {
+          "text": "L'Assommoir",
+          "type": "title"
+        },
+        {
+          "text": "Candide",
+          "type": "single-word"
+        },
+        {
+          "text": "Gustave Flaubert",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "3810d800-2e90-47ec-b58a-d426391bf0a3",
+      "text": "Dans quel roman de Antoine de Saint-Exupéry trouve-t-on le personnage de Le Petit Prince ?",
+      "category": "Littérature - Française",
+      "answer": "Le Petit Prince",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "La Nausée",
+          "type": "person-name"
+        },
+        {
+          "text": "Les Trois Mousquetaires",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Avare",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "ca0da9ae-4008-40aa-9257-cb7c4ff24c4e",
+      "text": "À quel peintre correspond ce tableau ? [4]",
+      "category": "Peinture - Peintres",
+      "answer": "Leonardo da Vinci",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Gustav Klimt",
+          "type": "person-name"
+        },
+        {
+          "text": "Salvador Dalí",
+          "type": "other"
+        },
+        {
+          "text": "Vincent van Gogh",
+          "type": "other"
+        },
+        {
+          "text": "Édouard Manet",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 2
+    },
+    {
+      "id": "ca69718a-68e2-4bcf-afbc-89f47586155b",
+      "text": "Qui a réalisé Gladiator ?",
+      "category": "Cinéma - Réalisateurs",
+      "answer": "Ridley Scott",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Luc Besson",
+          "type": "person-name"
+        },
+        {
+          "text": "Mathieu Kassovitz",
+          "type": "person-name"
+        },
+        {
+          "text": "Michel Hazanavicius",
+          "type": "person-name"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "91148119-a42f-4157-920d-bb08fb2fafab",
+      "text": "Dans quel film apparaît le personnage Vinz ?",
+      "category": "Cinéma - Personnages",
+      "answer": "La Haine",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Les Choristes",
+          "type": "person-name"
+        },
+        {
+          "text": "Morpheus",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "56088566-18cc-489b-8c04-78a0411f1e2c",
+      "text": "Dans quel film apparaît le personnage Saïd ?",
+      "category": "Cinéma - Personnages",
+      "answer": "La Haine",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "3c89824b-1a3f-4e34-bcfa-4320cdbe3ddf",
+      "text": "Dans quel film apparaît le personnage Comte Godefroy de Montmirail ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Les Visiteurs",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Zorg",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "2ca33fcb-2deb-4599-a84f-9257d6312084",
+      "text": "Dans quel film apparaît le personnage Jacquouille la Fripouille ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Les Visiteurs",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "f637e498-30b8-4a92-8028-a92251e9d305",
+      "text": "Dans quel film apparaît le personnage Béatrice de Montmirail ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Les Visiteurs",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Les Choristes",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Fabuleux Destin d'Amélie Poulain",
+          "type": "title"
+        },
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        },
+        {
+          "text": "Parasite",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "23a82ead-b4a4-4cb6-988e-8a82e19a4f39",
+      "text": "Dans quel film apparaît le personnage Rachin ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Les Choristes",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "The Dark Knight",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "4b58ee81-76b0-4249-aef2-7b4ce7703f73",
+      "text": "Dans quel film apparaît le personnage Zorg ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Cinquième Élément",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Les Choristes",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Chihiro",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "3148673f-11e2-4b44-9ed9-d88654f48099",
+      "text": "Dans quel film apparaît le personnage Don Vito Corleone ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Le Parrain",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Les Choristes",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "33c05d8d-176f-47b6-8bea-d908bc248d9c",
+      "text": "Dans quel film apparaît le personnage Jules Winnfield ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Pulp Fiction",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "Trinity",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "67532fb9-09d3-4df9-9ec9-d58775d2ed3e",
+      "text": "Dans quel film apparaît le personnage Mia Wallace ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Pulp Fiction",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Le Cinquième Élément",
+          "type": "person-name"
+        },
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "The Dark Knight",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "7872869e-7726-4ac3-ab75-a9d55faaa29f",
+      "text": "Dans quel film apparaît le personnage Jenny Curran ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Forrest Gump",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Rose DeWitt Bukater",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "41e436ac-18bd-4b2b-ad6b-712e2dc085c0",
+      "text": "Dans quel film apparaît le personnage Bruce Wayne / Batman ?",
+      "category": "Cinéma - Personnages",
+      "answer": "The Dark Knight",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "5f2ebef4-a8c2-42bb-95ab-39227fad1907",
+      "text": "Dans quel film apparaît le personnage Ashitaka ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Princesse Mononoké",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Star Wars, épisode IV: Un nouvel espoir",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "f884b782-1651-406a-8d61-bc494f2dec77",
+      "text": "Dans quel film apparaît le personnage Le Narrateur ?",
+      "category": "Cinéma - Personnages",
+      "answer": "Fight Club",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "Comte Godefroy de Montmirail",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "b9824c44-f9cd-4d26-929e-f47c373ae1a0",
+      "text": "De quel film provient cette réplique : \"Je vais lui faire une offre qu'il ne pourra pas refuser\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "Le Parrain",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Astérix et Obélix: Mission Cléopâtre",
+          "type": "other"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "2c0e86e6-4cb8-4ad9-b483-71ffb3ffd347",
+      "text": "De quel film provient cette réplique : \"La vie, c'est comme une boîte de chocolats\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "Forrest Gump",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Les Visiteurs",
+          "type": "person-name"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "45a18041-f306-40d5-ab67-25d9f21370fb",
+      "text": "De quel film provient cette réplique : \"La première règle du Fight Club est : il est interdit de parler du Fight Club\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "Fight Club",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Dîner de cons",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "b9a21a7a-3f1f-41e1-adcd-45d888a33534",
+      "text": "De quel film provient cette réplique : \"Je suis con\" ?",
+      "category": "Cinéma - Répliques",
+      "answer": "Le Dîner de cons",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Intouchables",
+          "type": "single-word"
+        },
+        {
+          "text": "Taxi",
+          "type": "single-word"
+        },
+        {
+          "text": "OSS 117: Le Caire, nid d'espions",
+          "type": "other"
+        },
+        {
+          "text": "La Haine",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "fc54c3e8-c784-4ca8-95c3-ea1b217db3b7",
+      "text": "Quel acteur joue Hubert Bonisseur de La Bath dans OSS 117: Le Caire, nid d'espions ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Jean Dujardin",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Robin Wright",
+          "type": "person-name"
+        },
+        {
+          "text": "Frédéric Diefenthal",
+          "type": "person-name"
+        },
+        {
+          "text": "Leonardo DiCaprio",
+          "type": "title"
+        },
+        {
+          "text": "Christian Bale",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "23b5a2f0-387e-430b-ad8d-2559da061a86",
+      "text": "Quel acteur joue Astérix dans Astérix et Obélix: Mission Cléopâtre ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Christian Clavier",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Bérénice Bejo",
+          "type": "person-name"
+        },
+        {
+          "text": "Jean Dujardin",
+          "type": "person-name"
+        },
+        {
+          "text": "Leonardo DiCaprio",
+          "type": "title"
+        },
+        {
+          "text": "Gérard Jugnot",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "8c705f52-6910-4c9c-9de7-2e54ac04f234",
+      "text": "Quelle actrice joue Jenny Curran dans Forrest Gump ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "Robin Wright",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Lee Sun-kyun",
+          "type": "title"
+        },
+        {
+          "text": "Joaquin Phoenix",
+          "type": "person-name"
+        },
+        {
+          "text": "Gérard Depardieu",
+          "type": "person-name"
+        },
+        {
+          "text": "Al Pacino",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a079bad8-548a-4f4b-a258-0e5401f90730",
+      "text": "Quel était le surnom de Henri IV ?",
+      "category": "Histoire - Personnages",
+      "answer": "Le Bon Roi Henri",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Grand",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Sage",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Bien-Aimé",
+          "type": "title"
+        },
+        {
+          "text": "Le Conquérant",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "64cef923-0c0c-4261-9a27-0ca0432bc8e3",
+      "text": "Quel acteur joue Rachin dans Les Choristes ?",
+      "category": "Cinéma - Acteurs",
+      "answer": "François Berléand",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Christian Clavier",
+          "type": "person-name"
+        },
+        {
+          "text": "Frédéric Diefenthal",
+          "type": "person-name"
+        },
+        {
+          "text": "Jean Reno",
+          "type": "person-name"
+        },
+        {
+          "text": "Lee Sun-kyun",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "b149c0a0-97f0-4c59-84f3-c8b5ca9a2954",
+      "text": "Écrivain français du début du XXe siècle, auteur d'une œuvre monumentale en 7 volumes. Qui est cet auteur ?",
+      "category": "Littérature - Française",
+      "answer": "Marcel Proust",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Émile Zola",
+          "type": "person-name"
+        },
+        {
+          "text": "Molière",
+          "type": "single-word"
+        },
+        {
+          "text": "Émile Zola",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Avare",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "bd22545e-312d-43bf-9232-c900d0047a6b",
+      "text": "Quelle œuvre a été créée par Ernest Hemingway ?",
+      "category": "Littérature - Française",
+      "answer": "Le Vieil Homme et la Mer",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Pour qui sonne le glas",
+          "type": "other"
+        },
+        {
+          "text": "L'Adieu aux armes",
+          "type": "title"
+        },
+        {
+          "text": "Paris est une fête",
+          "type": "other"
+        },
+        {
+          "text": "La Nausée",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "fb986025-fdac-4c78-bf5f-3b33d60b86d1",
+      "text": "Quelle œuvre a été créée par Gustave Flaubert ?",
+      "category": "Littérature - Française",
+      "answer": "Madame Bovary",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Germinal",
+          "type": "single-word"
+        },
+        {
+          "text": "Bel-Ami",
+          "type": "other"
+        },
+        {
+          "text": "Le Rouge et le Noir",
+          "type": "title"
+        },
+        {
+          "text": "Don Quichotte",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a00ee1c9-fa70-4a33-8686-5d10fc9e647f",
+      "text": "Quelle œuvre a été créée par Miguel de Cervantes ?",
+      "category": "Littérature - Française",
+      "answer": "Don Quichotte",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Les Nouvelles exemplaires",
+          "type": "title"
+        },
+        {
+          "text": "Galatée",
+          "type": "single-word"
+        },
+        {
+          "text": "Persiles et Sigismonde",
+          "type": "other"
+        },
+        {
+          "text": "Germinal",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "ed2e5783-6ebf-4ceb-86e9-8cdb1eb7280d",
+      "text": "Quelle œuvre a été créée par Victor Hugo ?",
+      "category": "Littérature - Française",
+      "answer": "Les Misérables",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Germinal",
+          "type": "single-word"
+        },
+        {
+          "text": "L'Avare",
+          "type": "title"
+        },
+        {
+          "text": "Le Père Goriot",
+          "type": "person-name"
+        },
+        {
+          "text": "Crime et Châtiment",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "0f81d12e-9ea4-4cd4-8ff7-ba12e597be6d",
+      "text": "Quelle œuvre a été créée par Virginia Woolf ?",
+      "category": "Littérature - Française",
+      "answer": "Mrs Dalloway",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "La Promenade au phare",
+          "type": "title"
+        },
+        {
+          "text": "Orlando",
+          "type": "single-word"
+        },
+        {
+          "text": "Les Vagues",
+          "type": "person-name"
+        },
+        {
+          "text": "Les Trois Mousquetaires",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "12e6b252-920e-4a29-b2a0-e76a934f7277",
+      "text": "De quelle animation japonaise provient ce personnage ? [5]",
+      "category": "Animation Japonaise",
+      "answer": "Demon Slayer",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Dragon Ball",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Attaque des Titans",
+          "type": "title"
+        },
+        {
+          "text": "Cowboy Bebop",
+          "type": "person-name"
+        },
+        {
+          "text": "Light Yagami",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "237b990e-355e-40a7-be9f-3f2d7bfa7561",
+      "text": "De quelle animation japonaise provient ce personnage ? [6]",
+      "category": "Animation Japonaise",
+      "answer": "Death Note",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "L'Attaque des Titans",
+          "type": "title"
+        },
+        {
+          "text": "One Piece",
+          "type": "person-name"
+        },
+        {
+          "text": "Bleach",
+          "type": "single-word"
+        },
+        {
+          "text": "Dragon Ball",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "822118bd-b2f6-4882-afe9-3de5d8661c86",
+      "text": "Qui est cet acteur ? [7]",
+      "category": "Cinéma - Acteurs",
+      "answer": "Bruce Willis",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Laurence Fishburne",
+          "type": "person-name"
+        },
+        {
+          "text": "Leonardo DiCaprio",
+          "type": "title"
+        },
+        {
+          "text": "Choi Min-sik",
+          "type": "other"
+        },
+        {
+          "text": "Gérard Depardieu",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "451b25f0-3291-4c0b-9e59-9117675d37ee",
+      "text": "Qui a chanté \"Hey Jude\" ?",
+      "category": "Musique - Artistes français",
+      "answer": "The Beatles",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Louise Attaque",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Duc de Boulogne",
+          "type": "title"
+        },
+        {
+          "text": "Daft Punk",
+          "type": "person-name"
+        },
+        {
+          "text": "Aya Nakamura",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "d8c72a2c-de79-4f1f-8eea-3cc9a01973b8",
+      "text": "Qui est cette actrice ? [1]",
+      "category": "Cinéma - Acteurs",
+      "answer": "Audrey Tautou",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Gérard Depardieu",
+          "type": "person-name"
+        },
+        {
+          "text": "Lee Sun-kyun",
+          "type": "title"
+        },
+        {
+          "text": "Samuel L. Jackson",
+          "type": "other"
+        },
+        {
+          "text": "Jamel Debbouze",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "e8c63f7c-3c48-46bf-a045-2fa41c89726f",
+      "text": "Qui est cet acteur ? [15]",
+      "category": "Cinéma - Acteurs",
+      "answer": "Jean Dujardin",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Roberto Benigni",
+          "type": "person-name"
+        },
+        {
+          "text": "Tom Hanks",
+          "type": "person-name"
+        },
+        {
+          "text": "Gérard Jugnot",
+          "type": "person-name"
+        },
+        {
+          "text": "Lee Sun-kyun",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "f45ffdc9-7124-4418-86a4-1a3591f3512a",
+      "text": "Quel film raconte l'histoire suivante : Un homme au QI limité mais au grand cœur traverse plusieurs décennies de l'histoire américaine, influençant sans le savoir de nombreux événements historiques tout en poursuivant son amour d'enfance ?",
+      "category": "Cinéma - Films",
+      "answer": "Forrest Gump",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Inception",
+          "type": "single-word"
+        },
+        {
+          "text": "Quentin Tarantino",
+          "type": "person-name"
+        },
+        {
+          "text": "Christopher Nolan",
+          "type": "person-name"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "763424a8-e08d-43e9-9c67-f36fcefc333c",
+      "text": "Quel film raconte l'histoire suivante : Le chef d'une puissante famille mafieuse new-yorkaise vieillit et doit transmettre son empire criminel à son fils réticent, qui finira par accepter de perpétuer la tradition familiale ?",
+      "category": "Cinéma - Films",
+      "answer": "Le Parrain",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Quentin Tarantino",
+          "type": "person-name"
+        },
+        {
+          "text": "Avatar",
+          "type": "single-word"
+        },
+        {
+          "text": "Forrest Gump",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "8ecad2d5-c34b-43fe-bef7-9dba7c4ede3a",
+      "text": "Quel film raconte l'histoire suivante : Un petit hobbit hérite d'un anneau magique aux pouvoirs redoutables et doit entreprendre un périlleux voyage pour le détruire dans les flammes de la montagne où il a été forgé, accompagné d'une communauté de héros ?",
+      "category": "Cinéma - Films",
+      "answer": "Le Seigneur des Anneaux",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Titanic",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Harry Potter à l'école des sorciers",
+          "type": "other"
+        },
+        {
+          "text": "Jean-Pierre Jeunet",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a0e4767d-f73c-4b07-9b4e-a0fddeab5d98",
+      "text": "Quel livre raconte l'histoire suivante : Un jeune berger andalou part en quête d'un trésor en Égypte après avoir fait un rêve récurrent, et son voyage devient une quête spirituelle qui lui enseigne à suivre sa légende personnelle ?",
+      "category": "Littérature - Internationale",
+      "answer": "L'Alchimiste",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Crime et Châtiment",
+          "type": "other"
+        },
+        {
+          "text": "Le Hobbit",
+          "type": "person-name"
+        },
+        {
+          "text": "J.R.R. Tolkien",
+          "type": "other"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "86c26c1b-4a03-481a-9f10-c64a8c33fd69",
+      "text": "Quelle légende des Chicago Bulls, considérée comme le meilleur joueur de basket de tous les temps, est surnommée \"His Airness\" ?",
+      "category": "Sports - NBA",
+      "answer": "Michael Jordan",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "LeBron James",
+          "type": "title"
+        },
+        {
+          "text": "Tony Parker",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "ac2c12f8-38df-4770-9d10-70264522ce19",
+      "text": "Dans quelle ville jouent les Lakers ?",
+      "category": "Sports - NBA",
+      "answer": "Los Angeles",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "LeBron James",
+          "type": "title"
+        },
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "Tony Parker",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "ecbad63a-972e-47a6-9aec-ccd6c0378472",
+      "text": "Quel meneur français a été champion NBA avec les San Antonio Spurs ?",
+      "category": "Sports - NBA",
+      "answer": "Tony Parker",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Boston Celtics",
+          "type": "person-name"
+        },
+        {
+          "text": "Los Angeles Lakers",
+          "type": "person-name"
+        },
+        {
+          "text": "Michael Jordan",
+          "type": "person-name"
+        },
+        {
+          "text": "LeBron James",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "07c59a9c-302f-405f-a80e-2491fd8298fd",
+      "text": "Quel film raconte l'histoire suivante : Dans une galaxie lointaine, un jeune fermier découvre qu'il est destiné à devenir un chevalier Jedi et rejoint une rébellion contre un empire galactique tyrannique dirigé par un seigneur masqué ?",
+      "category": "Cinéma - Films",
+      "answer": "Star Wars",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        },
+        {
+          "text": "Titanic",
+          "type": "single-word"
+        },
+        {
+          "text": "Bong Joon-ho",
+          "type": "other"
+        },
+        {
+          "text": "Avatar",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "6beed59e-7fcb-422b-aabb-b445bfd4ec16",
+      "text": "Qui a réalisé le film \"Le Seigneur des Anneaux\" ?",
+      "category": "Cinéma - Films",
+      "answer": "Peter Jackson",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Damien Chazelle",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Parrain",
+          "type": "person-name"
+        },
+        {
+          "text": "Avatar",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "e4047de0-ae48-4745-93d3-49a61f53e37b",
+      "text": "Qui a écrit le livre \"Germinal\" ?",
+      "category": "Littérature - Française",
+      "answer": "Émile Zola",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Madame Bovary",
+          "type": "person-name"
+        },
+        {
+          "text": "Charles Baudelaire",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "Guy de Maupassant",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "32a69e60-4ede-4286-9602-1eddf4dddebf",
+      "text": "Qui a écrit le livre \"L'Étranger\" ?",
+      "category": "Littérature - Française",
+      "answer": "Albert Camus",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        },
+        {
+          "text": "Madame Bovary",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Malade imaginaire",
+          "type": "title"
+        },
+        {
+          "text": "Alexandre Dumas",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "d888f038-7469-430b-954b-80b01064f8c6",
+      "text": "Qui a écrit le livre \"Crime et Châtiment\" ?",
+      "category": "Littérature - Internationale",
+      "answer": "Fiodor Dostoïevski",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "J.R.R. Tolkien",
+          "type": "other"
+        },
+        {
+          "text": "William Shakespeare",
+          "type": "person-name"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        },
+        {
+          "text": "Franz Kafka",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "d8290da5-2863-4530-8cb1-64887ca03ef4",
+      "text": "Qui a écrit le livre \"Roméo et Juliette\" ?",
+      "category": "Littérature - Internationale",
+      "answer": "William Shakespeare",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Hobbit",
+          "type": "person-name"
+        },
+        {
+          "text": "Roméo et Juliette",
+          "type": "other"
+        },
+        {
+          "text": "F. Scott Fitzgerald",
+          "type": "other"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a959eb31-f1c5-442f-8ecd-d9dee69d2fb5",
+      "text": "Comment appelle-t-on l'équipe de France de rugby à XV ?",
+      "category": "Sports - Rugby",
+      "answer": "XV de France",
+      "answerType": "other",
+      "distractors": [
+        {
+          "text": "Nouvelle-Zélande",
+          "type": "other"
+        },
+        {
+          "text": "Tournoi des 6 Nations",
+          "type": "other"
+        },
+        {
+          "text": "Antoine Dupont",
+          "type": "person-name"
+        },
+        {
+          "text": "6",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "3aa4434e-69b6-4883-a171-b4b08cf7332c",
+      "text": "Quel est le surnom de l'équipe de Nouvelle-Zélande de rugby, célèbre pour sa danse d'avant-match le Haka ?",
+      "category": "Sports - Rugby",
+      "answer": "All Blacks",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Antoine Dupont",
+          "type": "person-name"
+        },
+        {
+          "text": "Stade de France",
+          "type": "other"
+        },
+        {
+          "text": "France",
+          "type": "single-word"
+        },
+        {
+          "text": "6",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "3f5aea7d-608b-4de9-9b5d-73bdd9b3c8ce",
+      "text": "Quel capitaine du XV de France, considéré comme l'un des meilleurs joueurs au monde, joue au poste de demi de mêlée ?",
+      "category": "Sports - Rugby",
+      "answer": "Antoine Dupont",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Nouvelle-Zélande",
+          "type": "other"
+        },
+        {
+          "text": "Tournoi des 6 Nations",
+          "type": "other"
+        },
+        {
+          "text": "Stade de France",
+          "type": "other"
+        },
+        {
+          "text": "6",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "b5a8d5db-98d4-4813-b4b6-46df601024f5",
+      "text": "Quel artiste a interprété la chanson \"Je t'aime... moi non plus\" ?",
+      "category": "Musique - Artistes français",
+      "answer": "Serge Gainsbourg",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Louise Attaque",
+          "type": "person-name"
+        },
+        {
+          "text": "Christine and the Queens",
+          "type": "other"
+        },
+        {
+          "text": "Édith Piaf",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Duc de Boulogne",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a8b5416c-9b14-432b-ba4d-34c192c38fd8",
+      "text": "Quel est le surnom de Booba ?",
+      "category": "Musique - Artistes français",
+      "answer": "Le Duc de Boulogne",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Civilisation",
+          "type": "single-word"
+        },
+        {
+          "text": "Formidable",
+          "type": "single-word"
+        },
+        {
+          "text": "La Bohème",
+          "type": "person-name"
+        },
+        {
+          "text": "Queen",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "fbe0397a-e508-45ec-8e3d-e9588f99c480",
+      "text": "À quel artiste ou groupe associe-t-on l'album \"Thriller\" ?",
+      "category": "Musique - Albums",
+      "answer": "Michael Jackson",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Nevermind",
+          "type": "single-word"
+        },
+        {
+          "text": "21",
+          "type": "number"
+        },
+        {
+          "text": "The Dark Side of the Moon",
+          "type": "other"
+        },
+        {
+          "text": "Daft Punk",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "23f83bce-f768-4466-9811-34d0d32ff609",
+      "text": "À quel artiste ou groupe associe-t-on l'album \"The Dark Side of the Moon\" ?",
+      "category": "Musique - Albums",
+      "answer": "Pink Floyd",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Abbey Road",
+          "type": "person-name"
+        },
+        {
+          "text": "21",
+          "type": "number"
+        },
+        {
+          "text": "Thriller",
+          "type": "single-word"
+        },
+        {
+          "text": "The Beatles",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "6645051a-a0b5-4127-acf7-bc4e4938d20a",
+      "text": "À quel artiste ou groupe associe-t-on l'album \"Random Access Memories\" ?",
+      "category": "Musique - Albums",
+      "answer": "Daft Punk",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "OK Computer",
+          "type": "other"
+        },
+        {
+          "text": "Abbey Road",
+          "type": "person-name"
+        },
+        {
+          "text": "21",
+          "type": "number"
+        },
+        {
+          "text": "Adele",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "194fb4d9-4477-4a59-90ac-0b4905d05132",
+      "text": "À quel artiste ou groupe associe-t-on l'album \"Back to Black\" ?",
+      "category": "Musique - Albums",
+      "answer": "Amy Winehouse",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "21",
+          "type": "number"
+        },
+        {
+          "text": "Abbey Road",
+          "type": "person-name"
+        },
+        {
+          "text": "Random Access Memories",
+          "type": "person-name"
+        },
+        {
+          "text": "Nirvana",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a0e4a544-a69f-423e-aab4-9eb0b35d65c2",
+      "text": "Meneur français, champion NBA avec les San Antonio Spurs. Qui est ce sportif ?",
+      "category": "Sports - NBA",
+      "answer": "Tony Parker",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Los Angeles Lakers",
+          "type": "person-name"
+        },
+        {
+          "text": "LeBron James",
+          "type": "title"
+        },
+        {
+          "text": "Michael Jordan",
+          "type": "person-name"
+        },
+        {
+          "text": "Boston",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "1a3302b1-6eb7-4f3d-897f-9563ad92fd3e",
+      "text": "Écrivain et poète français, figure majeure du romantisme, auteur de \"Les Misérables\" et \"Notre-Dame de Paris\". Qui est cet auteur ?",
+      "category": "Littérature - Française",
+      "answer": "Victor Hugo",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Gustave Flaubert",
+          "type": "person-name"
+        },
+        {
+          "text": "Arthur Rimbaud",
+          "type": "person-name"
+        },
+        {
+          "text": "Charles Baudelaire",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Étranger",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "b62a1c40-faa9-4c78-b436-392a1f77fb78",
+      "text": "Dans quel roman de Victor Hugo trouve-t-on le personnage de Jean Valjean ?",
+      "category": "Littérature - Française",
+      "answer": "Les Misérables",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Candide",
+          "type": "single-word"
+        },
+        {
+          "text": "La Peste",
+          "type": "person-name"
+        },
+        {
+          "text": "Madame Bovary",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "89682096-20d0-4153-894b-cd0e8629f528",
+      "text": "Qui a écrit \"Notre-Dame de Paris\" ?",
+      "category": "Littérature - Française",
+      "answer": "Victor Hugo",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Arthur Rimbaud",
+          "type": "person-name"
+        },
+        {
+          "text": "Albert Camus",
+          "type": "person-name"
+        },
+        {
+          "text": "Molière",
+          "type": "single-word"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "9ab6ec28-0fa1-4260-9dcb-2625b8039dbe",
+      "text": "Qui a écrit \"Le Comte de Monte-Cristo\" ?",
+      "category": "Littérature - Française",
+      "answer": "Alexandre Dumas",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Albert Camus",
+          "type": "person-name"
+        },
+        {
+          "text": "Émile Zola",
+          "type": "person-name"
+        },
+        {
+          "text": "Arthur Rimbaud",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Bourgeois gentilhomme",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "46941a3e-37f2-4201-bf88-4b301946254f",
+      "text": "Qui a écrit \"L'Avare\" ?",
+      "category": "Littérature - Française",
+      "answer": "Molière",
+      "answerType": "single-word",
+      "distractors": [
+        {
+          "text": "Gustave Flaubert",
+          "type": "person-name"
+        },
+        {
+          "text": "Guy de Maupassant",
+          "type": "other"
+        },
+        {
+          "text": "Albert Camus",
+          "type": "person-name"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "087972d0-3f51-47aa-82c2-fca6e4cb8a31",
+      "text": "Dans quel roman de Molière trouve-t-on le personnage de Monsieur Jourdain ?",
+      "category": "Littérature - Française",
+      "answer": "Le Bourgeois gentilhomme",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        },
+        {
+          "text": "Illuminations",
+          "type": "single-word"
+        },
+        {
+          "text": "Romances sans paroles",
+          "type": "other"
+        },
+        {
+          "text": "Le Malade imaginaire",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "89675772-a1ea-46ee-93de-73a409a8c7e0",
+      "text": "Dans quel roman de Albert Camus trouve-t-on le personnage de Meursault ?",
+      "category": "Littérature - Française",
+      "answer": "L'Étranger",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Notre-Dame de Paris",
+          "type": "other"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        },
+        {
+          "text": "Une Saison en Enfer",
+          "type": "title"
+        },
+        {
+          "text": "Gustave Flaubert",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "c3aa9c70-00ae-4122-a065-197e73249124",
+      "text": "Qui a écrit \"À la recherche du temps perdu\" ?",
+      "category": "Littérature - Française",
+      "answer": "Marcel Proust",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Victor Hugo",
+          "type": "person-name"
+        },
+        {
+          "text": "Victor Hugo",
+          "type": "person-name"
+        },
+        {
+          "text": "Antoine de Saint-Exupéry",
+          "type": "other"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "3c16fcec-5d13-4f63-85f9-ea823821cbdb",
+      "text": "Qui a écrit \"Madame Bovary\" ?",
+      "category": "Littérature - Française",
+      "answer": "Gustave Flaubert",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Victor Hugo",
+          "type": "person-name"
+        },
+        {
+          "text": "Stendhal",
+          "type": "single-word"
+        },
+        {
+          "text": "Guy de Maupassant",
+          "type": "other"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "403ab1fe-8e81-4c27-99de-6ab28b78fb83",
+      "text": "Dans quel roman de Gustave Flaubert trouve-t-on le personnage de Emma Bovary ?",
+      "category": "Littérature - Française",
+      "answer": "Madame Bovary",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Le Petit Prince",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Rouge et le Noir",
+          "type": "title"
+        },
+        {
+          "text": "Les Misérables",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Misanthrope",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "925ed30e-cc67-430d-9f59-9f0129258795",
+      "text": "Qui a écrit \"Une Saison en Enfer\" ?",
+      "category": "Littérature - Française",
+      "answer": "Arthur Rimbaud",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Antoine de Saint-Exupéry",
+          "type": "other"
+        },
+        {
+          "text": "Albert Camus",
+          "type": "person-name"
+        },
+        {
+          "text": "Alexandre Dumas",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Vieil Homme et la Mer",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a65f5cdb-fe46-4e2f-9290-baa115d74afa",
+      "text": "Qui a écrit \"Illuminations\" ?",
+      "category": "Littérature - Française",
+      "answer": "Arthur Rimbaud",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Simone de Beauvoir",
+          "type": "other"
+        },
+        {
+          "text": "Albert Camus",
+          "type": "person-name"
+        },
+        {
+          "text": "Molière",
+          "type": "single-word"
+        },
+        {
+          "text": "Le Seigneur des Anneaux",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "aa8fd96c-1c70-45b9-bd32-f10ec4d07a72",
+      "text": "Dramaturge et poète anglais du XVIe siècle, considéré comme le plus grand écrivain de langue anglaise. Qui est cet auteur ?",
+      "category": "Littérature - Internationale",
+      "answer": "William Shakespeare",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Ernest Hemingway",
+          "type": "person-name"
+        },
+        {
+          "text": "Franz Kafka",
+          "type": "person-name"
+        },
+        {
+          "text": "Miguel de Cervantes",
+          "type": "other"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "4cdfcc90-3bbd-449b-a2e2-843d7d87e0a9",
+      "text": "Qui a écrit \"Hamlet\" ?",
+      "category": "Littérature - Internationale",
+      "answer": "William Shakespeare",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "J.K. Rowling",
+          "type": "other"
+        },
+        {
+          "text": "J.R.R. Tolkien",
+          "type": "other"
+        },
+        {
+          "text": "Charles Dickens",
+          "type": "person-name"
+        },
+        {
+          "text": "Le Comte de Monte-Cristo",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "925f18c4-ae75-48f6-a298-51034d14cf33",
+      "text": "Écrivaine britannique, créatrice de la saga Harry Potter. Qui est cet auteur ?",
+      "category": "Littérature - Internationale",
+      "answer": "J.K. Rowling",
+      "answerType": "other",
+      "distractors": [
+        {
+          "text": "George Orwell",
+          "type": "person-name"
+        },
+        {
+          "text": "Franz Kafka",
+          "type": "person-name"
+        },
+        {
+          "text": "J.R.R. Tolkien",
+          "type": "other"
+        },
+        {
+          "text": "1984",
+          "type": "number"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "e8ae41b5-a729-49b8-be03-89a6411db2ea",
+      "text": "Écrivain américain, Prix Nobel de littérature, style minimaliste. Qui est cet auteur ?",
+      "category": "Littérature - Internationale",
+      "answer": "Ernest Hemingway",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Fiodor Dostoïevski",
+          "type": "person-name"
+        },
+        {
+          "text": "William Shakespeare",
+          "type": "person-name"
+        },
+        {
+          "text": "George Orwell",
+          "type": "person-name"
+        },
+        {
+          "text": "L'Alchimiste",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "4837f926-65e9-4327-9ac2-01acef7d2472",
+      "text": "Écrivain britannique du XIXe siècle, maître du roman social. Qui est cet auteur ?",
+      "category": "Littérature - Internationale",
+      "answer": "Charles Dickens",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Gabriel García Márquez",
+          "type": "other"
+        },
+        {
+          "text": "George Orwell",
+          "type": "person-name"
+        },
+        {
+          "text": "Miguel de Cervantes",
+          "type": "other"
+        },
+        {
+          "text": "L'Alchimiste",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a5541369-b421-4473-85eb-1bd9b7cc3e0a",
+      "text": "YouTubeur français spécialisé dans les tests humoristiques de jeux vidéo rétro. Quel est ce YouTubeur ?",
+      "category": "Internet - YouTubeurs FR",
+      "answer": "Le Joueur du Grenier",
+      "answerType": "title",
+      "distractors": [
+        {
+          "text": "Norman Thavaud",
+          "type": "person-name"
+        },
+        {
+          "text": "Cyprien",
+          "type": "single-word"
+        },
+        {
+          "text": "Amixem",
+          "type": "single-word"
+        },
+        {
+          "text": "Norman fait des vidéos",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "a366dc1a-5792-49a1-9827-d5081d14d0bf",
+      "text": "Quelle est la chaîne YouTube animée par Benjamin Brillaud ?",
+      "category": "Internet - YouTubeurs FR",
+      "answer": "Nota Bene",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Natoo",
+          "type": "single-word"
+        },
+        {
+          "text": "Cyprien",
+          "type": "single-word"
+        },
+        {
+          "text": "EnjoyPhoenix",
+          "type": "other"
+        },
+        {
+          "text": "Le Joueur du Grenier",
+          "type": "title"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "6735fcf3-d5cd-4973-99c0-d83f3356424b",
+      "text": "YouTubeur français de vulgarisation historique. Quel est ce YouTubeur ?",
+      "category": "Internet - YouTubeurs FR",
+      "answer": "Nota Bene",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Squeezie",
+          "type": "single-word"
+        },
+        {
+          "text": "EnjoyPhoenix",
+          "type": "other"
+        },
+        {
+          "text": "Le Joueur du Grenier",
+          "type": "title"
+        },
+        {
+          "text": "Natoo",
+          "type": "single-word"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "4ca585d2-34f9-4d12-902a-e765766e7313",
+      "text": "Qui est ce réalisateur ? [11]",
+      "category": "Cinéma - Réalisateurs",
+      "answer": "Roberto Benigni",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "James Cameron",
+          "type": "person-name"
+        },
+        {
+          "text": "Luc Besson",
+          "type": "person-name"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        },
+        {
+          "text": "Christopher Nolan",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "9dc32c95-2b6b-4734-974c-cfec26722dfe",
+      "text": "Qui est ce réalisateur ? [14]",
+      "category": "Cinéma - Réalisateurs",
+      "answer": "Quentin Tarantino",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Alain Chabat",
+          "type": "person-name"
+        },
+        {
+          "text": "James Cameron",
+          "type": "person-name"
+        },
+        {
+          "text": "Lana et Lilly Wachowski",
+          "type": "title"
+        },
+        {
+          "text": "Christophe Barratier",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "fed8fcda-21f8-44dd-ad09-2a9b1ad18aff",
+      "text": "À quel peintre correspond ce tableau ? [3]",
+      "category": "Peinture - Peintres",
+      "answer": "Johannes Vermeer",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Henri Matisse",
+          "type": "person-name"
+        },
+        {
+          "text": "Paul Cézanne",
+          "type": "person-name"
+        },
+        {
+          "text": "Leonardo da Vinci",
+          "type": "title"
+        },
+        {
+          "text": "Pablo Picasso",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "eb4ea562-6e78-41d9-8052-fd7a6f9bb14d",
+      "text": "À quel peintre correspond ce tableau ? [10]",
+      "category": "Peinture - Peintres",
+      "answer": "Edvard Munch",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Salvador Dalí",
+          "type": "other"
+        },
+        {
+          "text": "Vincent van Gogh",
+          "type": "other"
+        },
+        {
+          "text": "Leonardo da Vinci",
+          "type": "title"
+        },
+        {
+          "text": "Pierre-Auguste Renoir",
+          "type": "other"
+        }
+      ],
+      "incoherentCount": 1
+    },
+    {
+      "id": "620e75c5-52df-4387-a75c-a3106a9c4761",
+      "text": "À quel peintre correspond ce tableau ? [13]",
+      "category": "Peinture - Peintres",
+      "answer": "Frida Kahlo",
+      "answerType": "person-name",
+      "distractors": [
+        {
+          "text": "Pablo Picasso",
+          "type": "person-name"
+        },
+        {
+          "text": "Edvard Munch",
+          "type": "person-name"
+        },
+        {
+          "text": "Leonardo da Vinci",
+          "type": "title"
+        },
+        {
+          "text": "Sandro Botticelli",
+          "type": "person-name"
+        }
+      ],
+      "incoherentCount": 1
+    }
+  ]
+}

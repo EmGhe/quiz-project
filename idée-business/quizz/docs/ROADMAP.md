@@ -7,7 +7,7 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 | Phase | Focus | Tasks | Estimated Time | Priority |
 |-------|-------|-------|----------------|----------|
 | **MVP1** | Daily Challenge | ~12 tasks | 2-3 weeks | ✅ Complete |
-| **POST-MVP1** | Question Database | ~17 tasks | 2-3 weeks | 🔴 Critical |
+| **POST-MVP1** | Question Database + Images | ~18 tasks | 2-3 weeks | 🔴 Critical |
 | **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🟠 High |
 | **V2** | Collection System | ~16 tasks | 2-3 weeks | 🟡 Medium |
 | **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 🟢 Low |
@@ -173,28 +173,52 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - [ ] Distractors: flags with similar colors/patterns
 - [ ] Target: +50 questions
 
+#### Task 12: Image Pipeline Infrastructure
+- [ ] **Database:** Add license metadata fields to Question model
+  - mediaLicenseAuthor, mediaLicenseType, mediaLicenseUrl, mediaSourceUrl
+  - Prisma migration: `add_media_license_fields`
+- [ ] **Script:** Enhance image download script with:
+  - Wikimedia Commons API integration (fetch license metadata)
+  - Sharp optimization (resize max 800px, compression)
+  - Automatic retry with exponential backoff (3× max)
+  - License metadata storage in DB
+- [ ] **Optimization:** Install Sharp, configure image processing
+  - SVG: no transformation (keep vectorial)
+  - PNG/JPG: resize + compression (target ~80 KB/image)
+- [ ] **Storage:** Local storage in `public/images/quiz/` + Vercel CDN
+  - MD5 hash filenames for deduplication
+  - ~180 images × 80 KB = ~14 MB total
+- [ ] **Execution:** Run download script (optimal delay from test)
+  - Expected: 1-3h for full download (rate limit safe)
+- [ ] **Validation:** Test image display in Daily, check all 180 images load
+- [ ] **Documentation:** Update QUESTION-QUALITY-GUIDELINES.md with image best practices
+
+**Design Spec:** `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
+
+**Scalability Note:** Phase 1 (local + Vercel CDN) supports 0-500 images. Migration to Cloudflare R2 (~1h effort) unlocks unlimited scaling when crossing 500 images. See spec for migration path.
+
 ### Phase 4: Industrialization Tools (parallel to content creation)
 
-#### Task 12: Admin dashboard (basic)
+#### Task 13: Admin dashboard (basic)
 - [ ] View all questions (filterable by category, difficulty, status)
 - [ ] Approve/reject/edit draft questions
 - [ ] View question stats (success rate, avg time, times asked)
 - [ ] Bulk actions (approve multiple, delete multiple)
 
-#### Task 13: Automated quality checks
+#### Task 14: Automated quality checks
 - [ ] Duplicate detection: flag questions with >80% similar text
 - [ ] Distractor validation: ensure 4-5 unique distractors per MCQ question
 - [ ] Answer validation: canonical_answer must be in accepted_answers list
 - [ ] Category balance check: warn if category has <50 questions
 - [ ] Difficulty distribution: visualize easy/medium/hard ratio
 
-#### Task 14: User reporting system
-- [ ] Add "Report Question" button in frontend
-- [ ] Store reports in question_metadata.user_reports (JSONB)
-- [ ] Admin dashboard: review queue for reported questions
-- [ ] Track common report reasons (incorrect answer, ambiguous, typo)
+#### Task 15: User reporting system
+- [x] Add "Report Question" button in frontend ✅ Session 2026-10-13
+- [x] Store reports in question_metadata.user_reports (JSONB) ✅ Session 2026-10-13
+- [x] Admin dashboard: review queue for reported questions ✅ Session 2026-10-13
+- [x] Track common report reasons (incorrect answer, ambiguous, typo) ✅ Session 2026-10-13
 
-#### Task 15: Analytics & monitoring
+#### Task 16: Analytics & monitoring
 - [ ] Track question performance metrics:
   - Success rate by question (too easy? too hard?)
   - Average answer time (outliers = poorly worded?)
@@ -206,7 +230,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ### Phase 5: Content Expansion Strategy (ongoing)
 
-#### Task 16: Define content roadmap
+#### Task 17: Define content roadmap
 - [ ] Set target: 1000 questions by MVP2 launch
 - [ ] Prioritize categories based on user preferences (from MVP1 analytics)
 - [ ] Create weekly content sprint plan:
@@ -215,7 +239,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
   - Week 3: +100 Music questions (Wikidata: famous artists, albums, hit songs)
   - Week 4: +50 Technology questions (Wikidata: inventions, companies, programming languages)
 
-#### Task 17: Community content pipeline (future)
+#### Task 18: Community content pipeline (future)
 - [ ] Design user-submitted question workflow:
   - Users propose questions (with sources)
   - Moderators review and approve
@@ -233,8 +257,8 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 ### Dependencies
 
 - ✅ MVP1 complete (infrastructure ready to consume new questions)
-- ⏳ Wikidata integration tested and rate-limits understood
-- ⏳ Admin dashboard deployed for QA review
+- ✅ Wikidata integration tested and rate-limits understood
+- ✅ Admin dashboard deployed for QA review
 
 ### Notes
 
@@ -242,6 +266,7 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - **Quality gates:** Every question must pass manual QA before first 500, then spot-check 10% after pipeline is proven
 - **Scalability:** Design with 10k+ questions in mind (indexing, query performance)
 - **Localization:** All Wikidata queries fetch both French and English labels (future i18n support)
+- **Image scalability:** Phase 1 pipeline (local + Vercel CDN) supports 0-500 images optimally. When crossing 500 images, migrate to Cloudflare R2 storage (~1h migration effort, unlimited free storage, faster global CDN). See image pipeline design spec for details.
 
 ---
 
@@ -249,18 +274,84 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 **Goal:** Competitive layer for engagement and depth
 
-**Status:** 📋 Planned
+**Status:** 🚧 In Progress (80% complete)
 
 **Plan:** `docs/superpowers/plans/2026-10-09-mvp2-pvp-competition.md`
 
+**Guidelines:** `docs/PVP-GUIDELINES.md`
+
+**Branch:** `mvp2-pvp-implementation`
+
+**Latest Session:** 2026-10-15 (UI/UX improvements + critical bug fixes)
+
+### Implementation Progress
+
+**Backend (Tasks 1-6):** ✅ Complete
+- ✅ Task 1: PvP Database Schema (Prisma models, migrations)
+- ✅ Task 2: ELO Service (K-factor 32, atomic updates, rank calculation)
+- ✅ Task 3: WebSocket Gateway (Socket.io, JWT auth, room management)
+- ✅ Task 4: Matchmaking Queue (ELO-based pairing, expanding range)
+- ✅ Task 5: Category Ban Phase (⏸️ removed - on stand by for future)
+- ✅ Task 6: PvP Match Flow (simplified: matchmaking → questions → scoring)
+
+**Frontend (Tasks 10-13):** 🚧 In Progress
+- ✅ Task 10: Matchmaking UI (Find Match button, queue status, WebSocket connection)
+- ⏸️ Task 11: Category Ban UI (on stand by - skipped for simplified flow)
+- ✅ Task 12: PvP Match UI (synchronized gameplay, MCQ choices, timer, results)
+- ✅ Task 12.1: UI/UX Polish (Session 2026-10-15)
+  - Player profiles with rank, division, ELO in header
+  - Ready/Go countdown animation before first question
+  - Timer animation synchronization fix (300ms linear)
+  - Rematch system with 10s acceptance popup
+  - Match statistics with accurate question counts
+- ⏳ Task 13: Ranks & Missions UI (display progression)
+
+**Backend Advanced (Tasks 7-9):** 📋 Planned
+- ⏳ Task 7: Seasons System (cron jobs, soft reset)
+- ⏳ Task 8: Ranks & Divisions (promotion/demotion notifications)
+- ⏳ Task 9: Weekly Missions Module (rotation, tracking)
+
+**Additional Features:**
+- ✅ Task 14: Rematch System (10s acceptance window, popup UI, WebSocket events) - Session 2026-10-15
+- ⏳ Task 15: Testing & Documentation (integration tests, WebSocket tests)
+
+**Critical Bug Fixes (Session 2026-10-15):**
+- ✅ **Match ID Bug:** Fixed `matchId` vs `id` mismatch in WebSocket events
+  - Backend was sending `matchId`, frontend expected `id`
+  - Caused `currentMatch.id` to be undefined → answers not submitted
+  - Root cause of scores staying at 0
+- ✅ **Score Calculation Bug:** Fixed stale closure in `handleQuestionEnd`
+  - playerScore/opponentScore captured at first render (always 0)
+  - Fixed by using `getState()` to read fresh values
+- ✅ **Match Statistics Bug:** Fixed incorrect question count calculation
+  - Was calculating from score (2200/200 * 10 = 11) → displayed as "22/10"
+  - Backend now counts actual correct answers and sends to frontend
+- ✅ **Rematch State Bug:** Fixed flash of "Question 10/10" when accepting rematch
+  - Added `resetMatch()` before setting new match in both flows
+  - Prevents stale state bleeding into new match
+
+### Technical Updates
+
+**✅ NestJS 12 Upgrade (2026-10-15)**
+- Migrated from NestJS 10.x → 12.1.3
+- Fixed security vulnerability in @nestjs/core ≤11.1.17
+- Native WebSocket compatibility (no version conflicts)
+- All modules tested and working
+
+**⚠️ Simplified Match Flow**
+- Category ban phase removed from initial implementation
+- Direct flow: matchmaking → questions → answers → scoring
+- Ban phase can be re-added in future (schema fields preserved)
+- Faster time to playable match
+
 ### Key Features
-- ✅ 1v1 Real-time matchmaking (WebSocket-based)
-- ✅ Category ban phase (10s per player, sequential)
-- ✅ ELO system (atomic calculations, rank display)
-- ✅ Ranks & Divisions (Bronze → Grandmaster)
-- ✅ Seasons (6 months, placement matches, soft reset)
-- ✅ Weekly missions (3/5 completion → rewards)
-- ✅ Rematch system (30s acceptance window)
+- ✅ 1v1 Real-time matchmaking (WebSocket + Socket.io)
+- ⏸️ Category ban phase (on stand by - can be re-added later)
+- ✅ ELO system (atomic calculations, K=32, rank calculation)
+- ✅ Ranks & Divisions calculation (Bronze → Grandmaster, 3 divisions each)
+- ⏳ Seasons (6 months, placement matches, soft reset) - planned
+- ⏳ Weekly missions (3/5 completion → rewards) - planned
+- ⏳ Rematch system (30s acceptance window) - planned
 
 ### Critical Success Metrics
 - PvP participation rate > 30% of Daily players
@@ -269,15 +360,17 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - Mission completion rate > 50%
 
 ### Technical Highlights
-- **ELO race conditions:** Row-level locks + transactions
-- **Matchmaking fairness:** ±200 ELO, expands by 50 every 10s
-- **Reconnection handling:** 30s grace period for disconnects
-- **Category ban validation:** Server ensures no banned categories in questions
+- **ELO race conditions:** Row-level locks + Prisma transactions ✅
+- **Matchmaking fairness:** ±200 ELO initial, expands +50 every 10s ✅
+- **Reconnection handling:** 30s grace period (planned)
+- **WebSocket architecture:** JWT auth middleware, room-based events ✅
+- **Simplified flow:** Direct to questions (no ban delay) ✅
 
 ### Dependencies
 - ✅ MVP1 complete (auth, users, questions, scoring)
-- ⏳ POST-MVP1 complete (500+ published questions from Wikidata pipeline)
-- ⏳ WebSocket infrastructure tested under load
+- ⏳ POST-MVP1 in progress (500+ published questions from Wikidata pipeline)
+- ✅ WebSocket infrastructure implemented (NestJS 12 + Socket.io)
+- ⏳ WebSocket load testing needed before production
 
 ---
 
@@ -552,9 +645,33 @@ Start free, scale only when users validate the product.
 
 ---
 
-**Latest Update:** 2026-10-12
+**Latest Update:** 2026-10-15
 **Status:** 
 - MVP1 implementation complete ✅
 - POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
+- **MVP2 PvP Competition in progress (80% complete)** 🚧
+  - Backend core complete: Schema, ELO, WebSocket, Matchmaking, Match Flow ✅
+  - Frontend matchmaking UI complete ✅
+  - Frontend match UI complete (synchronized gameplay, MCQ, timer, results) ✅
+  - **UI/UX Polish complete (Session 2026-10-15)** ✅
+    - Player profiles with rank/ELO in header
+    - Ready/Go countdown animation
+    - Timer animation sync fix
+    - Rematch system with popup
+    - Accurate match statistics
+  - **Critical bugs fixed (Session 2026-10-15)** ✅
+    - Match ID mismatch (matchId vs id)
+    - Score calculation stale closure
+    - Match statistics calculation
+    - Rematch state reset
+  - NestJS upgraded to v12 for security & compatibility ✅
+  - Match flow simplified (category ban on stand by) ✅
+  - Comprehensive logging added for debugging ✅
+  - Next: Ranks & Missions UI, Seasons System, Weekly Missions
+- Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
+- Task 12 (Image Pipeline Infrastructure) added with design spec 📋
+- Task 14 (Rematch System) completed ✅ (Session 2026-10-15)
 - Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
+- Image pipeline strategy documented in `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
+- PVP technical guidelines documented in `docs/PVP-GUIDELINES.md` 📋 (Session 2026-10-15)
 

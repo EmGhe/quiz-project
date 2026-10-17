@@ -5,9 +5,13 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import DailyPage from '@/pages/DailyPage';
 import CollectionPage from '@/pages/CollectionPage';
+import PvpMatchmakingPage from '@/pages/PvpMatchmakingPage';
+import PvpMatchPage from '@/pages/PvpMatchPage';
+import PvpResultsPage from '@/pages/PvpResultsPage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuestions from '@/pages/admin/AdminQuestions';
 import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
+import AdminReportedQuestions from '@/pages/admin/AdminReportedQuestions';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -44,6 +48,18 @@ function App() {
           element={user ? <CollectionPage /> : <Navigate to="/login" />}
         />
         <Route
+          path="/pvp"
+          element={user ? <PvpMatchmakingPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pvp/match"
+          element={user ? <PvpMatchPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pvp/results"
+          element={user ? <PvpResultsPage /> : <Navigate to="/login" />}
+        />
+        <Route
           path="/admin"
           element={user ? <AdminDashboard /> : <Navigate to="/login" />}
         />
@@ -54,6 +70,10 @@ function App() {
         <Route
           path="/admin/questions/:id"
           element={user ? <AdminQuestionDetail /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin/reported"
+          element={user ? <AdminReportedQuestions /> : <Navigate to="/login" />}
         />
         <Route path="/" element={<Navigate to="/daily" />} />
       </Routes>
