@@ -30,6 +30,9 @@ export default function PvpMatchPage() {
   const [revealData, setRevealData] = useState<any>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [totalAnswered, setTotalAnswered] = useState(0);
+  const [showAbandonDialog, setShowAbandonDialog] = useState(false);
 
   // Check user and match
   useEffect(() => {
@@ -75,6 +78,7 @@ export default function PvpMatchPage() {
     socket.on('match:player_answered', handlePlayerAnswered);
     socket.on('match:complete', handleMatchComplete);
     socket.on('match:cancelled', handleMatchCancelled);
+    socket.on('match:abandoned', handleMatchAbandoned);
 
     // Cleanup on unmount: remove all listeners for these events
     return () => {
@@ -84,6 +88,7 @@ export default function PvpMatchPage() {
       socket.removeAllListeners('match:player_answered');
       socket.removeAllListeners('match:complete');
       socket.removeAllListeners('match:cancelled');
+      socket.removeAllListeners('match:abandoned');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty deps = attach once on mount, never re-attach
@@ -164,6 +169,23 @@ export default function PvpMatchPage() {
       player2Points: data.player2Correct ? calculatePoints(data.player2Time) : 0,
     });
 
+    // Update correct answers counter
+    const isMyAnswerCorrect = isPlayer1 ? data.player1Correct : data.player2Correct;
+    console.log('[Match] Updating correct answers counter:', {
+      isPlayer1,
+      isMyAnswerCorrect,
+      player1Correct: data.player1Correct,
+      player2Correct: data.player2Correct,
+    });
+    if (isMyAnswerCorrect) {
+      setCorrectAnswers((prev) => {
+        const newCount = prev + 1;
+        console.log('[Match] Correct answers updated:', prev, '->', newCount);
+        return newCount;
+      });
+    }
+    setTotalAnswered((prev) => prev + 1);
+
     const myNewScore = isPlayer1
       ? (currentScores.playerScore + (data.player1Correct ? calculatePoints(data.player1Time) : 0))
       : (currentScores.playerScore + (data.player2Correct ? calculatePoints(data.player2Time) : 0));
@@ -193,6 +215,8 @@ export default function PvpMatchPage() {
       player2Score: data.player2Score,
       player1Time: data.player1Time,
       player2Time: data.player2Time,
+      player1CorrectAnswers: data.player1CorrectAnswers,
+      player2CorrectAnswers: data.player2CorrectAnswers,
       eloChanges: data.eloChanges,
     });
 
@@ -206,6 +230,44 @@ export default function PvpMatchPage() {
     console.log('[Match] Cancelled:', data.reason);
     alert(`Match annulé: ${data.reason}`);
     navigate('/pvp');
+  };
+
+  const handleMatchAbandoned = (data: any) => {
+    console.log('[Match] Abandoned:', data);
+
+    // Store results (no scores, just ELO changes)
+    usePvpStore.getState().setMatchResults({
+      matchId: data.matchId,
+      winnerId: data.winnerId,
+      player1Score: 0,
+      player2Score: 0,
+      player1Time: 0,
+      player2Time: 0,
+      eloChanges: data.eloChanges,
+      abandoned: true,
+      abandonedBy: data.abandonedBy,
+    });
+
+    // Navigate to results immediately
+    navigate('/pvp/results');
+  };
+
+  const handleAbandonClick = () => {
+    if (!currentMatch) return;
+
+    setShowAbandonDialog(true);
+  };
+
+  const confirmAbandon = () => {
+    if (!currentMatch) return;
+
+    console.log('[Match] User confirms abandon');
+    websocketService.getSocket()?.emit('match:abandon', { matchId: currentMatch.id });
+    setShowAbandonDialog(false);
+  };
+
+  const cancelAbandon = () => {
+    setShowAbandonDialog(false);
   };
 
   const handleChoiceClick = (choice: string) => {
@@ -278,13 +340,22 @@ export default function PvpMatchPage() {
                   {myProfile?.rank} {myProfile?.division} • {myProfile?.elo} ELO
                 </div>
                 <div className="text-2xl font-bold text-purple-600">{playerScore} pts</div>
+                <div className="text-xs text-gray-600">Questions réussies: {correctAnswers}/10</div>
               </div>
             </div>
 
-            {/* Question progress */}
-            <div className="text-center">
-              <div className="text-sm text-gray-600">Question</div>
-              <div className="text-2xl font-bold text-gray-800">{currentQuestionIndex + 1}/10</div>
+            {/* Question progress + Abandon button */}
+            <div className="text-center flex flex-col gap-2">
+              <div>
+                <div className="text-sm text-gray-600">Question</div>
+                <div className="text-2xl font-bold text-gray-800">{currentQuestionIndex + 1}/10</div>
+              </div>
+              <button
+                onClick={handleAbandonClick}
+                className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
+              >
+                Abandonner
+              </button>
             </div>
 
             {/* Player 2 */}
@@ -345,6 +416,34 @@ export default function PvpMatchPage() {
           </div>
         </div>
       </div>
+
+      {/* Abandon Dialog */}
+      {showAbandonDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Abandonner le match ?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Êtes-vous sûr de vouloir quitter la partie ? Vous risquez de perdre de l'ELO.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={cancelAbandon}
+                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded transition-colors"
+              >
+                Non
+              </button>
+              <button
+                onClick={confirmAbandon}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded transition-colors"
+              >
+                Oui
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

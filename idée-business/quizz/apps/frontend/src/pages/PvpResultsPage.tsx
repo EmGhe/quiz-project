@@ -133,19 +133,32 @@ export default function PvpResultsPage() {
           </h1>
         </div>
 
-        {/* Scores */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className={`p-6 rounded-lg ${isWinner ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
-            <div className="text-sm text-gray-600 mb-2">Vous</div>
-            <div className="text-4xl font-bold text-gray-800 mb-2">{myScore}</div>
-            <div className="text-sm text-gray-600">points</div>
+        {/* Scores or Abandon message */}
+        {matchResults.abandoned ? (
+          <div className="mb-8 p-6 bg-yellow-50 border-2 border-yellow-400 rounded-lg text-center">
+            <div className="text-lg font-semibold text-yellow-800 mb-2">
+              {matchResults.abandonedBy === user?.id
+                ? "Vous avez abandonné la partie"
+                : "Votre adversaire a abandonné"}
+            </div>
+            <div className="text-sm text-yellow-700">
+              Match terminé par abandon
+            </div>
           </div>
-          <div className={`p-6 rounded-lg ${!isWinner ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
-            <div className="text-sm text-gray-600 mb-2">Adversaire</div>
-            <div className="text-4xl font-bold text-gray-800 mb-2">{opponentScoreVal}</div>
-            <div className="text-sm text-gray-600">points</div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6 mb-8">
+            <div className={`p-6 rounded-lg ${isWinner ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
+              <div className="text-sm text-gray-600 mb-2">Vous</div>
+              <div className="text-4xl font-bold text-gray-800 mb-2">{myScore}</div>
+              <div className="text-sm text-gray-600">points</div>
+            </div>
+            <div className={`p-6 rounded-lg ${!isWinner ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
+              <div className="text-sm text-gray-600 mb-2">Adversaire</div>
+              <div className="text-4xl font-bold text-gray-800 mb-2">{opponentScoreVal}</div>
+              <div className="text-sm text-gray-600">points</div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ELO change */}
         <div className="bg-purple-50 rounded-lg p-6 mb-8">
@@ -157,45 +170,56 @@ export default function PvpResultsPage() {
           </div>
         </div>
 
-        {/* Match stats */}
-        <div className="bg-gray-50 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Statistiques du match</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-sm text-gray-600">Temps total</div>
-              <div className="text-xl font-bold text-gray-800">
-                {formatTime(isPlayer1 ? matchResults.player1Time : matchResults.player2Time)}
+        {/* Match stats - only show if not abandoned */}
+        {!matchResults.abandoned && (
+          <div className="bg-gray-50 rounded-lg p-6 mb-8">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Statistiques du match</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-gray-600">Temps total</div>
+                <div className="text-xl font-bold text-gray-800">
+                  {formatTime(isPlayer1 ? matchResults.player1Time : matchResults.player2Time)}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-600">Questions réussies</div>
-              <div className="text-xl font-bold text-gray-800">
-                {isPlayer1 ? matchResults.player1CorrectAnswers : matchResults.player2CorrectAnswers}/10
+              <div>
+                <div className="text-sm text-gray-600">Questions réussies</div>
+                <div className="text-xl font-bold text-gray-800">
+                  {(isPlayer1 ? matchResults.player1CorrectAnswers : matchResults.player2CorrectAnswers) ?? 0}/10
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            onClick={handleRematchRequest}
-            disabled={rematchRequested}
-            className={`flex-1 px-6 py-3 font-bold rounded-lg shadow-lg transform transition ${
-              rematchRequested
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white hover:scale-105'
-            }`}
-          >
-            {rematchRequested ? 'En attente...' : 'Revanche'}
-          </button>
+        {matchResults.abandoned ? (
           <button
             onClick={handleBackToMatchmaking}
-            className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-lg transition"
+            className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-lg shadow-lg transition"
           >
             Retour au menu
           </button>
-        </div>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              onClick={handleRematchRequest}
+              disabled={rematchRequested}
+              className={`flex-1 px-6 py-3 font-bold rounded-lg shadow-lg transform transition ${
+                rematchRequested
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white hover:scale-105'
+              }`}
+            >
+              {rematchRequested ? 'En attente...' : 'Revanche'}
+            </button>
+            <button
+              onClick={handleBackToMatchmaking}
+              className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-lg transition"
+            >
+              Retour au menu
+            </button>
+          </div>
+        )}
 
         {/* Rematch request popup */}
         {rematchReceived && (

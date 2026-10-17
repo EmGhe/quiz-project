@@ -49,7 +49,9 @@ export interface MatchResults {
   player2Score: number;
   player1Time: number;
   player2Time: number;
-  player1CorrectAnswers: number;
-  player2CorrectAnswers: number;
+  player1CorrectAnswers?: number;
+  player2CorrectAnswers?: number;
   eloChanges: Record<string, number>;
+  abandoned?: boolean;
+  abandonedBy?: string;
 }

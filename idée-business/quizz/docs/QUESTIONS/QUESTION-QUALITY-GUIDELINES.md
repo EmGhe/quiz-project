@@ -352,6 +352,250 @@ Question : Capitale de la France ?
 
 ---
 
+## 🎮 Mode PVP : Exactement 4 Distractors Requis (Session 2026-10-17)
+
+### Règle critique
+
+**Le mode PVP (Player vs Player) nécessite EXACTEMENT 4 distractors par question.**
+
+```
+Question MCQ PVP = 1 bonne réponse + 4 distractors = 5 choix affichés
+```
+
+### Validation backend
+
+Le serveur vérifie au démarrage de chaque match :
+
+```typescript
+// match.service.ts - startMatch()
+const invalidQuestions = questions.filter((q) => q.distractors.length < 4);
+
+if (invalidQuestions.length > 0) {
+  console.error(
+    `[Match] Invalid questions without enough distractors: ${invalidQuestions.map((q) => q.id).join(', ')}`
+  );
+  await this.cancelMatch(matchId, 'Invalid questions');
+  return;
+}
+```
+
+**Si une question a moins de 4 distractors, le match est annulé avec l'erreur :**
+```
+Match annulé: Invalid questions
+```
+
+### Pourquoi exactement 4 ?
+
+1. **UX cohérente** : Toutes les questions MCQ ont le même nombre de choix (5)
+2. **Équité** : Difficulté comparable entre toutes les questions
+3. **Design UI** : Interface optimisée pour 5 choix
+4. **Simplicité** : Pas de logique conditionnelle (3, 4 ou 5 choix)
+
+### Structure en base de données
+
+```prisma
+model Question {
+  id          String   @id @default(uuid())
+  text        String   @unique
+  
+  // Relations
+  acceptedAnswers  AcceptedAnswer[]  // >= 1 (bonne réponse)
+  distractors      Distractor[]      // EXACTEMENT 4 pour PVP
+  
+  // Flags
+  enabledForMcq    Boolean @default(false)  // ✅ Require 4 distractors
+  enabledForDaily  Boolean @default(false)  // ⚠️ Flexible (peut avoir 3)
+}
+
+model Distractor {
+  id              String  @id @default(uuid())
+  questionId      String
+  distractorText  String
+  order           Int     // 1, 2, 3, 4
+  plausibilityScore Int   // 0-100
+}
+```
+
+### Script de vérification
+
+**Identifier les questions avec moins de 4 distractors :**
+```typescript
+// scripts/fixes/check-mcq-distractors.ts
+const questionsNeedingDistractor = await prisma.question.findMany({
+  where: {
+    enabledForMcq: true,
+  },
+  include: {
+    distractors: true,
+  },
+});
+
+const invalid = questionsNeedingDistractor.filter(q => q.distractors.length < 4);
+
+console.log(`❌ ${invalid.length} questions MCQ avec < 4 distractors`);
+invalid.forEach(q => {
+  console.log(`  - "${q.text}" → ${q.distractors.length} distractors`);
+});
+```
+
+### Script de correction
+
+**Ajouter automatiquement le 4ème distractor :**
+```typescript
+// scripts/fixes/add-missing-4th-distractor.ts
+
+// Pools de distractors par catégorie
+const extraDistractors: Record<string, string[]> = {
+  cinema: ['Karin Viard', 'Juliette Binoche', 'Audrey Tautou', ...],
+  litterature: ['Jean-Paul Sartre', 'Simone de Beauvoir', ...],
+  sport: ['Platini', 'Cantona', 'Ribéry', 'Benzema', ...],
+  histoire: ['1815', '1848', 'Louis XV', 'Henri IV', ...],
+  geographie: ['Oslo', 'Helsinki', 'Stockholm', ...],
+};
+
+for (const question of questionsNeedingDistractor) {
+  const categorySlug = question.category?.slug || 'geographie';
+  const pool = extraDistractors[categorySlug];
+  
+  // Vérifier qu'on n'a pas déjà ce distractor
+  const existing = [
+    ...question.distractors.map(d => d.distractorText.toLowerCase()),
+    ...question.acceptedAnswers.map(a => a.answer.toLowerCase()),
+  ];
+  
+  // Trouver un distractor valide
+  const newDistractor = pool.find(d => !existing.includes(d.toLowerCase()));
+  
+  if (newDistractor) {
+    await prisma.distractor.create({
+      data: {
+        questionId: question.id,
+        distractorText: newDistractor,
+        order: 4,
+        plausibilityScore: 75,
+      },
+    });
+    console.log(`✅ Added "${newDistractor}" to "${question.text}"`);
+  } else {
+    console.log(`⚠️  No valid distractor found for "${question.text}"`);
+  }
+}
+```
+
+### Bonnes pratiques pour les distractors
+
+**1. Cohérence de catégorie**
+
+Les 4 distractors doivent appartenir à la même famille que la bonne réponse :
+
+```
+✅ Bon exemple (Capitales)
+Question: "Quelle est la capitale de la France ?"
+Réponse: Paris
+Distractors: Londres, Berlin, Rome, Madrid  ← Toutes des capitales
+
+❌ Mauvais exemple
+Question: "Quelle est la capitale de la France ?"
+Réponse: Paris
+Distractors: Londres, Voiture, 42, Pizza  ← Incohérent
+```
+
+**2. Plausibilité graduée**
+
+```
+Question: "Qui a peint La Joconde ?"
+Réponse: Léonard de Vinci
+
+Distractors (par plausibilité) :
+1. Michel-Ange          (plausibilityScore: 90) ← Même époque, même pays
+2. Raphaël              (plausibilityScore: 85) ← Renaissance italienne
+3. Botticelli           (plausibilityScore: 75) ← Renaissance, mais moins connu
+4. Pablo Picasso        (plausibilityScore: 50) ← Peintre célèbre, mais époque différente
+```
+
+**3. Éviter les doublons sémantiques**
+
+```
+❌ Mauvais
+Réponse: Paris
+Distractors: Ville de Paris, Paris France, Paris (capitale), Paris (ville)
+
+✅ Bon
+Réponse: Paris
+Distractors: Londres, Berlin, Rome, Madrid
+```
+
+### Workflow de création de question PVP
+
+```
+1. ✅ Créer la question avec le texte
+2. ✅ Ajouter la bonne réponse (AcceptedAnswer)
+3. ✅ Ajouter EXACTEMENT 4 distractors plausibles
+4. ✅ Vérifier la cohérence de catégorie
+5. ✅ Définir enabledForMcq = true
+6. ✅ Tester dans un match PVP
+```
+
+### Checklist avant publication
+
+Pour chaque question PVP MCQ :
+
+- [ ] La question a **exactement 4 distractors** (pas 3, pas 5)
+- [ ] Tous les distractors sont de la **même catégorie** que la réponse
+- [ ] Aucun distractor n'est une **variante** de la bonne réponse
+- [ ] Les distractors sont **plausibles** (pas évidemment faux)
+- [ ] `enabledForMcq = true` est défini
+- [ ] Testé dans un match PVP sans erreur "Invalid questions"
+
+### Commandes utiles
+
+**Vérifier le nombre de distractors par question :**
+```bash
+cd apps/backend
+npx tsx -e "
+import { getPrismaClient } from './scripts/utils/db';
+const prisma = getPrismaClient();
+(async () => {
+  const questions = await prisma.question.findMany({
+    where: { enabledForMcq: true },
+    include: { distractors: true },
+  });
+  
+  const distribution = {};
+  questions.forEach(q => {
+    const count = q.distractors.length;
+    distribution[count] = (distribution[count] || 0) + 1;
+  });
+  
+  console.log('Distribution des distractors (questions MCQ):');
+  Object.entries(distribution).forEach(([count, num]) => {
+    const status = count === '4' ? '✅' : '❌';
+    console.log(\`  \${status} \${count} distractors: \${num} questions\`);
+  });
+  
+  await prisma.\$disconnect();
+})();
+"
+```
+
+**Résultat attendu :**
+```
+Distribution des distractors (questions MCQ):
+  ✅ 4 distractors: 60 questions
+```
+
+### Leçon apprise
+
+> **Le mode PVP nécessite une validation stricte des questions. Toujours vérifier le nombre de distractors AVANT d'activer `enabledForMcq: true`.**
+
+**Pourquoi :**
+- Un match PVP annulé cause une mauvaise UX pour les deux joueurs
+- Les joueurs perdent leur temps (attente matchmaking + chargement)
+- Peut causer une perte de confiance dans le système
+- Facile à prévenir avec un script de vérification
+
+---
+
 ## 📈 Statistiques Pipeline (Référence)
 
 **Résultat actuel :**
@@ -370,5 +614,6 @@ Question : Capitale de la France ?
 
 ---
 
-**Dernière mise à jour :** 2026-10-15  
-**Pipeline version :** 2.0 (2 phases + fallback automatique)
+**Dernière mise à jour :** 2026-10-17  
+**Pipeline version :** 2.0 (2 phases + fallback automatique)  
+**Ajouts :** Règle critique des 4 distractors pour mode PVP

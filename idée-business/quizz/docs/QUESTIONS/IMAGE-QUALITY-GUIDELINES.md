@@ -2,7 +2,7 @@
 
 Documentation des problèmes techniques rencontrés et solutions implémentées pour le pipeline de gestion d'images du quiz.
 
-**Dernière mise à jour :** 2026-10-14 (après optimisations ChatGPT)
+**Dernière mise à jour :** 2026-10-17 (ajout section images locales vs proxy)
 
 ---
 
@@ -550,6 +550,206 @@ npx ts-node scripts/images/download-and-store-all-images.ts
 
 Total : ~75 minutes pour 143 images
 ```
+
+---
+
+## 🎯 Images Locales vs Proxy (Session 2026-10-17)
+
+### Problème CORS avec URLs externes
+
+**Symptôme :**
+```
+Access to image at 'https://upload.wikimedia.org/wikipedia/commons/...' 
+from origin 'http://localhost:5173' has been blocked by CORS policy
+```
+
+Les images chargées directement depuis Wikimedia Commons causent des erreurs CORS dans le navigateur.
+
+### ❌ Solution incorrecte : Proxy backend
+
+**Tentative initiale :**
+```typescript
+// Proxy les images via le backend
+mediaUrl: `/api/proxy/image?url=${encodeURIComponent(wikimediaUrl)}`
+```
+
+**Problèmes du proxy :**
+- ❌ Augmente la latence (requête → backend → Wikimedia → backend → frontend)
+- ❌ Consomme de la bande passante backend inutilement
+- ❌ Charge le serveur pour une tâche statique
+- ❌ Complexité supplémentaire (endpoint, cache, gestion erreurs)
+
+### ✅ Solution correcte : Images locales
+
+**Architecture recommandée :**
+
+1. **Téléchargement initial** (une seule fois) :
+```bash
+cd apps/backend
+npx ts-node scripts/images/download-and-store-all-images.ts
+```
+
+2. **Pipeline de téléchargement** :
+```typescript
+// Script: download-and-store-all-images.ts
+
+// Phase 1: Batch metadata (4 appels pour 180 images)
+const metadataCache = await getImageMetadataBatch(wikimediaUrls);
+
+// Phase 2: Download séquentiel avec optimisation
+for (const question of imageQuestions) {
+  // 1. Télécharger depuis Wikimedia
+  const imageBuffer = await downloadWithRetry(wikimediaUrl);
+  
+  // 2. Optimiser avec Sharp (resize 800px, compression)
+  const optimizedBuffer = await optimizeImage(imageBuffer, wikimediaUrl);
+  
+  // 3. Générer nom de fichier (MD5 hash)
+  const hash = crypto.createHash('md5').update(cleanUrl).digest('hex');
+  const filename = `${hash}.${ext}`;
+  
+  // 4. Sauvegarder localement
+  fs.writeFileSync(`public/images/quiz/${filename}`, optimizedBuffer);
+  
+  // 5. Mettre à jour la DB
+  await prisma.question.update({
+    where: { id: question.id },
+    data: { 
+      mediaUrl: `/images/quiz/${filename}`,  // ✅ URL locale
+      mediaLicenseAuthor: metadata.author,
+      mediaLicenseType: metadata.license,
+      mediaLicenseUrl: metadata.licenseUrl,
+      mediaSourceUrl: metadata.sourceUrl,
+    },
+  });
+}
+```
+
+3. **Gestion des erreurs 404** :
+```typescript
+// Si une image retourne 404, chercher automatiquement un remplacement
+catch (error) {
+  if (error.message.includes('404')) {
+    console.log('🔍 Searching for replacement image...');
+    
+    const replacementUrl = await searchReplacementImage(wikimediaUrl);
+    
+    if (replacementUrl) {
+      // Mettre à jour l'URL pour téléchargement en Phase 2
+      await prisma.question.update({
+        where: { id: question.id },
+        data: { mediaUrl: replacementUrl }
+      });
+    } else {
+      // Désactiver la question si aucun remplacement
+      await prisma.question.update({
+        where: { id: question.id },
+        data: {
+          enabledForDaily: false,
+          enabledForMcq: false
+        }
+      });
+    }
+  }
+}
+```
+
+4. **Pipeline en 2 phases** :
+   - **Phase 1** : Télécharger les images normales + détecter les 404
+   - **Phase 2** : Télécharger les images de remplacement trouvées
+
+### Avantages des images locales
+
+| Critère | Proxy backend | Images locales |
+|---------|---------------|----------------|
+| **Latence** | 500-2000ms | 10-50ms |
+| **CORS** | ❌ Possible | ✅ Aucun problème |
+| **Charge serveur** | ❌ Élevée | ✅ Zéro |
+| **Bande passante** | ❌ Double | ✅ Une seule fois |
+| **Fiabilité** | ⚠️ Dépend de Wikimedia | ✅ Contrôle total |
+| **CDN** | ❌ Non | ✅ Vercel/Cloudflare |
+| **Optimisation** | ⚠️ Complexe | ✅ Sharp automatique |
+| **Coût** | ❌ Runtime | ✅ Build-time |
+
+### Structure des URLs
+
+**Avant (Wikimedia direct) :**
+```
+https://upload.wikimedia.org/wikipedia/commons/9/9e/Flag_of_Japan.svg
+```
+
+**Après (local) :**
+```
+/images/quiz/9eee5b75c548589e85414c7049e24318.svg
+```
+
+**En production (avec CDN Vercel) :**
+```
+https://votre-app.vercel.app/_next/static/images/9eee5b75c548589e85414c7049e24318.svg
+```
+
+### Métadonnées de licence
+
+Les métadonnées sont **toujours préservées** dans la base de données :
+
+```typescript
+// Stockées en DB pour attribution légale
+{
+  mediaUrl: '/images/quiz/abc123.svg',
+  mediaLicenseAuthor: 'Wikimedia Commons User',
+  mediaLicenseType: 'CC BY-SA 4.0',
+  mediaLicenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+  mediaSourceUrl: 'https://commons.wikimedia.org/wiki/File:Flag_of_Japan.svg'
+}
+```
+
+**Affichage frontend** (attribution requise par les licences CC) :
+```tsx
+{question.mediaUrl && (
+  <div className="relative">
+    <img src={question.mediaUrl} alt="Question" />
+    {question.mediaLicenseAuthor && (
+      <div className="text-xs text-gray-500 mt-1">
+        © {question.mediaLicenseAuthor} ({question.mediaLicenseType})
+      </div>
+    )}
+  </div>
+)}
+```
+
+### Scripts de maintenance
+
+**Restaurer les URLs Wikimedia** (si besoin de re-télécharger) :
+```typescript
+// scripts/fixes/restore-wikimedia-urls.ts
+const questions = await prisma.question.findMany({
+  where: { mediaUrl: { startsWith: '/api/proxy' } }
+});
+
+for (const question of questions) {
+  // Extraire l'URL originale du proxy
+  const match = question.mediaUrl.match(/url=([^&]+)/);
+  const originalUrl = decodeURIComponent(match[1]);
+  
+  await prisma.question.update({
+    where: { id: question.id },
+    data: { mediaUrl: originalUrl }
+  });
+}
+```
+
+### Leçon apprise
+
+> **Pour une application de quiz avec images, toujours télécharger localement plutôt que d'utiliser des URLs externes ou un proxy backend.**
+
+**Raisons :**
+1. ✅ Performance : CDN edge vs requête externe
+2. ✅ Fiabilité : pas de dépendance externe
+3. ✅ Coût : build-time vs runtime
+4. ✅ Optimisation : Sharp automatique
+5. ✅ UX : chargement instantané
+
+**Le seul coût est le stockage (~20 MB pour 200 images optimisées), négligeable comparé aux bénéfices.**
 
 ---
 

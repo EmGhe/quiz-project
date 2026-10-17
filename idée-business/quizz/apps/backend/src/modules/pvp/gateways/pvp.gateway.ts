@@ -388,4 +388,23 @@ export class PvpGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Notify requester
     this.sendToUser(request.requesterId, 'rematch:declined', {});
   }
+
+  /**
+   * Handle match abandon
+   */
+  @SubscribeMessage('match:abandon')
+  async handleAbandon(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { matchId: string },
+  ) {
+    if (!client.userId) {
+      return { error: 'Unauthorized' };
+    }
+
+    console.log(`[Abandon] User ${client.userId} abandons match ${data.matchId}`);
+
+    if (this.matchService) {
+      await this.matchService.handleAbandon(data.matchId, client.userId);
+    }
+  }
 }

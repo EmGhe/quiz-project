@@ -44,6 +44,15 @@ export default function PvpMatchmakingPage() {
 
   const initializeWebSocket = async () => {
     try {
+      // Check if already connected
+      if (websocketService.isConnected()) {
+        console.log('[WebSocket] Already connected, skipping initialization');
+        setConnected(true);
+        setConnecting(false);
+        setError('');
+        return;
+      }
+
       setConnecting(true);
       setConnected(false);
 
@@ -221,7 +230,7 @@ export default function PvpMatchmakingPage() {
                     <div className="text-sm text-gray-600">Questions</div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600">30s</div>
+                    <div className="text-3xl font-bold text-blue-600">10s</div>
                     <div className="text-sm text-gray-600">Par question</div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-4">

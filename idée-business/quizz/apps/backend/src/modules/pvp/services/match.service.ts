@@ -205,14 +205,35 @@ export class MatchService {
       allPlayerAnswers: playerAnswers,
     });
 
+    // If player didn't answer, count full 10s as their time
+    const player1TimeMs = player1Answer?.timeMs ?? 10000;
+    const player2TimeMs = player2Answer?.timeMs ?? 10000;
+
+    // Update times in DB for players who didn't answer
+    const updates: any = {};
+    if (!player1Answer) {
+      updates.player1Time = { increment: 10000 };
+    }
+    if (!player2Answer) {
+      updates.player2Time = { increment: 10000 };
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await this.prisma.pvpMatch.update({
+        where: { id: matchId },
+        data: updates,
+      });
+      console.log('[MatchService] ⏱️ Added timeout penalty for non-answers:', updates);
+    }
+
     const questionEndData = {
       questionIndex,
       correctAnswer: currentQuestion.correctAnswer,
       player1Answer: player1Answer?.choice || null,
-      player1Time: player1Answer?.timeMs || null,
+      player1Time: player1TimeMs,
       player1Correct: player1Answer?.choice === currentQuestion.correctAnswer,
       player2Answer: player2Answer?.choice || null,
-      player2Time: player2Answer?.timeMs || null,
+      player2Time: player2TimeMs,
       player2Correct: player2Answer?.choice === currentQuestion.correctAnswer,
     };
 
@@ -433,6 +454,14 @@ export class MatchService {
     const questions = metadata.questions || [];
     const playerAnswers = metadata.playerAnswers || {};
 
+    console.log('[Match] Metadata for correct answers calculation:', {
+      hasMetadata: !!metadata,
+      questionsCount: questions.length,
+      hasPlayerAnswers: !!playerAnswers,
+      player1AnswersCount: Object.keys(playerAnswers[match.player1Id] || {}).length,
+      player2AnswersCount: Object.keys(playerAnswers[match.player2Id] || {}).length,
+    });
+
     let player1CorrectAnswers = 0;
     let player2CorrectAnswers = 0;
 
@@ -441,6 +470,15 @@ export class MatchService {
       const player1Answer = playerAnswers[match.player1Id]?.[i];
       const player2Answer = playerAnswers[match.player2Id]?.[i];
 
+      console.log(`[Match] Question ${i} check:`, {
+        hasQuestion: !!question,
+        correctAnswer: question?.correctAnswer,
+        player1Choice: player1Answer?.choice,
+        player1Correct: player1Answer?.choice === question?.correctAnswer,
+        player2Choice: player2Answer?.choice,
+        player2Correct: player2Answer?.choice === question?.correctAnswer,
+      });
+
       if (player1Answer?.choice === question.correctAnswer) {
         player1CorrectAnswers++;
       }
@@ -448,6 +486,11 @@ export class MatchService {
         player2CorrectAnswers++;
       }
     }
+
+    console.log('[Match] Correct answers calculated:', {
+      player1CorrectAnswers,
+      player2CorrectAnswers,
+    });
 
     console.log(`[Match] ${matchId} completed:`, {
       player1Score: match.player1Score,
@@ -492,6 +535,67 @@ export class MatchService {
       this.pvpGateway.leaveMatchRoom(match.player1Id, matchId);
       this.pvpGateway.leaveMatchRoom(match.player2Id, matchId);
     }, 5000); // Wait 5s before cleanup
+  }
+
+  /**
+   * Handle match abandon
+   */
+  async handleAbandon(matchId: string, userId: string): Promise<void> {
+    console.log(`[Match] User ${userId} abandons match ${matchId}`);
+
+    const match = await this.prisma.pvpMatch.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!match || match.status !== 'in_progress') {
+      console.error(`[Match] Cannot abandon - match not found or not in progress`);
+      return;
+    }
+
+    // Determine winner and loser
+    const winnerId = match.player1Id === userId ? match.player2Id : match.player1Id;
+    const loserId = userId;
+
+    console.log(`[Match] Winner by abandon: ${winnerId}, Loser: ${loserId}`);
+
+    // Update match status
+    await this.prisma.pvpMatch.update({
+      where: { id: matchId },
+      data: {
+        status: 'completed',
+        winnerId,
+        completedAt: new Date(),
+      },
+    });
+
+    // Calculate ELO changes (loser loses, winner gains)
+    const eloResult = await this.eloService.updateElo(winnerId, loserId, matchId);
+    const winnerEloChange = eloResult.winner.change;
+    const loserEloChange = eloResult.loser.change;
+
+    console.log(`[Match] ELO changes - Winner: ${winnerEloChange}, Loser: ${loserEloChange}`);
+
+    // Send results to both players
+    const results = {
+      matchId,
+      winnerId,
+      player1Id: match.player1Id,
+      player2Id: match.player2Id,
+      abandoned: true,
+      abandonedBy: loserId,
+      eloChanges: {
+        [winnerId]: winnerEloChange,
+        [loserId]: loserEloChange,
+      },
+    };
+
+    this.pvpGateway.sendToMatch(matchId, 'match:abandoned', results);
+
+    // Clean up rooms
+    setTimeout(() => {
+      this.pvpGateway.leaveMatchRoom(match.player1Id, matchId);
+      this.pvpGateway.leaveMatchRoom(match.player2Id, matchId);
+    }, 5000);
   }
 
   /**
