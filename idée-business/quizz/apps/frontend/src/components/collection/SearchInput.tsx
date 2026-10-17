@@ -19,9 +19,12 @@ export default function SearchInput({ value, onChange, placeholder = 'Rechercher
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localValue]);
 
-  // Sync with external value
+  // Sync with external value only when it changes externally (not from our own onChange)
   useEffect(() => {
-    setLocalValue(value);
+    if (value !== localValue) {
+      setLocalValue(value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (
