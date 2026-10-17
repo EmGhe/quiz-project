@@ -2,17 +2,102 @@
   {
     "wikidataId": "Q517",
     "expectedAlbum": "personnalites",
-    "comment": "Napoléon Bonaparte - historical figure"
+    "comment": "Napoléon Bonaparte"
   },
   {
-    "wikidataId": "Q956",
+    "wikidataId": "Q10305",
     "expectedAlbum": "personnalites",
-    "comment": "Pékin - capitale (for testing capital category)"
+    "comment": "Zinedine Zidane"
   },
   {
-    "wikidataId": "Q12544",
-    "expectedAlbum": "culture",
-    "comment": "La Joconde - painting"
+    "wikidataId": "Q7374",
+    "expectedAlbum": "personnalites",
+    "comment": "Victor Hugo"
+  },
+  {
+    "wikidataId": "Q5593",
+    "expectedAlbum": "personnalites",
+    "comment": "Édith Piaf"
+  },
+  {
+    "wikidataId": "Q2105",
+    "expectedAlbum": "personnalites",
+    "comment": "Molière"
+  },
+  {
+    "wikidataId": "Q12552",
+    "expectedAlbum": "personnalites",
+    "comment": "Louis XIV"
+  },
+  {
+    "wikidataId": "Q7226",
+    "expectedAlbum": "personnalites",
+    "comment": "Jeanne d'Arc"
+  },
+  {
+    "wikidataId": "Q2275",
+    "expectedAlbum": "personnalites",
+    "comment": "Charles de Gaulle"
+  },
+  {
+    "wikidataId": "Q178038",
+    "expectedAlbum": "personnalites",
+    "comment": "Vercingétorix"
+  },
+  {
+    "wikidataId": "Q42937",
+    "expectedAlbum": "personnalites",
+    "comment": "Michel Platini"
+  },
+  {
+    "wikidataId": "Q29465",
+    "expectedAlbum": "personnalites",
+    "comment": "Karim Benzema"
+  },
+  {
+    "wikidataId": "Q1058572",
+    "expectedAlbum": "personnalites",
+    "comment": "Kylian Mbappé"
+  },
+  {
+    "wikidataId": "Q106221",
+    "expectedAlbum": "personnalites",
+    "comment": "Alain Delon"
+  },
+  {
+    "wikidataId": "Q106307",
+    "expectedAlbum": "personnalites",
+    "comment": "Marion Cotillard"
+  },
+  {
+    "wikidataId": "Q106544",
+    "expectedAlbum": "personnalites",
+    "comment": "Gérard Depardieu"
+  },
+  {
+    "wikidataId": "Q1231",
+    "expectedAlbum": "personnalites",
+    "comment": "Johnny Hallyday"
+  },
+  {
+    "wikidataId": "Q205012",
+    "expectedAlbum": "personnalites",
+    "comment": "Daft Punk"
+  },
+  {
+    "wikidataId": "Q296",
+    "expectedAlbum": "personnalites",
+    "comment": "Claude Monet"
+  },
+  {
+    "wikidataId": "Q39931",
+    "expectedAlbum": "personnalites",
+    "comment": "Auguste Renoir"
+  },
+  {
+    "wikidataId": "Q35548",
+    "expectedAlbum": "personnalites",
+    "comment": "Paul Cézanne"
   },
   {
     "wikidataId": "Q3464665",
@@ -20,14 +105,119 @@
     "comment": "Intouchables - film"
   },
   {
+    "wikidataId": "Q165325",
+    "expectedAlbum": "culture",
+    "comment": "Le Fabuleux Destin d'Amélie Poulain"
+  },
+  {
+    "wikidataId": "Q663286",
+    "expectedAlbum": "culture",
+    "comment": "La Haine - film"
+  },
+  {
+    "wikidataId": "Q180736",
+    "expectedAlbum": "culture",
+    "comment": "Les Misérables - roman"
+  },
+  {
+    "wikidataId": "Q25338",
+    "expectedAlbum": "culture",
+    "comment": "Le Petit Prince"
+  },
+  {
+    "wikidataId": "Q178713",
+    "expectedAlbum": "culture",
+    "comment": "L'Étranger - roman"
+  },
+  {
+    "wikidataId": "Q12544",
+    "expectedAlbum": "culture",
+    "comment": "La Joconde"
+  },
+  {
+    "wikidataId": "Q212616",
+    "expectedAlbum": "culture",
+    "comment": "Impression, soleil levant"
+  },
+  {
+    "wikidataId": "Q1892745",
+    "expectedAlbum": "culture",
+    "comment": "Le Déjeuner sur l'herbe"
+  },
+  {
+    "wikidataId": "Q127117",
+    "expectedAlbum": "culture",
+    "comment": "Astérix"
+  },
+  {
+    "wikidataId": "Q744536",
+    "expectedAlbum": "culture",
+    "comment": "Les Aventures de Tintin"
+  },
+  {
+    "wikidataId": "Q1154945",
+    "expectedAlbum": "culture",
+    "comment": "Lucky Luke"
+  },
+  {
     "wikidataId": "Q243",
     "expectedAlbum": "lieux",
-    "comment": "Tour Eiffel - monument"
+    "comment": "Tour Eiffel"
+  },
+  {
+    "wikidataId": "Q274814",
+    "expectedAlbum": "lieux",
+    "comment": "Arc de Triomphe"
+  },
+  {
+    "wikidataId": "Q2981",
+    "expectedAlbum": "lieux",
+    "comment": "Notre-Dame de Paris"
+  },
+  {
+    "wikidataId": "Q3321850",
+    "expectedAlbum": "lieux",
+    "comment": "Mont-Saint-Michel"
   },
   {
     "wikidataId": "Q142",
     "expectedAlbum": "lieux",
-    "comment": "France - country"
+    "comment": "France"
+  },
+  {
+    "wikidataId": "Q31",
+    "expectedAlbum": "lieux",
+    "comment": "Belgique"
+  },
+  {
+    "wikidataId": "Q39",
+    "expectedAlbum": "lieux",
+    "comment": "Suisse"
+  },
+  {
+    "wikidataId": "Q16",
+    "expectedAlbum": "lieux",
+    "comment": "Canada"
+  },
+  {
+    "wikidataId": "Q90",
+    "expectedAlbum": "lieux",
+    "comment": "Paris"
+  },
+  {
+    "wikidataId": "Q239",
+    "expectedAlbum": "lieux",
+    "comment": "Bruxelles"
+  },
+  {
+    "wikidataId": "Q70",
+    "expectedAlbum": "lieux",
+    "comment": "Berne"
+  },
+  {
+    "wikidataId": "Q1930",
+    "expectedAlbum": "lieux",
+    "comment": "Ottawa"
   },
   {
     "wikidataId": "Q1929607",
@@ -35,18 +225,28 @@
     "comment": "Drapeau de la France"
   },
   {
+    "wikidataId": "Q160150",
+    "expectedAlbum": "symboles",
+    "comment": "Drapeau de l'Union européenne"
+  },
+  {
+    "wikidataId": "Q653071",
+    "expectedAlbum": "symboles",
+    "comment": "Drapeau du Québec"
+  },
+  {
     "wikidataId": "Q188593",
     "expectedAlbum": "divers",
-    "comment": "Rayman - jeu vidéo"
+    "comment": "Rayman"
   },
   {
-    "wikidataId": "Q10305",
-    "expectedAlbum": "personnalites",
-    "comment": "Zidane - sportif (testing different type)"
+    "wikidataId": "Q200308",
+    "expectedAlbum": "divers",
+    "comment": "Assassin's Creed"
   },
   {
-    "wikidataId": "Q7374",
-    "expectedAlbum": "personnalites",
-    "comment": "Victor Hugo - écrivain"
+    "wikidataId": "Q191019",
+    "expectedAlbum": "divers",
+    "comment": "Cyrano de Bergerac"
   }
 ]

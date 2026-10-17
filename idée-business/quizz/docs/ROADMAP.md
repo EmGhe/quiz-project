@@ -281,6 +281,46 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ---
 
+## MVP3 - Collection System (Phase 1)
+
+**Goal:** Read-only catalog demonstrating collection mechanics
+
+**Status:** ✅ Complete
+
+**Plan:** `docs/superpowers/plans/2026-10-16-mvp3-collection-system.md`
+
+### Completed Features
+- ✅ 52 cards with Wikidata entities across 5 albums
+- ✅ 5 meta-albums (Personnalités, Culture, Lieux, Symboles, Divers)
+- ✅ Rarity system with algorithmic distribution (40% pageviews + 60% wiki depth)
+- ✅ `/collec` page with grid display and lazy loading
+- ✅ Filters: album selection, rarity tiers, text search
+- ✅ Card detail modal with entity information
+- ✅ Collection statistics (total cards, rarity breakdown)
+- ✅ Responsive design (mobile 2 cols / tablet 3 cols / desktop 4 cols)
+
+### Rarity Distribution (Achieved)
+- Common: 23 (target 20)
+- Uncommon: 16 (target 15)
+- Rare: 9 (target 10)
+- Epic: 3 (target 4)
+- Legendary: 1 (target 1)
+
+**Total deviation from target: 6** (well within acceptable range)
+
+### Performance Metrics
+- Page load time: < 2s with 52 cards
+- Responsive breakpoints: 640px (mobile), 1024px (tablet/desktop)
+- All filters functional with smooth UX
+
+### Next Steps
+**MVP3 Phase 2:** User ownership layer
+- User-card ownership mapping
+- Pack opening system
+- Gold economy integration
+
+---
+
 ## V2 - Collection System (Monetization Layer)
 
 **Goal:** Retention through collection + Gold economy (no Pay-to-Win)

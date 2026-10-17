@@ -77,14 +77,19 @@ async function main() {
   }
 
   // 2. Load entity data
+  const inputFile = fs.existsSync(path.join(__dirname, 'data/all-entities-with-images.json'))
+    ? 'data/all-entities-with-images.json'
+    : 'data/test-entities-with-images.json';
+
   const entities: EntityData[] = JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, 'data/test-entities-with-images.json'),
+      path.join(__dirname, inputFile),
       'utf-8'
     )
   );
 
-  console.log(`\nSeeding ${entities.length} entities...\n`);
+  console.log(`\nReading from ${inputFile}...`);
+  console.log(`Seeding ${entities.length} entities...\n`);
 
   // 3. Create entities and cards
   for (const entityData of entities) {
@@ -116,50 +121,47 @@ async function main() {
       },
     });
 
-    // Only create card if image URL exists
-    if (entityData.imageUrl) {
-      const card = await prisma.card.upsert({
-        where: { entityId: entity.id },
-        update: {
-          rarity: entityData.rarity,
-          imageUrl: entityData.imageUrl,
-          imageWidth: entityData.imageWidth || 800,
-          imageHeight: entityData.imageHeight || 600,
-          imageSourceUrl: entityData.imageSourceUrl,
-        },
-        create: {
-          entityId: entity.id,
-          rarity: entityData.rarity,
-          imageUrl: entityData.imageUrl,
-          imageWidth: entityData.imageWidth || 800,
-          imageHeight: entityData.imageHeight || 600,
-          imageSourceUrl: entityData.imageSourceUrl,
-          active: true,
-        },
-      });
+    // Create card for all entities (use placeholder for missing images)
+    const card = await prisma.card.upsert({
+      where: { entityId: entity.id },
+      update: {
+        rarity: entityData.rarity,
+        imageUrl: entityData.imageUrl || '/images/collection/placeholder.jpg',
+        imageWidth: entityData.imageWidth || 800,
+        imageHeight: entityData.imageHeight || 600,
+        imageSourceUrl: entityData.imageSourceUrl || null,
+      },
+      create: {
+        entityId: entity.id,
+        rarity: entityData.rarity,
+        imageUrl: entityData.imageUrl || '/images/collection/placeholder.jpg',
+        imageWidth: entityData.imageWidth || 800,
+        imageHeight: entityData.imageHeight || 600,
+        imageSourceUrl: entityData.imageSourceUrl || null,
+        active: true,
+      },
+    });
 
-      // Create card-album relation
-      const album = createdAlbums[entityData.expectedAlbum];
-      if (album) {
-        await prisma.cardAlbum.upsert({
-          where: {
-            cardId_albumId: {
-              cardId: card.id,
-              albumId: album.id,
-            },
-          },
-          update: {},
-          create: {
+    // Create card-album relation
+    const album = createdAlbums[entityData.expectedAlbum];
+    if (album) {
+      await prisma.cardAlbum.upsert({
+        where: {
+          cardId_albumId: {
             cardId: card.id,
             albumId: album.id,
           },
-        });
-        console.log(`  ✅ Entity + Card + Album (${album.name})`);
-      } else {
-        console.log(`  ✅ Entity + Card (no album)`);
-      }
+        },
+        update: {},
+        create: {
+          cardId: card.id,
+          albumId: album.id,
+        },
+      });
+      const imageStatus = entityData.imageUrl ? 'with image' : 'no image';
+      console.log(`  ✅ Card created (${entityData.rarity}, ${imageStatus}) → ${album.name}`);
     } else {
-      console.log(`  ⚠️ Entity created (no image)`);
+      console.log(`  ✅ Card created (no album assigned)`);
     }
   }
 

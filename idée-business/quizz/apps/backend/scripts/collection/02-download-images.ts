@@ -87,12 +87,18 @@ async function createTestImage(outputPath: string, width: number = 800, height: 
 async function main() {
   console.log('Downloading and optimizing images...\n');
 
+  const inputFile = fs.existsSync(path.join(__dirname, 'data/all-entities-fetched.json'))
+    ? 'data/all-entities-fetched.json'
+    : 'data/test-entities-fetched.json';
+
   const entities: EntityData[] = JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, 'data/test-entities-fetched.json'),
+      path.join(__dirname, inputFile),
       'utf-8'
     )
   );
+
+  console.log(`Reading from ${inputFile}...`);
 
   const imagesDir = path.join(__dirname, '../../public/images/collection');
   if (!fs.existsSync(imagesDir)) {
@@ -165,7 +171,11 @@ async function main() {
   }
 
   // Save updated data
-  const outputPath = path.join(__dirname, 'data/test-entities-with-images.json');
+  const outputFile = inputFile.includes('all-entities')
+    ? 'data/all-entities-with-images.json'
+    : 'data/test-entities-with-images.json';
+
+  const outputPath = path.join(__dirname, outputFile);
   fs.writeFileSync(outputPath, JSON.stringify(updatedEntities, null, 2));
   console.log(`\n✅ Saved ${updatedEntities.length} entities to ${outputPath}`);
   console.log(`   Images downloaded: ${successCount} / ${entities.filter(e => e.imageUrl).length}`);
