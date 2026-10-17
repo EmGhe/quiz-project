@@ -9,11 +9,13 @@ import CollectionStats from '../components/collection/CollectionStats';
 import { Card } from '../types/collection';
 
 export default function CollectionPage() {
-  const { fetchAll, loading, error, cards, albums, filters, stats, setFilter } = useCollectionStore();
+  const store = useCollectionStore();
+  const { loading, error, cards, albums, filters, stats, setFilter } = store;
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
-    fetchAll();
+    store.fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCardClick = (card: Card) => {
