@@ -1,9 +1,15 @@
 module.exports = {
+  preset: 'ts-jest',
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.(t|j)s$': ['ts-jest', {
+      tsconfig: {
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      },
+    }],
   },
   collectCoverageFrom: [
     '**/*.(t|j)s',
@@ -13,7 +19,5 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(@nestjs/jwt)/)',
-  ],
+  transformIgnorePatterns: [],
 };

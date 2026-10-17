@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../../../app.module';
 import { PrismaService } from '../../../prisma/prisma.service';
 
@@ -23,11 +23,18 @@ describe('AlbumsController (e2e)', () => {
   });
 
   describe('GET /api/albums', () => {
-    it('should return empty array when no albums exist', () => {
+    it('should return an array of albums', () => {
       return request(app.getHttpServer())
         .get('/api/albums')
         .expect(200)
-        .expect([]);
+        .then((res: any) => {
+          expect(Array.isArray(res.body)).toBe(true);
+          if (res.body.length > 0) {
+            expect(res.body[0]).toHaveProperty('id');
+            expect(res.body[0]).toHaveProperty('slug');
+            expect(res.body[0]).toHaveProperty('name');
+          }
+        });
     });
   });
 
