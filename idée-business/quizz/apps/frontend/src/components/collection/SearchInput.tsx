@@ -12,20 +12,13 @@ export default function SearchInput({ value, onChange, placeholder = 'Rechercher
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      onChange(localValue);
+      if (localValue !== value) {
+        onChange(localValue);
+      }
     }, 300);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localValue]);
-
-  // Sync with external value only when it changes externally (not from our own onChange)
-  useEffect(() => {
-    if (value !== localValue) {
-      setLocalValue(value);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [localValue, value, onChange]);
 
   return (
     <div className="relative">
