@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { WikidataEntity } from './types';
+import { USER_AGENT, HTTP_TIMEOUT, getErrorMessage } from './http-config';
 
 export class WikidataClient {
   private static SPARQL_ENDPOINT = 'https://query.wikidata.org/sparql';
   private static WIKIDATA_BASE = 'https://www.wikidata.org/wiki/';
-  private static USER_AGENT = 'QuizPlatform/1.0 (Educational; https://github.com/quiz-platform; contact: quiz.platform.support@gmail.com)';
 
   /**
    * Validate if an image URL is relevant for the given entity
    * Returns a confidence score (0-100)
+   *
+   * This is a heuristic filter, not a proof of correctness.
+   * Images that fail validation are skipped (set to null).
    */
   private static validateImageUrl(imageUrl: string, entityLabel: string, entityType: string): { valid: boolean; score: number; reason: string } {
     if (!imageUrl) {
@@ -19,28 +22,40 @@ export class WikidataClient {
     const filename = decodeURIComponent(imageUrl.split('/').pop() || '').toLowerCase();
     const labelLower = entityLabel.toLowerCase();
 
-    // Normalize for comparison (remove accents, special chars)
-    const normalizeString = (str: string) => {
+    // Normalize for full string comparison (remove accents, special chars, spaces)
+    const normalizeForMatch = (str: string) => {
       return str
         .normalize('NFD')
         .replace(/[̀-ͯ]/g, '') // Remove accents
         .replace(/[^a-z0-9\s]/g, '') // Keep only alphanumeric
-        .replace(/\s+/g, ''); // Remove spaces
+        .replace(/\s+/g, ''); // Remove spaces for exact match
     };
 
-    const normalizedFilename = normalizeString(filename);
-    const normalizedLabel = normalizeString(labelLower);
+    // Normalize for word extraction (keep spaces)
+    const normalizeForWords = (str: string) => {
+      return str
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '') // Remove accents
+        .replace(/[^a-z0-9\s]/g, '') // Keep only alphanumeric + spaces
+        .replace(/\s+/g, ' ') // Normalize spaces
+        .trim();
+    };
+
+    const normalizedFilename = normalizeForMatch(filename);
+    const normalizedLabelForMatch = normalizeForMatch(labelLower);
+    const normalizedLabelForWords = normalizeForWords(labelLower);
 
     let score = 0;
     const reasons: string[] = [];
 
     // Check 1: Label appears in filename (strong signal)
-    if (normalizedFilename.includes(normalizedLabel)) {
+    if (normalizedFilename.includes(normalizedLabelForMatch)) {
       score += 50;
       reasons.push('Label in filename');
     } else {
       // Check for partial matches (first/last name for people)
-      const labelWords = normalizedLabel.split(/\s+/).filter(w => w.length > 2);
+      // FIX: Use normalizedLabelForWords which has spaces preserved
+      const labelWords = normalizedLabelForWords.split(/\s+/).filter(w => w.length > 2);
       const matchedWords = labelWords.filter(word => normalizedFilename.includes(word));
 
       if (matchedWords.length > 0) {
@@ -157,13 +172,14 @@ export class WikidataClient {
       for (const [wikidataId, binding] of entitiesData) {
         const wikipediaUrl = binding.wikipediaArticle?.value || null;
 
-        let wikiTextLength = 0;
+        let wikiTextLength: number | null = null;
         if (wikipediaUrl) {
           const title = decodeURIComponent(wikipediaUrl.split('/').pop() || '');
           try {
             wikiTextLength = await this.fetchWikiTextLength(title);
-          } catch (error) {
+          } catch (error: unknown) {
             console.warn(`  ⚠️  Could not fetch wiki length for ${title}`);
+            wikiTextLength = null; // Data unavailable
           }
         }
 
@@ -193,8 +209,9 @@ export class WikidataClient {
       }
 
       return results;
-    } catch (error) {
-      console.error(`Error fetching batch:`, error.message);
+    } catch (error: unknown) {
+      const errorMsg = getErrorMessage(error);
+      console.error(`Error fetching batch:`, errorMsg);
       throw error;
     }
   }
@@ -242,7 +259,7 @@ export class WikidataClient {
       const wikipediaUrl = bindings.wikipediaArticle?.value || null;
 
       // Fetch wiki text length if Wikipedia article exists
-      let wikiTextLength = 0;
+      let wikiTextLength: number | null = null;
       if (wikipediaUrl) {
         const title = decodeURIComponent(wikipediaUrl.split('/').pop() || '');
         wikiTextLength = await this.fetchWikiTextLength(title);
@@ -273,32 +290,49 @@ export class WikidataClient {
         imageUrl,
         wikiTextLength,
       };
-    } catch (error) {
-      console.error(`Error fetching ${wikidataId}:`, error.message);
+    } catch (error: unknown) {
+      const errorMsg = getErrorMessage(error);
+      console.error(`Error fetching ${wikidataId}:`, errorMsg);
       throw error;
     }
   }
 
   /**
-   * Fetch Wikipedia article text length
+   * Fetch Wikipedia article text length (ESTIMATED)
+   *
+   * WARNING: This is an approximation based on summary length × 5
+   * The assumption that summary = 20% of article is NOT reliable
+   *
+   * TODO: Investigate Wikipedia API for actual article length
+   *
+   * @param title - Wikipedia article title
+   * @returns Estimated length, or null if unavailable
    */
-  private static async fetchWikiTextLength(title: string): Promise<number> {
+  private static async fetchWikiTextLength(title: string): Promise<number | null> {
     try {
       const response = await axios.get(
         `https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
         {
           headers: {
-            'User-Agent': this.USER_AGENT,
+            'User-Agent': USER_AGENT,
           },
+          timeout: HTTP_TIMEOUT.DEFAULT,
         }
       );
 
-      // Extract character count from extract_html (approximation)
-      const extract = response.data.extract || '';
-      return extract.length * 5; // Rough estimate: summary is ~20% of full article
-    } catch (error) {
-      console.warn(`Could not fetch wiki length for ${title}`);
-      return 0;
+      // Extract character count from extract (approximation)
+      const extract = response.data?.extract || '';
+      if (!extract) {
+        return null; // No summary available
+      }
+
+      // ROUGH ESTIMATE: summary is ~20% of full article
+      // This is NOT a reliable metric - see TODO above
+      return extract.length * 5;
+    } catch (error: unknown) {
+      const errorMsg = getErrorMessage(error);
+      console.warn(`Could not fetch wiki length for ${title}: ${errorMsg}`);
+      return null; // Data unavailable, not zero
     }
   }
 }

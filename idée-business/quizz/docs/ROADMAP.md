@@ -505,7 +505,65 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
     - ✓ Returns 'legendary' for score >= 90
 - **Impact:** Prevents regressions when modifying rarity algorithm
 
+#### P2 — Collection Utils Improvements
+
+**Context:** Improvements identified during utils review (2026-10-19)  
+**Documentation:** `docs/COLLEC/utils-feedback.md`
+
+**Task: Replace wikiTextLength estimation with real data**
+- **Priority:** P2
+- **Effort:** ~2 hours (investigation + implementation)
+- **Current issue:** `wikiTextLength = extract.length * 5` is unreliable
+  - Assumes summary is 20% of article (no correlation)
+  - Short summary ≠ short article, long summary ≠ long article
+- **Investigation needed:**
+  - Check if Wikipedia REST API exposes actual article length
+  - Check if MediaWiki API `action=query&prop=revisions&rvprop=size` is accessible
+- **Alternative (if no API):** Rename to `estimatedWikiLength` and document clearly
+- **Impact:** More accurate rarity scores for "documentary importance" criterion
+
+**Task: SPARQL make description OPTIONAL**
+- **Priority:** P2
+- **Effort:** ~1 hour
+- **Current issue:** Entities without French description are excluded
+- **Fix:** Change SPARQL query from:
+  ```sparql
+  ?entity schema:description ?description .
+  FILTER(LANG(?description) = "fr")
+  ```
+  To:
+  ```sparql
+  OPTIONAL { ?entity schema:description ?description . FILTER(LANG(?description) = "fr") }
+  ```
+- **Impact:** Include more valid entities (especially for rare/obscure ones)
+- **Defer until:** V2 when scaling to 1000+ cards
+
+**Task: Handle multiple P31 (instance of) types**
+- **Priority:** P2
+- **Effort:** ~2 hours
+- **Current issue:** Entities with multiple types keep first one arbitrarily
+- **Fix options:**
+  1. Define type hierarchy (humain > artiste > peintre)
+  2. Use `ORDER BY` in SPARQL to prioritize certain types
+  3. Store all types and pick most specific
+- **Impact:** More accurate entity type classification
+- **Defer until:** V2 when type accuracy becomes critical
+
+**Task: Centralize HTTP utilities**
+- **Priority:** P2
+- **Effort:** ~2 hours
+- **What:** Create comprehensive `http-config.ts` with:
+  - ✅ User-Agent (done)
+  - ✅ Error handling (done)
+  - Retry policy (exponential backoff)
+  - Timeout configuration (done)
+  - Rate limiting utilities
+- **Impact:** Consistent HTTP behavior across all clients
+- **Defer until:** When adding more data sources (V2)
+
 #### Completed (2026-10-19)
+
+**Session 1 — Main Scripts (P0 fixes)**
 
 ✅ **P0 — Remove fake image generation** (`02-download-images.ts`)
 - Removed `createTestImage()` function
@@ -522,6 +580,34 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - `null` = data unavailable → returns `null` (cannot calculate)
 - `0` = measured zero → returns score based on zero
 - Scripts propagate `null` correctly (`01`, `04`, `05`)
+
+**Session 2 — Utils (P0/P1 fixes)**
+
+✅ **P0 — Return null instead of 0 for errors** (`wikipedia.client.ts`, `wikidata.client.ts`)
+- `fetchPageviews()` returns `number | null` (404 → null, not 0)
+- `fetchWikiTextLength()` returns `number | null` (error → null, not 0)
+- Types updated: `WikidataEntity.wikiTextLength: number | null`
+- Types updated: `RawEntity.pageviewsMonth/wikiTextLength: number | null`
+
+✅ **P1 — Centralize User-Agent** (`utils/http-config.ts`)
+- New file with shared `USER_AGENT` constant
+- Both clients import from central config
+- Compliant with Wikimedia User-Agent policy
+
+✅ **P1 — Validate pageviews response structure** (`wikipedia.client.ts`)
+- Check `response.data.items` is array before processing
+- Validate each `item.views` is number before summing
+- Prevents `NaN` from invalid responses
+
+✅ **P1 — Fix word splitting bug in validateImageUrl** (`wikidata.client.ts`)
+- Separate `normalizeForMatch()` (no spaces) from `normalizeForWords()` (keep spaces)
+- Use `normalizeForWords()` for splitting label into words
+- Fixes bug where "Marie Curie" became "mariecurie" → no word matches
+
+✅ **P1 — TypeScript error handling** (all utils)
+- Use `getErrorMessage(error: unknown)` helper
+- Use `getHttpStatus(error: unknown)` helper
+- Consistent `catch (error: unknown)` blocks
 
 ---
 

@@ -6,15 +6,15 @@ export interface WikidataEntity {
   wikipediaUrl: string | null;
   wikidataUrl: string;
   imageUrl: string | null;
-  wikiTextLength: number;
+  wikiTextLength: number | null; // null = data unavailable, 0 = measured zero
 }
 
 export interface RawEntity {
   wikidataId: string;
   label: string;
   type: string;
-  pageviewsMonth: number;
-  wikiTextLength: number;
+  pageviewsMonth: number | null; // null = data unavailable, 0 = measured zero
+  wikiTextLength: number | null; // null = data unavailable, 0 = measured zero
   description: string;
   wikidataUrl: string;
   wikipediaUrl: string | null;
