@@ -35,31 +35,16 @@ Error: Cannot find module './utils/wikidata.client'
 
 ### Solutions à essayer
 
-**Option A : Créer un nouveau script simple**
+**Option A : Améliorer le script existant**
 ```bash
 cd apps/backend/scripts/collection
-cp 02-download-images.ts 08-download-with-validation.ts
+cp 02-download-images.ts
 # Ajouter la validation du WikidataClient
 ```
-
-**Option B : Compiler en JS**
-```bash
-cd apps/backend
-npx tsc scripts/collection/06-update-card-images.ts --outDir scripts/collection/dist
-node scripts/collection/dist/06-update-card-images.js
-```
-
-**Option C : Utiliser le script 02 existant**
-```bash
-# Il fonctionne déjà, mais SANS validation
-# Risque : mêmes erreurs qu'hier
-```
-
-### Test de validation
-```bash
-# Le script doit démarrer et afficher :
-# "📦 Phase 1: Batch pre-fetching metadata from Wikidata..."
-```
+  ```bash
+  # Le script doit démarrer et afficher :
+  # "📦 Phase 1: Batch pre-fetching metadata from Wikidata..."
+  ```
 
 ---
 

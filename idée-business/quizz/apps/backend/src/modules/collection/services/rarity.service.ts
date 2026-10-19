@@ -5,9 +5,17 @@ export class RarityService {
   /**
    * Normalize pageviews to 0-100 scale using logarithmic scale
    * Thresholds: 0 → 0, 1k → ~25, 10k → ~50, 100k → ~75, 1M+ → ~95
+   *
+   * @param pageviews - Number of pageviews (0 = measured zero, null = unavailable)
+   * @returns Score 0-100, or null if data unavailable
    */
-  calculatePageviewsScore(pageviews: number): number {
-    if (pageviews <= 0) return 0;
+  calculatePageviewsScore(pageviews: number | null | undefined): number | null {
+    // Distinguish between unavailable (null/undefined) and measured zero
+    if (pageviews === null || pageviews === undefined) {
+      return null; // Data unavailable
+    }
+
+    if (pageviews <= 0) return 0; // Measured zero or negative
 
     // Log scale: score = 25 * log10(pageviews / 100)
     // 100 → 0, 1k → 25, 10k → 50, 100k → 75, 1M → 100
@@ -20,9 +28,17 @@ export class RarityService {
   /**
    * Normalize wiki text length to 0-100 scale using linear scale
    * Thresholds: 0 → 0, 1k → ~20, 5k → ~40, 20k → ~60, 50k+ → ~90
+   *
+   * @param length - Wiki text length (0 = measured zero, null = unavailable)
+   * @returns Score 0-100, or null if data unavailable
    */
-  calculateWikiLengthScore(length: number): number {
-    if (length <= 0) return 0;
+  calculateWikiLengthScore(length: number | null | undefined): number | null {
+    // Distinguish between unavailable (null/undefined) and measured zero
+    if (length === null || length === undefined) {
+      return null; // Data unavailable
+    }
+
+    if (length <= 0) return 0; // Measured zero or negative
 
     // Linear scale with diminishing returns
     // 0-1k: 0-20 (20 points per 1k)
@@ -49,19 +65,38 @@ export class RarityService {
 
   /**
    * Calculate composite rarity score: 40% popularity + 60% depth
-   * Returns value in [0, 100]
+   * Returns value in [0, 100], or null if required data is unavailable
+   *
+   * @param pageviews - Number of pageviews (null = unavailable)
+   * @param wikiLength - Wiki text length (null = unavailable)
+   * @returns Rarity score 0-100, or null if data incomplete
    */
-  calculateRarityScore(pageviews: number, wikiLength: number): number {
+  calculateRarityScore(
+    pageviews: number | null | undefined,
+    wikiLength: number | null | undefined
+  ): number | null {
     const pageviewsScore = this.calculatePageviewsScore(pageviews);
     const wikiLengthScore = this.calculateWikiLengthScore(wikiLength);
+
+    // If any required data is unavailable, score is incomplete
+    if (pageviewsScore === null || wikiLengthScore === null) {
+      return null;
+    }
 
     return 0.4 * pageviewsScore + 0.6 * wikiLengthScore;
   }
 
   /**
    * Map rarity score [0-100] to tier
+   *
+   * @param score - Rarity score (null = incomplete data)
+   * @returns Rarity tier, or null if score unavailable
    */
-  scoreToRarity(score: number): 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' {
+  scoreToRarity(score: number | null): 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | null {
+    if (score === null || score === undefined) {
+      return null; // Cannot assign rarity without complete data
+    }
+
     if (score >= 90) return 'legendary';
     if (score >= 70) return 'epic';
     if (score >= 50) return 'rare';

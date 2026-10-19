@@ -412,6 +412,117 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 - Pack opening system
 - Gold economy integration
 
+### Collection Pipeline Improvements (Backlog)
+
+**Context:** Improvements identified during P0 review of collection scripts (2026-10-19)  
+**Documentation:** `docs/COLLEC/P0-IMPROVEMENTS-2026-10-19.md`  
+**Status:** 📋 Planned
+
+#### P1 — Data Integrity
+
+**Task: Validate WikidataID uniqueness before seeding**
+- **Priority:** P1
+- **Effort:** ~30 min
+- **Description:** Add validation in `03-seed-database.ts` to detect duplicate QIDs before insertion
+- **Implementation:**
+  ```typescript
+  const wikidataIds = new Set();
+  for (const entity of entities) {
+    if (wikidataIds.has(entity.wikidataId)) {
+      throw new Error(`Duplicate wikidataId: ${entity.wikidataId}`);
+    }
+    wikidataIds.add(entity.wikidataId);
+  }
+  ```
+- **Impact:** Prevents data corruption from duplicate entities
+
+#### P2 — Enhanced Rarity Algorithm
+
+**Task: Add "International Presence" criterion (20% weight)**
+- **Priority:** P2
+- **Effort:** ~3 hours
+- **Current formula:** `0.4 * pageviewsScore + 0.6 * wikiLengthScore`
+- **Target formula:** `0.5 * pageviewsScore + 0.3 * wikiLengthScore + 0.2 * internationalScore`
+- **Description:** 
+  - Fetch number of Wikipedia language versions from Wikidata
+  - Normalize to 0-100 scale (1 lang → 0, 50+ langs → 100)
+  - Update `RarityService.calculateRarityScore()` to accept 3 parameters
+  - Recalculate all existing cards with new formula
+- **Rationale:** More accurate rarity for entities with global vs regional importance
+- **Breaking change:** Yes - requires migration and recalculation of all cards
+- **Defer until:** After MVP3 Phase 2, when collection is stabilized
+
+**Task: Rarity algorithm versioning**
+- **Priority:** P2
+- **Effort:** ~2 hours
+- **Description:**
+  - Add fields to `Card` model:
+    - `rarityAlgorithmVersion: String` (e.g., "1.0.0", "2.0.0")
+    - `rarityCalculatedAt: DateTime`
+  - Store raw data used for calculation (pageviews, wikiLength, internationalScore)
+  - Enable selective recalculation when algorithm changes
+- **Prisma migration:**
+  ```prisma
+  model Card {
+    // ... existing fields
+    rarityAlgorithmVersion String  @default("1.0.0")
+    rarityCalculatedAt     DateTime @default(now())
+    rarityRawData          Json?   // {pageviews, wikiLength, internationalScore}
+  }
+  ```
+- **Impact:** Enables safe algorithm evolution without losing historical data
+
+#### P2 — Test Coverage
+
+**Task: RarityService unit tests**
+- **Priority:** P2
+- **Effort:** ~2 hours
+- **Test file:** `apps/backend/src/modules/collection/services/rarity.service.spec.ts`
+- **Test cases:**
+  - `calculatePageviewsScore()`:
+    - ✓ Returns null for null/undefined input (data unavailable)
+    - ✓ Returns 0 for measured zero pageviews
+    - ✓ Returns ~25 for 1k pageviews
+    - ✓ Returns ~50 for 10k pageviews
+    - ✓ Returns ~75 for 100k pageviews
+    - ✓ Returns ~100 for 1M+ pageviews
+  - `calculateWikiLengthScore()`:
+    - ✓ Returns null for null/undefined input
+    - ✓ Returns 0 for measured zero length
+    - ✓ Returns ~20 for 1k chars
+    - ✓ Returns ~40 for 5k chars
+    - ✓ Returns ~60 for 20k chars
+  - `calculateRarityScore()`:
+    - ✓ Returns null if any input is null (incomplete data)
+    - ✓ Returns correct weighted score for complete data
+    - ✓ Distinguishes null (unavailable) from 0 (measured zero)
+  - `scoreToRarity()`:
+    - ✓ Returns null for null score
+    - ✓ Returns 'common' for score < 30
+    - ✓ Returns 'uncommon' for score 30-49
+    - ✓ Returns 'rare' for score 50-69
+    - ✓ Returns 'epic' for score 70-89
+    - ✓ Returns 'legendary' for score >= 90
+- **Impact:** Prevents regressions when modifying rarity algorithm
+
+#### Completed (2026-10-19)
+
+✅ **P0 — Remove fake image generation** (`02-download-images.ts`)
+- Removed `createTestImage()` function
+- Failed downloads set `imageUrl: null` explicitly
+- Failed downloads tracked in `data/failed-downloads-report.json`
+
+✅ **P0 — Validate image format by content** (`02-download-images.ts`, `06-update-card-images.ts`)
+- Sharp detects actual format from buffer (not URL)
+- SVG detected by content analysis (`buffer.includes('<svg')`)
+- File extension matches real format (no `.jpg` files containing PNG data)
+
+✅ **P0 — Distinguish null vs 0 for missing data** (`RarityService`)
+- Signatures accept `number | null | undefined`
+- `null` = data unavailable → returns `null` (cannot calculate)
+- `0` = measured zero → returns score based on zero
+- Scripts propagate `null` correctly (`01`, `04`, `05`)
+
 ---
 
 ## V2 - Collection System (Monetization Layer)

@@ -74,13 +74,19 @@ async function downloadWithRetry(imageUrl: string, maxRetries: number = 3): Prom
   throw new Error(`Failed after ${maxRetries} attempts: ${lastError.message}`);
 }
 
-async function optimizeImage(buffer: Buffer, originalUrl: string): Promise<{buffer: Buffer, width: number, height: number}> {
-  // SVG : pas d'optimisation (déjà vectoriel)
-  if (originalUrl.toLowerCase().endsWith('.svg')) {
-    return { buffer, width: 800, height: 600 };
+async function optimizeImage(buffer: Buffer): Promise<{buffer: Buffer, width: number, height: number, format: string}> {
+  // Detect actual format from buffer content (not URL)
+  const isSvg = buffer.toString('utf-8', 0, 100).includes('<svg');
+
+  if (isSvg) {
+    // SVG : pas d'optimisation (déjà vectoriel)
+    return { buffer, width: 800, height: 600, format: 'svg' };
   }
 
+  // Use Sharp to detect actual image format
   const metadata = await sharp(buffer).metadata();
+  const detectedFormat = metadata.format || 'jpeg';
+
   let image = sharp(buffer);
 
   // Resize si > 800px
@@ -91,11 +97,12 @@ async function optimizeImage(buffer: Buffer, originalUrl: string): Promise<{buff
     });
   }
 
-  // Compression selon le format
+  // Compression based on DETECTED format (not URL)
   let optimizedBuffer: Buffer;
-  if (originalUrl.toLowerCase().includes('.png')) {
+  if (detectedFormat === 'png') {
     optimizedBuffer = await image.png({ compressionLevel: 8 }).toBuffer();
   } else {
+    // Default to JPEG for all other formats
     optimizedBuffer = await image.jpeg({ quality: 85 }).toBuffer();
   }
 
@@ -105,6 +112,7 @@ async function optimizeImage(buffer: Buffer, originalUrl: string): Promise<{buff
     buffer: optimizedBuffer,
     width: finalMetadata.width || 800,
     height: finalMetadata.height || 600,
+    format: detectedFormat,
   };
 }
 
@@ -235,40 +243,54 @@ async function main() {
 
       console.log(`  🖼️  Image URL: ${wikidataEntity.imageUrl.substring(0, 70)}...`);
 
-      // Generate filename
+      // Generate filename hash (extension will be determined after format detection)
       const hash = crypto.createHash('md5').update(wikidataEntity.imageUrl).digest('hex');
-      const ext = wikidataEntity.imageUrl.toLowerCase().endsWith('.svg') ? '.svg' : '.jpg';
-      const filename = `${hash}${ext}`;
-      const outputPath = path.join(imagesDir, filename);
+
+      // Check if already downloaded (try all possible extensions)
+      const possibleExtensions = ['.svg', '.jpg', '.png'];
+      let existingFile = null;
+      for (const ext of possibleExtensions) {
+        const filePath = path.join(imagesDir, `${hash}${ext}`);
+        if (fs.existsSync(filePath)) {
+          existingFile = { path: filePath, ext };
+          break;
+        }
+      }
 
       let imageDimensions: { width: number; height: number };
+      let finalFilename: string;
 
-      // Check if already downloaded
-      if (fs.existsSync(outputPath)) {
-        console.log('  ✓ Image already downloaded locally');
+      if (existingFile) {
+        console.log(`  ✓ Image already downloaded locally: ${hash}${existingFile.ext}`);
         // Get dimensions from existing file
-        if (ext === '.svg') {
+        if (existingFile.ext === '.svg') {
           imageDimensions = { width: 800, height: 600 };
         } else {
-          const metadata = await sharp(outputPath).metadata();
+          const metadata = await sharp(existingFile.path).metadata();
           imageDimensions = {
             width: metadata.width || 800,
             height: metadata.height || 600,
           };
         }
+        finalFilename = `${hash}${existingFile.ext}`;
       } else {
         // Download and optimize
         console.log('  ⬇️  Downloading...');
         const imageBuffer = await downloadWithRetry(wikidataEntity.imageUrl);
 
         console.log('  ⚙️  Optimizing with Sharp...');
-        const { buffer: optimizedBuffer, width, height } = await optimizeImage(imageBuffer, wikidataEntity.imageUrl);
+        const { buffer: optimizedBuffer, width, height, format } = await optimizeImage(imageBuffer);
+
+        // Determine correct extension based on actual format
+        const ext = format === 'svg' ? '.svg' : (format === 'png' ? '.png' : '.jpg');
+        finalFilename = `${hash}${ext}`;
+        const outputPath = path.join(imagesDir, finalFilename);
 
         // Save optimized image
         fs.writeFileSync(outputPath, optimizedBuffer);
 
         const sizeKB = Math.round(optimizedBuffer.length / 1024);
-        console.log(`  ✅ Saved (${width}x${height}, ${sizeKB} KB)`);
+        console.log(`  ✅ Saved (${width}x${height}, ${sizeKB} KB, format: ${format})`);
 
         imageDimensions = { width, height };
       }
@@ -277,7 +299,7 @@ async function main() {
       await prisma.card.update({
         where: { id: card.id },
         data: {
-          imageUrl: `/images/collection/${filename}`,
+          imageUrl: `/images/collection/${finalFilename}`,
           imageWidth: imageDimensions.width,
           imageHeight: imageDimensions.height,
           imageSourceUrl: wikidataEntity.imageUrl,

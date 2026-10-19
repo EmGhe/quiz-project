@@ -70,6 +70,11 @@ function generateEntity(
   const rarityScore = rarityService.calculateRarityScore(pageviews, wikiLength);
   const rarity = rarityService.scoreToRarity(rarityScore);
 
+  // Synthetic data is always complete, so score and rarity should never be null
+  if (rarityScore === null || rarity === null) {
+    throw new Error(`Generated entity has incomplete rarity data: ${label}`);
+  }
+
   return {
     wikidataId: `Q${id}`,
     label,

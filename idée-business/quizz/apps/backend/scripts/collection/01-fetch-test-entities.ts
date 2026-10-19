@@ -44,7 +44,7 @@ async function main() {
     try {
       // Try to fetch from APIs
       let entity = null;
-      let pageviewsMonth = 0;
+      let pageviewsMonth: number | null = null; // null = unavailable, 0 = measured zero
       let description = '';
 
       try {
@@ -60,10 +60,11 @@ async function main() {
             console.log(`  Pageviews: ${pageviewsMonth.toLocaleString()}`);
           } catch (error) {
             console.warn(`  Could not fetch pageviews: ${error.message}`);
-            pageviewsMonth = 0;
+            pageviewsMonth = null; // Data unavailable, not zero
           }
         } else {
           console.log(`  Pageviews: N/A (no Wikipedia article)`);
+          pageviewsMonth = null; // No Wikipedia = no pageview data available
         }
 
         // Fetch summary
@@ -108,7 +109,12 @@ async function main() {
         entity.wikiTextLength
       );
       const rarity = rarityService.scoreToRarity(rarityScore);
-      console.log(`  Rarity score: ${rarityScore.toFixed(2)} → ${rarity}`);
+
+      if (rarityScore === null || rarity === null) {
+        console.log(`  Rarity: INCOMPLETE DATA - cannot calculate rarity`);
+      } else {
+        console.log(`  Rarity score: ${rarityScore.toFixed(2)} → ${rarity}`);
+      }
 
       results.push({
         wikidataId: testEntity.wikidataId,

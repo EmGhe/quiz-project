@@ -10,7 +10,7 @@ interface EntityData {
   imageUrl: string | null;
 }
 
-async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCount: number = 0): Promise<{width: number, height: number}> {
+async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCount: number = 0): Promise<{width: number, height: number, format: string}> {
   try {
     // Download image
     const response = await axios.get(imageUrl, {
@@ -23,15 +23,18 @@ async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCo
 
     const buffer = Buffer.from(response.data);
 
-    // Check if SVG
-    if (imageUrl.toLowerCase().endsWith('.svg')) {
+    // Detect actual format from buffer content (not URL)
+    const isSvg = buffer.toString('utf-8', 0, 100).includes('<svg');
+
+    if (isSvg) {
       // Save SVG as-is (no optimization)
       fs.writeFileSync(outputPath, buffer);
-      return { width: 800, height: 600 }; // Default SVG dimensions
+      return { width: 800, height: 600, format: 'svg' }; // Default SVG dimensions
     }
 
-    // Optimize with Sharp
+    // Use Sharp to detect actual image format and metadata
     const metadata = await sharp(buffer).metadata();
+    const detectedFormat = metadata.format || 'jpeg'; // Sharp detects actual format
 
     // Resize if width > 800px
     let image = sharp(buffer);
@@ -42,10 +45,11 @@ async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCo
       });
     }
 
-    // Compress
-    if (imageUrl.toLowerCase().includes('.png')) {
+    // Compress based on DETECTED format (not URL)
+    if (detectedFormat === 'png') {
       await image.png({ quality: 85 }).toFile(outputPath);
     } else {
+      // Default to JPEG for all other formats (webp, tiff, etc.)
       await image.jpeg({ quality: 85 }).toFile(outputPath);
     }
 
@@ -54,6 +58,7 @@ async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCo
     return {
       width: finalMetadata.width || 800,
       height: finalMetadata.height || 600,
+      format: detectedFormat,
     };
   } catch (error) {
     // Handle rate limiting with exponential backoff
@@ -67,22 +72,6 @@ async function downloadAndOptimize(imageUrl: string, outputPath: string, retryCo
   }
 }
 
-async function createTestImage(outputPath: string, width: number = 800, height: number = 600): Promise<{width: number, height: number}> {
-  // Create a simple test image (solid color with dimensions)
-  const buffer = await sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: { r: 100, g: 150, b: 200 },
-    },
-  })
-    .jpeg({ quality: 85 })
-    .toBuffer();
-
-  fs.writeFileSync(outputPath, buffer);
-  return { width, height };
-}
 
 async function main() {
   console.log('Downloading and optimizing images...\n');
@@ -106,7 +95,10 @@ async function main() {
   }
 
   const updatedEntities = [];
+  const failedDownloads = [];
   let successCount = 0;
+  let skipCount = 0;
+  let failCount = 0;
 
   for (const entity of entities) {
     console.log(`\n${entity.label}...`);
@@ -114,59 +106,106 @@ async function main() {
     if (!entity.imageUrl) {
       console.log('  ⚠️  No image URL, skipping');
       updatedEntities.push(entity);
+      skipCount++;
       continue;
     }
 
     try {
-      // Generate filename from MD5 hash
+      // Generate filename from MD5 hash (temporary, will be corrected based on actual format)
       const hash = crypto.createHash('md5').update(entity.imageUrl).digest('hex');
-      const ext = entity.imageUrl.toLowerCase().endsWith('.svg') ? '.svg' : '.jpg';
-      const filename = `${hash}${ext}`;
-      const outputPath = path.join(imagesDir, filename);
+
+      // Don't assume extension from URL - will be determined after download
+      const tempPath = path.join(imagesDir, `${hash}.tmp`);
 
       // Skip if already downloaded
-      if (fs.existsSync(outputPath)) {
-        const metadata = await sharp(outputPath).metadata();
-        console.log(`  ✅ Already downloaded: ${filename} (${metadata.width}x${metadata.height})`);
-        updatedEntities.push({
-          ...entity,
-          imageUrl: `/images/collection/${filename}`,
-          imageWidth: metadata.width || 800,
-          imageHeight: metadata.height || 600,
-          imageSourceUrl: entity.imageUrl,
-        });
+      const possibleExtensions = ['.svg', '.jpg', '.png'];
+      let existingFile = null;
+      for (const ext of possibleExtensions) {
+        const filePath = path.join(imagesDir, `${hash}${ext}`);
+        if (fs.existsSync(filePath)) {
+          existingFile = { path: filePath, ext };
+          break;
+        }
+      }
+
+      if (existingFile) {
+        if (existingFile.ext === '.svg') {
+          console.log(`  ✅ Already downloaded: ${hash}${existingFile.ext} (SVG)`);
+          updatedEntities.push({
+            ...entity,
+            imageUrl: `/images/collection/${hash}${existingFile.ext}`,
+            imageWidth: 800,
+            imageHeight: 600,
+            imageSourceUrl: entity.imageUrl,
+          });
+        } else {
+          const metadata = await sharp(existingFile.path).metadata();
+          console.log(`  ✅ Already downloaded: ${hash}${existingFile.ext} (${metadata.width}x${metadata.height})`);
+          updatedEntities.push({
+            ...entity,
+            imageUrl: `/images/collection/${hash}${existingFile.ext}`,
+            imageWidth: metadata.width || 800,
+            imageHeight: metadata.height || 600,
+            imageSourceUrl: entity.imageUrl,
+          });
+        }
         successCount++;
         continue;
       }
 
-      let dimensions;
-      try {
-        // Try to download real image
-        dimensions = await downloadAndOptimize(entity.imageUrl, outputPath);
-        successCount++;
-      } catch (downloadError) {
-        // Fall back to test image
-        console.log(`  ⚠️  Download failed, using test image`);
-        dimensions = await createTestImage(outputPath, 800, 600);
-      }
+      // Download and optimize
+      const dimensions = await downloadAndOptimize(entity.imageUrl, tempPath);
 
-      const stats = fs.statSync(outputPath);
-      console.log(`  ✅ Saved: ${filename} (${Math.round(stats.size / 1024)}KB, ${dimensions.width}x${dimensions.height})`);
+      // Determine correct extension based on actual format
+      const ext = dimensions.format === 'svg' ? '.svg' : (dimensions.format === 'png' ? '.png' : '.jpg');
+      const finalPath = path.join(imagesDir, `${hash}${ext}`);
+
+      // Rename temp file to final name with correct extension
+      fs.renameSync(tempPath, finalPath);
+
+      const stats = fs.statSync(finalPath);
+      console.log(`  ✅ Saved: ${hash}${ext} (${Math.round(stats.size / 1024)}KB, ${dimensions.width}x${dimensions.height}, ${dimensions.format})`);
 
       // Update entity with local path
       updatedEntities.push({
         ...entity,
-        imageUrl: `/images/collection/${filename}`,
+        imageUrl: `/images/collection/${hash}${ext}`,
         imageWidth: dimensions.width,
         imageHeight: dimensions.height,
         imageSourceUrl: entity.imageUrl, // Store original Wikimedia URL
       });
 
+      successCount++;
+
       // Rate limit: 2s between downloads
       await new Promise(resolve => setTimeout(resolve, 2000));
     } catch (error) {
-      console.error(`  ❌ Error: ${error.message}`);
-      updatedEntities.push(entity);
+      console.error(`  ❌ Download failed: ${error.message}`);
+
+      // Clean up any temp file
+      const hash = crypto.createHash('md5').update(entity.imageUrl).digest('hex');
+      const tempPath = path.join(imagesDir, `${hash}.tmp`);
+      if (fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+      }
+
+      // Keep entity but with null imageUrl (no fake image)
+      updatedEntities.push({
+        ...entity,
+        imageUrl: null, // Explicitly set to null on failure
+        imageWidth: null,
+        imageHeight: null,
+        imageSourceUrl: entity.imageUrl, // Keep original URL for retry
+      });
+
+      failedDownloads.push({
+        wikidataId: entity.wikidataId,
+        label: entity.label,
+        attemptedUrl: entity.imageUrl,
+        error: error.message,
+      });
+
+      failCount++;
     }
   }
 
@@ -177,8 +216,27 @@ async function main() {
 
   const outputPath = path.join(__dirname, outputFile);
   fs.writeFileSync(outputPath, JSON.stringify(updatedEntities, null, 2));
-  console.log(`\n✅ Saved ${updatedEntities.length} entities to ${outputPath}`);
-  console.log(`   Images downloaded: ${successCount} / ${entities.filter(e => e.imageUrl).length}`);
+
+  // Save failed downloads report
+  if (failedDownloads.length > 0) {
+    const failedReportPath = path.join(__dirname, 'data/failed-downloads-report.json');
+    fs.writeFileSync(failedReportPath, JSON.stringify(failedDownloads, null, 2));
+    console.log(`\n❌ Failed downloads report saved to ${failedReportPath}`);
+  }
+
+  // Summary
+  console.log(`\n${'='.repeat(60)}`);
+  console.log('📊 Summary:');
+  console.log(`   Total entities: ${entities.length}`);
+  console.log(`   ✅ Success: ${successCount}`);
+  console.log(`   ⏭️  Skipped (no URL): ${skipCount}`);
+  console.log(`   ❌ Failed: ${failCount}`);
+  console.log(`   📁 Output: ${outputFile}`);
+
+  if (failCount > 0) {
+    console.log(`\n⚠️  ${failCount} images could not be downloaded.`);
+    console.log(`   These entities have imageUrl: null and can be retried later.`);
+  }
 }
 
 main().catch(console.error);
