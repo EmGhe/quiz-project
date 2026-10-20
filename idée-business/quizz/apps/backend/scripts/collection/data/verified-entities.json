@@ -1,0 +1,482 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-10-20",
+    "description": "Liste vérifiée des 50 entités avec leurs QIDs corrects depuis Wikidata",
+    "source": "Vérification manuelle + API Wikidata"
+  },
+  "entities": [
+    {
+      "wikidataId": "Q517",
+      "label": "Napoléon Bonaparte",
+      "type": "militaire et homme d'État",
+      "description": "Empereur des Français, militaire et homme d'État qui a dominé l'Europe au début du XIXe siècle.",
+      "album": "personnalites",
+      "targetRarity": "legendary",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q1631",
+      "label": "Édith Piaf",
+      "type": "chanteuse",
+      "description": "Chanteuse française emblématique, surnommée \"La Môme Piaf\", connue pour \"La Vie en rose\".",
+      "album": "personnalites",
+      "targetRarity": "epic",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q535",
+      "label": "Victor Hugo",
+      "type": "écrivain",
+      "description": "Poète, dramaturge et romancier français, auteur des Misérables et de Notre-Dame de Paris.",
+      "album": "personnalites",
+      "targetRarity": "rare",
+      "verified": true,
+      "note": "Q7374 était incorrect (Alfred Hitchcock), le vrai est Q535"
+    },
+    {
+      "wikidataId": "Q687",
+      "label": "Molière",
+      "type": "dramaturge",
+      "description": "Dramaturge et comédien français, considéré comme l'un des plus grands auteurs de comédie.",
+      "album": "personnalites",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q2042",
+      "label": "Charles de Gaulle",
+      "type": "homme d'État",
+      "description": "Général et homme d'État français, fondateur de la Ve République.",
+      "album": "personnalites",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q296",
+      "label": "Claude Monet",
+      "type": "peintre",
+      "description": "Peintre impressionniste français, célèbre pour ses Nymphéas et Impression, soleil levant.",
+      "album": "personnalites",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q1835",
+      "label": "Zinedine Zidane",
+      "type": "footballeur",
+      "description": "Footballeur français légendaire, vainqueur de la Coupe du monde 1998.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Q7251 était incorrect (Alan Turing)"
+    },
+    {
+      "wikidataId": "Q7742",
+      "label": "Louis XIV",
+      "type": "monarque",
+      "description": "Roi de France surnommé le Roi-Soleil, règne le plus long de l'histoire européenne.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Q12252 était incorrect"
+    },
+    {
+      "wikidataId": "Q7226",
+      "label": "Jeanne d'Arc",
+      "type": "héroïne militaire",
+      "description": "Héroïne de la guerre de Cent Ans, sainte patronne de la France.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q212015",
+      "label": "Johnny Hallyday",
+      "type": "chanteur",
+      "description": "Chanteur français surnommé \"l'idole des jeunes\", icône du rock français.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q185828",
+      "label": "Daft Punk",
+      "type": "groupe de musique",
+      "description": "Duo français de musique électronique, pionniers de la French touch.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q39931",
+      "label": "Auguste Renoir",
+      "type": "peintre",
+      "description": "Peintre impressionniste français, célèbre pour ses scènes de la vie parisienne.",
+      "album": "personnalites",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q106529",
+      "label": "Alain Delon",
+      "type": "acteur",
+      "description": "Acteur français emblématique du cinéma des années 1960-1970.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q8927",
+      "label": "Marion Cotillard",
+      "type": "actrice",
+      "description": "Actrice française oscarisée pour La Môme, star internationale.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q106508",
+      "label": "Gérard Depardieu",
+      "type": "acteur",
+      "description": "Acteur français prolifique, figure majeure du cinéma français.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q106510 était Klaus-Michael Kodalle"
+    },
+    {
+      "wikidataId": "Q1912",
+      "label": "Karim Benzema",
+      "type": "footballeur",
+      "description": "Footballeur français, Ballon d'Or 2022, attaquant légendaire.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q43907 était Blitz"
+    },
+    {
+      "wikidataId": "Q21621995",
+      "label": "Kylian Mbappé",
+      "type": "footballeur",
+      "description": "Footballeur français, champion du monde 2018, prodige du football moderne.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q3721206 était une fourmi !"
+    },
+    {
+      "wikidataId": "Q4261",
+      "label": "Michel Platini",
+      "type": "footballeur",
+      "description": "Footballeur et dirigeant français, triple Ballon d'Or.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q26027 était Frontier Psychiatrist"
+    },
+    {
+      "wikidataId": "Q35548",
+      "label": "Paul Cézanne",
+      "type": "peintre",
+      "description": "Peintre post-impressionniste, considéré comme le père de l'art moderne.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q178953",
+      "label": "Vercingétorix",
+      "type": "chef gaulois",
+      "description": "Chef gaulois qui mena la résistance contre Jules César.",
+      "album": "personnalites",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q83320 était acide nitrique"
+    },
+    {
+      "wikidataId": "Q12418",
+      "label": "La Joconde",
+      "type": "peinture",
+      "description": "Portrait de Mona Lisa par Léonard de Vinci, tableau le plus célèbre du monde.",
+      "album": "culture",
+      "targetRarity": "epic",
+      "verified": false,
+      "note": "À VÉRIFIER - possiblement Q12418"
+    },
+    {
+      "wikidataId": "Q180736",
+      "label": "Les Misérables",
+      "type": "roman",
+      "description": "Roman de Victor Hugo publié en 1862, l'un des plus grands romans français.",
+      "album": "culture",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q25338",
+      "label": "Le Petit Prince",
+      "type": "roman",
+      "description": "Conte philosophique d'Antoine de Saint-Exupéry, l'un des livres les plus traduits.",
+      "album": "culture",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q595",
+      "label": "Intouchables",
+      "type": "film",
+      "description": "Film français réalisé par Nakache et Toledano, succès mondial.",
+      "album": "culture",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q652599 était Twilight"
+    },
+    {
+      "wikidataId": "Q484048",
+      "label": "Le Fabuleux Destin d'Amélie Poulain",
+      "type": "film",
+      "description": "Film de Jean-Pierre Jeunet avec Audrey Tautou, phénomène culturel.",
+      "album": "culture",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 (Amélie est le titre international)"
+    },
+    {
+      "wikidataId": "Q466101",
+      "label": "La Haine",
+      "type": "film",
+      "description": "Film de Mathieu Kassovitz sur les banlieues, drame social culte.",
+      "album": "culture",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q2040354 était Otto Rudolf Pulch"
+    },
+    {
+      "wikidataId": "Q7620503",
+      "label": "Astérix",
+      "type": "bande dessinée",
+      "description": "Série de bandes dessinées créée par Goscinny et Uderzo, icône française.",
+      "album": "culture",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q167726 était Jurassic Park. Q7620503 = le personnage"
+    },
+    {
+      "wikidataId": "Q163297",
+      "label": "L'Étranger",
+      "type": "roman",
+      "description": "Roman d'Albert Camus publié en 1942, classique de la littérature française.",
+      "album": "culture",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q178713 était Isao Takahata. Script avait trouvé Alien, corrigé manuellement."
+    },
+    {
+      "wikidataId": "Q328523",
+      "label": "Impression, soleil levant",
+      "type": "peinture",
+      "description": "Tableau de Claude Monet qui a donné son nom à l'impressionnisme.",
+      "album": "culture",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q212616 était Le Radeau de la Méduse"
+    },
+    {
+      "wikidataId": "Q152509",
+      "label": "Le Déjeuner sur l'herbe",
+      "type": "peinture",
+      "description": "Peinture d'Édouard Manet, scandale artistique du XIXe siècle.",
+      "album": "culture",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q1892745 était Salvator Mundi"
+    },
+    {
+      "wikidataId": "Q744536",
+      "label": "Les Aventures de Tintin",
+      "type": "bande dessinée",
+      "description": "Série de bandes dessinées créée par Hergé, reporter belge aventurier.",
+      "album": "culture",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q10870658",
+      "label": "Lucky Luke",
+      "type": "bande dessinée",
+      "description": "Série de bandes dessinées western créée par Morris, cow-boy solitaire.",
+      "album": "culture",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q23691 était hymne national. Q10870658 = le personnage"
+    },
+    {
+      "wikidataId": "Q243",
+      "label": "Tour Eiffel",
+      "type": "monument",
+      "description": "Tour métallique symbole de Paris, monument le plus visité au monde.",
+      "album": "lieux",
+      "targetRarity": "epic",
+      "verified": true,
+      "note": "Correct - label Wikidata en minuscule 'tour Eiffel'"
+    },
+    {
+      "wikidataId": "Q142",
+      "label": "France",
+      "type": "pays",
+      "description": "République française, État d'Europe occidentale et puissance mondiale.",
+      "album": "lieux",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q90",
+      "label": "Paris",
+      "type": "ville",
+      "description": "Capitale de la France, ville lumière et destination touristique majeure.",
+      "album": "lieux",
+      "targetRarity": "rare",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q64436",
+      "label": "Arc de Triomphe",
+      "type": "monument",
+      "description": "Monument parisien commandé par Napoléon, symbole de victoires françaises.",
+      "album": "lieux",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q2913 était 1er octobre"
+    },
+    {
+      "wikidataId": "Q2981",
+      "label": "Notre-Dame de Paris",
+      "type": "cathédrale",
+      "description": "Cathédrale gothique emblématique sur l'île de la Cité à Paris.",
+      "album": "lieux",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Correct - label Wikidata complet 'cathédrale Notre-Dame de Paris'"
+    },
+    {
+      "wikidataId": "Q20892",
+      "label": "Mont-Saint-Michel",
+      "type": "monument",
+      "description": "Abbaye médiévale sur îlot rocheux en Normandie, site UNESCO.",
+      "album": "lieux",
+      "targetRarity": "uncommon",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q3321850 était mont Gelai"
+    },
+    {
+      "wikidataId": "Q31",
+      "label": "Belgique",
+      "type": "pays",
+      "description": "Royaume de Belgique, État fédéral d'Europe occidentale.",
+      "album": "lieux",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q39",
+      "label": "Suisse",
+      "type": "pays",
+      "description": "Confédération suisse, État d'Europe centrale.",
+      "album": "lieux",
+      "targetRarity": "uncommon",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q16",
+      "label": "Canada",
+      "type": "pays",
+      "description": "État fédéral d'Amérique du Nord, deuxième plus grand pays du monde.",
+      "album": "lieux",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q70",
+      "label": "Berne",
+      "type": "ville",
+      "description": "Capitale de la Suisse, ville médiévale inscrite au patrimoine UNESCO.",
+      "album": "lieux",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q239",
+      "label": "Bruxelles",
+      "type": "ville",
+      "description": "Capitale de la Belgique et siège de l'Union européenne.",
+      "album": "lieux",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q1930",
+      "label": "Ottawa",
+      "type": "ville",
+      "description": "Capitale du Canada, ville bilingue sur la rivière des Outaouais.",
+      "album": "lieux",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q43192",
+      "label": "Drapeau de la France",
+      "type": "drapeau",
+      "description": "Drapeau tricolore bleu-blanc-rouge, emblème de la République française.",
+      "album": "symboles",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q98055852",
+      "label": "Drapeau de l'Union européenne",
+      "type": "drapeau",
+      "description": "Drapeau bleu aux douze étoiles d'or, symbole de l'Union européenne.",
+      "album": "symboles",
+      "targetRarity": "common",
+      "verified": true,
+      "note": "Corrigé le 2026-10-21 : Q42813 était Casalmorano"
+    },
+    {
+      "wikidataId": "Q392167",
+      "label": "Drapeau du Québec",
+      "type": "drapeau",
+      "description": "Drapeau fleurdelisé, emblème de la province du Québec.",
+      "album": "symboles",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q200864",
+      "label": "Assassin's Creed",
+      "type": "jeu vidéo",
+      "description": "Série de jeux vidéo d'action-aventure développée par Ubisoft.",
+      "album": "divers",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q213614",
+      "label": "Cyrano de Bergerac",
+      "type": "pièce de théâtre",
+      "description": "Pièce de théâtre d'Edmond Rostand, chef-d'œuvre du théâtre français.",
+      "album": "divers",
+      "targetRarity": "common",
+      "verified": true
+    },
+    {
+      "wikidataId": "Q13219467",
+      "label": "Rayman",
+      "type": "jeu vidéo",
+      "description": "Série de jeux vidéo de plateforme créée par Michel Ancel chez Ubisoft.",
+      "album": "divers",
+      "targetRarity": "common",
+      "verified": true
+    }
+  ]
+}

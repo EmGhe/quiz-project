@@ -73,7 +73,7 @@ export class WikidataClient {
     ];
 
     for (const pattern of badPatterns) {
-      if (normalizedFilename.includes(pattern) && !normalizedLabel.includes(pattern)) {
+      if (normalizedFilename.includes(pattern) && !normalizedLabelForMatch.includes(pattern)) {
         score = Math.max(0, score - 40);
         reasons.push(`Bad pattern: ${pattern}`);
       }
@@ -127,19 +127,20 @@ export class WikidataClient {
         VALUES ?entity { ${valuesClause} }
 
         ?entity rdfs:label ?label .
-        ?entity schema:description ?description .
-        ?entity wdt:P31 ?instanceOf .
-        ?instanceOf rdfs:label ?type .
 
+        OPTIONAL { ?entity schema:description ?description . FILTER(LANG(?description) = "fr") }
+        OPTIONAL {
+          ?entity wdt:P31 ?instanceOf .
+          ?instanceOf rdfs:label ?type .
+          FILTER(LANG(?type) = "fr" || LANG(?type) = "mul" || LANG(?type) = "en")
+        }
         OPTIONAL { ?entity wdt:P18 ?image . }
         OPTIONAL {
           ?wikipediaArticle schema:about ?entity .
           ?wikipediaArticle schema:isPartOf <https://fr.wikipedia.org/> .
         }
 
-        FILTER(LANG(?label) = "fr")
-        FILTER(LANG(?description) = "fr")
-        FILTER(LANG(?type) = "fr")
+        FILTER(LANG(?label) = "fr" || LANG(?label) = "mul" || LANG(?label) = "en")
       }
     `;
 
@@ -150,8 +151,9 @@ export class WikidataClient {
           format: 'json',
         },
         headers: {
-          'User-Agent': this.USER_AGENT,
+          'User-Agent': USER_AGENT,
         },
+        timeout: HTTP_TIMEOUT.LONG,
       });
 
       const results = new Map<string, WikidataEntity>();
@@ -185,8 +187,11 @@ export class WikidataClient {
 
         // Validate image URL
         let imageUrl = binding.image?.value || null;
+        const entityType = binding.type?.value || 'entité';
+        const entityDescription = binding.description?.value || '';
+
         if (imageUrl) {
-          const validation = this.validateImageUrl(imageUrl, binding.label.value, binding.type.value);
+          const validation = this.validateImageUrl(imageUrl, binding.label.value, entityType);
           if (!validation.valid) {
             console.warn(`  ⚠️  Image validation failed for ${binding.label.value}`);
             console.warn(`     Score: ${validation.score}/100 - ${validation.reason}`);
@@ -199,8 +204,8 @@ export class WikidataClient {
         results.set(wikidataId, {
           wikidataId,
           label: binding.label.value,
-          type: binding.type.value,
-          description: binding.description.value,
+          type: entityType,
+          description: entityDescription,
           wikipediaUrl,
           wikidataUrl: `${this.WIKIDATA_BASE}${wikidataId}`,
           imageUrl,
@@ -223,20 +228,23 @@ export class WikidataClient {
     const query = `
       SELECT ?label ?description ?image ?wikipediaArticle ?type WHERE {
         wd:${wikidataId} rdfs:label ?label .
-        wd:${wikidataId} schema:description ?description .
-        wd:${wikidataId} wdt:P31 ?instanceOf .
-        ?instanceOf rdfs:label ?type .
 
+        OPTIONAL { wd:${wikidataId} schema:description ?description . FILTER(LANG(?description) = "fr") }
+        OPTIONAL {
+          wd:${wikidataId} wdt:P31 ?instanceOf .
+          ?instanceOf rdfs:label ?type .
+          FILTER(LANG(?type) = "fr" || LANG(?type) = "mul" || LANG(?type) = "en")
+        }
         OPTIONAL { wd:${wikidataId} wdt:P18 ?image . }
         OPTIONAL {
           ?wikipediaArticle schema:about wd:${wikidataId} .
           ?wikipediaArticle schema:isPartOf <https://fr.wikipedia.org/> .
         }
 
-        FILTER(LANG(?label) = "fr")
-        FILTER(LANG(?description) = "fr")
-        FILTER(LANG(?type) = "fr")
+        FILTER(LANG(?label) = "fr" || LANG(?label) = "mul" || LANG(?label) = "en")
       }
+      ORDER BY
+        IF(LANG(?label) = "fr", 1, IF(LANG(?label) = "mul", 2, 3))
       LIMIT 1
     `;
 
@@ -247,8 +255,9 @@ export class WikidataClient {
           format: 'json',
         },
         headers: {
-          'User-Agent': this.USER_AGENT,
+          'User-Agent': USER_AGENT,
         },
+        timeout: HTTP_TIMEOUT.LONG,
       });
 
       const bindings = response.data.results.bindings[0];
@@ -267,8 +276,11 @@ export class WikidataClient {
 
       // Validate image URL
       let imageUrl = bindings.image?.value || null;
+      const entityType = bindings.type?.value || 'entité';
+      const entityDescription = bindings.description?.value || '';
+
       if (imageUrl) {
-        const validation = this.validateImageUrl(imageUrl, bindings.label.value, bindings.type.value);
+        const validation = this.validateImageUrl(imageUrl, bindings.label.value, entityType);
         if (!validation.valid) {
           console.warn(`  ⚠️  Image validation failed for ${bindings.label.value}`);
           console.warn(`     Score: ${validation.score}/100 - ${validation.reason}`);
@@ -283,8 +295,8 @@ export class WikidataClient {
       return {
         wikidataId,
         label: bindings.label.value,
-        type: bindings.type.value,
-        description: bindings.description.value,
+        type: entityType,
+        description: entityDescription,
         wikipediaUrl,
         wikidataUrl: `${this.WIKIDATA_BASE}${wikidataId}`,
         imageUrl,
