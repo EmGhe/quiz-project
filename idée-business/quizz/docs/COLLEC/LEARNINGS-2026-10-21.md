@@ -143,3 +143,126 @@ Commits    : 3 (fix SPARQL, images, cleanup)
 - Validation humaine finale des images
 - A/B test seuils validation
 - Metrics: temps chargement, taux engagement par rarity
+
+---
+
+## Next Steps : 100% Image Coverage
+
+**Objectif :** 17 entités manquantes → solutions par catégorie
+
+### Stratégie 1 : Ajuster Validation (Quick Win - 6 entités)
+
+**Baisser seuil 35 → 25 pour types spécifiques :**
+
+```typescript
+// Dans validateImageUrl()
+const threshold = (entityType.includes('drapeau') || entityType.includes('monument'))
+  ? 25  // Plus permissif pour symboles/architecture
+  : 35; // Standard pour personnes/objets
+```
+
+**Impact estimé :**
+- ✅ Drapeau France (15/100) → accepté
+- ✅ Drapeau Québec (15/100) → accepté
+- ✅ Notre-Dame (20/100) → accepté
+- ✅ Mont-Saint-Michel (0/100) → chercher autre image Wikidata
+- ✅ Arc de Triomphe (20/100) → déjà téléchargé
+- ✅ Drapeau UE (0/100) → chercher SVG direct
+
+**Commande :** Re-run `06-update-card-images.ts` après ajustement
+
+### Stratégie 2 : Sources Alternatives (Medium - 6 entités)
+
+**Wikipedia EN fallback pour entités sans P18 :**
+
+| Entité | QID | Action |
+|--------|-----|--------|
+| Karim Benzema | Q1912 | Wikipedia EN a P18, fetch avec lang=en |
+| Le Petit Prince | Q25338 | Chercher P18 éditions livre (pas expo) |
+| Tintin | Q744536 | Chercher P154 (logo) au lieu de P18 |
+| Assassin's Creed | Q200864 | Utiliser P154 (logo) ou cover art |
+| Rayman | Q13219467 | Utiliser P154 (logo) ou character sprite |
+| Intouchables | Q595 | Poster officiel (P18 existe, valider manuellement) |
+
+**Script à créer :**
+```typescript
+// scripts/collection/07-fetch-alternative-images.ts
+// 1. Try English Wikipedia P18
+// 2. Try P154 (logo) for games/series
+// 3. Try P491 (cover art) for movies/books
+```
+
+### Stratégie 3 : Upload Manuel (Last Resort - 5 entités)
+
+**Films/Pays sans images automatisables :**
+
+| Entité | Solution |
+|--------|----------|
+| Amélie Poulain (Q484048) | Upload poster officiel Wikimedia Commons |
+| La Haine (Q466101) | Upload poster officiel |
+| France (Q142) | Utiliser drapeau ou carte simplifiée custom |
+| Suisse (Q39) | Utiliser drapeau |
+| Canada (Q16) | Utiliser drapeau |
+| Bruxelles (Q239) | Photo Grand-Place (chercher manuellement) |
+
+**Process :**
+1. Télécharger images libres de droits (Unsplash, Pexels)
+2. Upload sur Wikimedia Commons avec license
+3. Ajouter P18 sur Wikidata
+4. Attendre 24h
+5. Re-fetch avec script
+
+**Ou plus rapide :** Upload direct dans `/public/images/collection/` et update DB
+
+```sql
+UPDATE cards SET 
+  image_url = '/images/collection/custom/{hash}.jpg',
+  image_width = 800, 
+  image_height = 600
+WHERE entity_id IN (SELECT id FROM entities WHERE wikidata_id = 'Q595');
+```
+
+### Roadmap Réaliste
+
+**Phase 1 (30 min) - Validation ajustée :**
+- [ ] Modifier seuil drapeaux/monuments → +6 images
+- [ ] Re-run download script
+- [ ] **Résultat :** 38/49 (78%)
+
+**Phase 2 (2h) - Sources alternatives :**
+- [ ] Script fetch EN Wikipedia P18
+- [ ] Script fetch P154/P491 properties
+- [ ] Validation manuelle résultats
+- [ ] **Résultat :** 44/49 (90%)
+
+**Phase 3 (3h) - Upload manuel :**
+- [ ] Sourcer 5 images libres droits
+- [ ] Upload Wikimedia Commons OU direct /public
+- [ ] Update DB manuellement si direct
+- [ ] **Résultat :** 49/49 (100%)
+
+### Script Helper Proposé
+
+```bash
+# scripts/collection/helpers/check-alternative-sources.ts
+# Affiche sources alternatives pour entités sans image
+
+Output example:
+---
+Karim Benzema (Q1912)
+  ✗ P18 (image): none
+  ✓ EN Wikipedia P18: https://commons.../Benzema.jpg
+  ⚠ Validation needed: manual review
+---
+```
+
+### Décision : Effort vs Impact
+
+| Stratégie | Effort | Gain | Total Coverage |
+|-----------|--------|------|----------------|
+| Ajuster validation | 30 min | +6 | 78% |
+| Sources alt. | 2h | +6 | 90% |
+| Upload manuel | 3h | +5 | 100% |
+
+**Recommandation :** Phase 1 + Phase 2 (90%) = meilleur ROI  
+Phase 3 uniquement si 100% critique pour UX
