@@ -1,7 +1,27 @@
 [
   {
+    "entityLabel": "Karim Benzema",
+    "wikidataId": "Q1912",
+    "reason": "No image on Wikidata"
+  },
+  {
     "entityLabel": "Le Petit Prince",
     "wikidataId": "Q25338",
+    "reason": "No image on Wikidata"
+  },
+  {
+    "entityLabel": "Intouchables",
+    "wikidataId": "Q595",
+    "reason": "No image on Wikidata"
+  },
+  {
+    "entityLabel": "Le Fabuleux Destin d'Amélie Poulain",
+    "wikidataId": "Q484048",
+    "reason": "No image on Wikidata"
+  },
+  {
+    "entityLabel": "La Haine",
+    "wikidataId": "Q466101",
     "reason": "No image on Wikidata"
   },
   {
@@ -20,6 +40,11 @@
     "reason": "No image on Wikidata"
   },
   {
+    "entityLabel": "Le Mont-Saint-Michel",
+    "wikidataId": "Q20892",
+    "reason": "No image on Wikidata"
+  },
+  {
     "entityLabel": "Suisse",
     "wikidataId": "Q39",
     "reason": "No image on Wikidata"
@@ -27,11 +52,6 @@
   {
     "entityLabel": "Canada",
     "wikidataId": "Q16",
-    "reason": "No image on Wikidata"
-  },
-  {
-    "entityLabel": "Berne",
-    "wikidataId": "Q70",
     "reason": "No image on Wikidata"
   },
   {
@@ -57,6 +77,11 @@
   {
     "entityLabel": "Rayman",
     "wikidataId": "Q13219467",
+    "reason": "No image on Wikidata"
+  },
+  {
+    "entityLabel": "Drapeau de l'Union européenne",
+    "wikidataId": "Q98055852",
     "reason": "No image on Wikidata"
   }
 ]
