@@ -12,8 +12,10 @@ export class WikidataClient {
    *
    * This is a heuristic filter, not a proof of correctness.
    * Images that fail validation are skipped (set to null).
+   *
+   * @param imageSource - Source of the image: 'P18', 'P154', or 'P491'
    */
-  private static validateImageUrl(imageUrl: string, entityLabel: string, entityType: string): { valid: boolean; score: number; reason: string } {
+  private static validateImageUrl(imageUrl: string, entityLabel: string, entityType: string, imageSource: string = 'P18'): { valid: boolean; score: number; reason: string } {
     if (!imageUrl) {
       return { valid: false, score: 0, reason: 'No image URL' };
     }
@@ -21,6 +23,20 @@ export class WikidataClient {
     // Extract filename from URL
     const filename = decodeURIComponent(imageUrl.split('/').pop() || '').toLowerCase();
     const labelLower = entityLabel.toLowerCase();
+    const entityTypeLower = entityType.toLowerCase();
+
+    // Auto-accept: P41 (official flag property) or SVG flags
+    if (imageSource === 'P41') {
+      return { valid: true, score: 100, reason: 'P41 official flag (auto-accepted)' };
+    }
+
+    const isSvg = filename.endsWith('.svg') || imageUrl.toLowerCase().includes('.svg');
+    const isFlag = labelLower.includes('drapeau') || entityTypeLower.includes('drapeau') ||
+                   labelLower.includes('flag') || entityTypeLower.includes('flag');
+
+    if (isSvg && isFlag) {
+      return { valid: true, score: 100, reason: 'SVG flag (auto-accepted)' };
+    }
 
     // Normalize for full string comparison (remove accents, special chars, spaces)
     const normalizeForMatch = (str: string) => {
@@ -53,8 +69,7 @@ export class WikidataClient {
       score += 50;
       reasons.push('Label in filename');
     } else {
-      // Check for partial matches (first/last name for people)
-      // FIX: Use normalizedLabelForWords which has spaces preserved
+      // Check for partial matches (word-by-word for robustness)
       const labelWords = normalizedLabelForWords.split(/\s+/).filter(w => w.length > 2);
       const matchedWords = labelWords.filter(word => normalizedFilename.includes(word));
 
@@ -64,13 +79,32 @@ export class WikidataClient {
       }
     }
 
-    // Check 2: Reject obvious wrong images
+    // Check 2: Reject obvious wrong images (context-aware based on source)
     const badPatterns = [
       'hitchcock', 'horner', 'brasseur', 'takahata', // Known wrong people
       'heic', 'ngc', 'messier', // Astronomy
-      'logo', 'icon', 'symbol', // Generic
-      'map', 'carte', 'diagram', // Maps/diagrams (for people)
     ];
+
+    // Only penalize logo/icon/symbol for P18 (main images), not for P154 (official logos) or P41 (flags)
+    if (imageSource === 'P18') {
+      badPatterns.push('logo', 'icon', 'symbol');
+    }
+
+    // Maps/diagrams are bad for people/portraits (but OK for countries/places)
+    // Use more specific patterns to avoid false positives
+    if (!entityTypeLower.includes('pays') &&
+        !entityTypeLower.includes('country') &&
+        !entityTypeLower.includes('ville') &&
+        !entityTypeLower.includes('city')) {
+      // Check for specific map patterns (not just "map" which is too generic)
+      const mapPatterns = ['location map', 'map of', 'carte de', 'diagram', 'aerial', 'luftaufnahme'];
+      for (const pattern of mapPatterns) {
+        if (normalizedFilename.includes(pattern.replace(/\s/g, ''))) {
+          score = Math.max(0, score - 40);
+          reasons.push(`Bad pattern: ${pattern}`);
+        }
+      }
+    }
 
     for (const pattern of badPatterns) {
       if (normalizedFilename.includes(pattern) && !normalizedLabelForMatch.includes(pattern)) {
@@ -80,7 +114,7 @@ export class WikidataClient {
     }
 
     // Check 3: Good patterns based on type
-    if (entityType.includes('humain') || entityType.includes('personne') || entityType.includes('être humain')) {
+    if (entityTypeLower.includes('humain') || entityTypeLower.includes('personne') || entityTypeLower.includes('être humain')) {
       // For people, prefer "portrait" or name-based files
       if (filename.includes('portrait') || filename.includes('.jpg') || filename.includes('.png')) {
         score += 20;
@@ -94,7 +128,7 @@ export class WikidataClient {
       }
     }
 
-    if (entityType.includes('monument') || entityType.includes('bâtiment')) {
+    if (entityTypeLower.includes('monument') || entityTypeLower.includes('bâtiment')) {
       // For buildings, avoid aerial views unless it's the main subject
       if (!filename.includes('aerial') && !filename.includes('luftaufnahme')) {
         score += 10;
@@ -103,8 +137,33 @@ export class WikidataClient {
     }
 
     // Final validation
-    // Threshold: 35 (accept most good images, reject obvious bad ones)
-    const valid = score >= 35;
+    // Dynamic threshold based on entity type and source:
+    // - Monuments/buildings/cities: 0 (trust Wikidata P18, filter only bad patterns)
+    // - Logos (P154) / Flags (P41): 0 (official properties, always accept unless bad pattern)
+    // - Others (people, objects): 35 (standard validation with name matching)
+    //
+    // Rationale for threshold=0 on monuments/cities:
+    // - Names vary by language (Bruxelles/Brussels, Mont-Saint-Michel/Mont St Michel)
+    // - Wikidata P18 is curated and generally reliable for landmarks
+    // - Bad patterns (maps, aerial views) are already filtered above
+    const isMonument = entityTypeLower.includes('monument') ||
+                       entityTypeLower.includes('bâtiment') ||
+                       entityTypeLower.includes('building') ||
+                       entityTypeLower.includes('architecture') ||
+                       entityTypeLower.includes('cathédrale') ||
+                       entityTypeLower.includes('église') ||
+                       entityTypeLower.includes('ville') ||
+                       entityTypeLower.includes('city') ||
+                       entityTypeLower.includes('commune');
+
+    let threshold = 35; // Default for people/objects
+    if (imageSource === 'P154' || imageSource === 'P41') {
+      threshold = 0; // Trust official logo/flag properties
+    } else if (isMonument) {
+      threshold = 0; // Trust Wikidata for monuments/cities (language-agnostic)
+    }
+
+    const valid = score >= threshold;
     const reason = reasons.join('; ') || 'No matches';
 
     return { valid, score, reason };
@@ -123,7 +182,7 @@ export class WikidataClient {
     const valuesClause = wikidataIds.map(id => `wd:${id}`).join(' ');
 
     const query = `
-      SELECT ?entity ?label ?description ?image ?wikipediaArticle ?type WHERE {
+      SELECT ?entity ?label ?description ?image ?flag ?logo ?cover ?wikipediaArticle ?type WHERE {
         VALUES ?entity { ${valuesClause} }
 
         ?entity rdfs:label ?label .
@@ -134,7 +193,10 @@ export class WikidataClient {
           ?instanceOf rdfs:label ?type .
           FILTER(LANG(?type) = "fr" || LANG(?type) = "mul" || LANG(?type) = "en")
         }
+        OPTIONAL { ?entity wdt:P41 ?flag . }
         OPTIONAL { ?entity wdt:P18 ?image . }
+        OPTIONAL { ?entity wdt:P154 ?logo . }
+        OPTIONAL { ?entity wdt:P491 ?cover . }
         OPTIONAL {
           ?wikipediaArticle schema:about ?entity .
           ?wikipediaArticle schema:isPartOf <https://fr.wikipedia.org/> .
@@ -185,19 +247,54 @@ export class WikidataClient {
           }
         }
 
-        // Validate image URL
-        let imageUrl = binding.image?.value || null;
         const entityType = binding.type?.value || 'entité';
         const entityDescription = binding.description?.value || '';
+        const entityTypeLower = entityType.toLowerCase();
+
+        // For countries, prioritize flag (P41) over main image (P18)
+        const isCountry = entityTypeLower.includes('pays') ||
+                          entityTypeLower.includes('country') ||
+                          entityTypeLower.includes('état souverain');
+
+        // Priority logic:
+        // - Countries: P41 (flag) > P18 (image) > P154 (logo) > P491 (cover)
+        // - Others: P18 (image) > P154 (logo) > P491 (cover)
+        let imageUrl: string | null = null;
+        let imageSource = 'P18';
+        let imageSourceLabel = 'none';
+
+        if (isCountry && binding.flag?.value) {
+          imageUrl = binding.flag.value;
+          imageSource = 'P41';
+          imageSourceLabel = 'P41 (flag)';
+        } else if (binding.image?.value) {
+          imageUrl = binding.image.value;
+          imageSource = 'P18';
+          imageSourceLabel = 'P18 (image)';
+        } else if (isCountry && binding.flag?.value) {
+          imageUrl = binding.flag.value;
+          imageSource = 'P41';
+          imageSourceLabel = 'P41 (flag)';
+        } else if (binding.logo?.value) {
+          imageUrl = binding.logo.value;
+          imageSource = 'P154';
+          imageSourceLabel = 'P154 (logo)';
+        } else if (binding.cover?.value) {
+          imageUrl = binding.cover.value;
+          imageSource = 'P491';
+          imageSourceLabel = 'P491 (cover art)';
+        }
 
         if (imageUrl) {
-          const validation = this.validateImageUrl(imageUrl, binding.label.value, entityType);
+          const validation = this.validateImageUrl(imageUrl, binding.label.value, entityType, imageSource);
           if (!validation.valid) {
-            console.warn(`  ⚠️  Image validation failed for ${binding.label.value}`);
+            console.warn(`  ⚠️  Image validation failed for ${binding.label.value} (${imageSourceLabel})`);
             console.warn(`     Score: ${validation.score}/100 - ${validation.reason}`);
             console.warn(`     URL: ${imageUrl.substring(0, 80)}...`);
             console.warn(`     → Skipping this image (will use null)`);
             imageUrl = null; // Skip suspicious images
+          } else if (imageSource !== 'P18') {
+            console.log(`  ✓ Using fallback ${imageSourceLabel} for ${binding.label.value}`);
           }
         }
 
@@ -226,7 +323,7 @@ export class WikidataClient {
    */
   static async fetchEntity(wikidataId: string): Promise<WikidataEntity> {
     const query = `
-      SELECT ?label ?description ?image ?wikipediaArticle ?type WHERE {
+      SELECT ?label ?description ?image ?flag ?logo ?cover ?wikipediaArticle ?type WHERE {
         wd:${wikidataId} rdfs:label ?label .
 
         OPTIONAL { wd:${wikidataId} schema:description ?description . FILTER(LANG(?description) = "fr") }
@@ -235,7 +332,10 @@ export class WikidataClient {
           ?instanceOf rdfs:label ?type .
           FILTER(LANG(?type) = "fr" || LANG(?type) = "mul" || LANG(?type) = "en")
         }
+        OPTIONAL { wd:${wikidataId} wdt:P41 ?flag . }
         OPTIONAL { wd:${wikidataId} wdt:P18 ?image . }
+        OPTIONAL { wd:${wikidataId} wdt:P154 ?logo . }
+        OPTIONAL { wd:${wikidataId} wdt:P491 ?cover . }
         OPTIONAL {
           ?wikipediaArticle schema:about wd:${wikidataId} .
           ?wikipediaArticle schema:isPartOf <https://fr.wikipedia.org/> .
@@ -274,21 +374,54 @@ export class WikidataClient {
         wikiTextLength = await this.fetchWikiTextLength(title);
       }
 
-      // Validate image URL
-      let imageUrl = bindings.image?.value || null;
       const entityType = bindings.type?.value || 'entité';
       const entityDescription = bindings.description?.value || '';
+      const entityTypeLower = entityType.toLowerCase();
+
+      // For countries, prioritize flag (P41) over main image (P18)
+      const isCountry = entityTypeLower.includes('pays') ||
+                        entityTypeLower.includes('country') ||
+                        entityTypeLower.includes('état souverain');
+
+      // Priority logic:
+      // - Countries: P41 (flag) > P18 (image) > P154 (logo) > P491 (cover)
+      // - Others: P18 (image) > P154 (logo) > P491 (cover)
+      let imageUrl: string | null = null;
+      let imageSource = 'P18';
+      let imageSourceLabel = 'none';
+
+      if (isCountry && bindings.flag?.value) {
+        imageUrl = bindings.flag.value;
+        imageSource = 'P41';
+        imageSourceLabel = 'P41 (flag)';
+      } else if (bindings.image?.value) {
+        imageUrl = bindings.image.value;
+        imageSource = 'P18';
+        imageSourceLabel = 'P18 (image)';
+      } else if (isCountry && bindings.flag?.value) {
+        imageUrl = bindings.flag.value;
+        imageSource = 'P41';
+        imageSourceLabel = 'P41 (flag)';
+      } else if (bindings.logo?.value) {
+        imageUrl = bindings.logo.value;
+        imageSource = 'P154';
+        imageSourceLabel = 'P154 (logo)';
+      } else if (bindings.cover?.value) {
+        imageUrl = bindings.cover.value;
+        imageSource = 'P491';
+        imageSourceLabel = 'P491 (cover art)';
+      }
 
       if (imageUrl) {
-        const validation = this.validateImageUrl(imageUrl, bindings.label.value, entityType);
+        const validation = this.validateImageUrl(imageUrl, bindings.label.value, entityType, imageSource);
         if (!validation.valid) {
-          console.warn(`  ⚠️  Image validation failed for ${bindings.label.value}`);
+          console.warn(`  ⚠️  Image validation failed for ${bindings.label.value} (${imageSourceLabel})`);
           console.warn(`     Score: ${validation.score}/100 - ${validation.reason}`);
           console.warn(`     URL: ${imageUrl.substring(0, 80)}...`);
           console.warn(`     → Skipping this image (will use null)`);
           imageUrl = null; // Skip suspicious images
         } else {
-          console.log(`  ✓ Image validated (score: ${validation.score}/100) - ${validation.reason}`);
+          console.log(`  ✓ Image validated (score: ${validation.score}/100, source: ${imageSourceLabel}) - ${validation.reason}`);
         }
       }
 
