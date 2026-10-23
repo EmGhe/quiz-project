@@ -1,22 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useCollectionStore } from '../stores/collectionStore';
+import { useTagStore } from '../stores/tagStore';
 import CardGrid from '../components/collection/CardGrid';
 import AlbumFilter from '../components/collection/AlbumFilter';
 import RarityFilter from '../components/collection/RarityFilter';
 import SearchInput from '../components/collection/SearchInput';
+import TagFilter from '../components/collection/TagFilter';
 import CardDetailModal from '../components/collection/CardDetailModal';
 import CollectionStats from '../components/collection/CollectionStats';
 import { Card } from '../types/collection';
 
 export default function CollectionPage() {
-  const store = useCollectionStore();
-  const { loading, error, cards, albums, filters, stats, setFilter } = store;
+  const collectionStore = useCollectionStore();
+  const tagStore = useTagStore();
+  const { loading, error, cards, albums, filters, stats, setFilter } = collectionStore;
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
-    store.fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    tagStore.fetchUserTags();
+    collectionStore.fetchAll();
   }, []);
+
+  useEffect(() => {
+    cards.forEach((card) => {
+      if (!tagStore.cardTags[card.id]) {
+        tagStore.fetchCardTags(card.id);
+      }
+    });
+  }, [cards]);
 
   const handleCardClick = (card: Card) => {
     setSelectedCard(card);
@@ -68,6 +79,16 @@ export default function CollectionPage() {
             <RarityFilter
               selectedRarity={filters.rarity}
               onSelect={(rarity) => setFilter('rarity', rarity)}
+            />
+          </div>
+
+          {/* Tag Filter */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">Étiquettes</h3>
+            <TagFilter
+              tags={tagStore.tags}
+              selectedTagId={filters.tagId}
+              onSelect={(tagId) => setFilter('tagId', tagId)}
             />
           </div>
 
