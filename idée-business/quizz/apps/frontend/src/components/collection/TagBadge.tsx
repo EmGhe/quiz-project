@@ -29,7 +29,7 @@ export default function TagBadge({
       <span className={truncate ? 'truncate' : ''}>{label}</span>
       {removable && (
         <button
-          onClick={onRemove}
+          onClick={() => onRemove?.()}
           className="hover:opacity-80 ml-1"
           aria-label="Retirer l'étiquette"
         >
