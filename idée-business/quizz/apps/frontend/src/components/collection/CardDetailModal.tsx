@@ -16,15 +16,15 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
   const tagStore = useTagStore();
   const [currentTags, setCurrentTags] = useState<Tag[]>([]);
   const [isFavorite, setIsFavorite] = useState(card.isFavorite || false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const loadCardTags = async () => {
+      await tagStore.fetchCardTags(card.id);
+      setCurrentTags(tagStore.getCardTags(card.id));
+    };
     loadCardTags();
-  }, [card.id]);
-
-  const loadCardTags = async () => {
-    await tagStore.fetchCardTags(card.id);
-    setCurrentTags(tagStore.getCardTags(card.id));
-  };
+  }, [card.id, tagStore]);
 
   const handleToggleFavorite = async () => {
     try {
@@ -36,30 +36,42 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
   };
 
   const handleAddTag = async (tagId: string) => {
+    setLoading(true);
     try {
       await tagStore.addTagToCard(tagId, card.id);
-      await loadCardTags();
+      await tagStore.fetchCardTags(card.id);
+      setCurrentTags(tagStore.getCardTags(card.id));
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRemoveTag = async (tagId: string) => {
+    setLoading(true);
     try {
       await tagStore.removeTagFromCard(tagId, card.id);
-      await loadCardTags();
+      await tagStore.fetchCardTags(card.id);
+      setCurrentTags(tagStore.getCardTags(card.id));
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreateAndAdd = async (label: string, color: string) => {
+    setLoading(true);
     try {
       const newTag = await tagStore.createTag(label, color);
       await tagStore.addTagToCard(newTag.id, card.id);
-      await loadCardTags();
+      await tagStore.fetchCardTags(card.id);
+      setCurrentTags(tagStore.getCardTags(card.id));
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -137,6 +149,7 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
               onAddTag={handleAddTag}
               onRemoveTag={handleRemoveTag}
               onCreateAndAdd={handleCreateAndAdd}
+              isParentLoading={loading}
             />
           </div>
         </div>

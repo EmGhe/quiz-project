@@ -10,15 +10,15 @@ interface TagManagerProps {
   onAddTag: (tagId: string) => Promise<void>;
   onRemoveTag: (tagId: string) => Promise<void>;
   onCreateAndAdd: (label: string, color: string) => Promise<void>;
+  isParentLoading?: boolean;
 }
 
 export default function TagManager({
-  cardId,
   currentTags,
   availableTags,
-  onAddTag,
   onRemoveTag,
   onCreateAndAdd,
+  isParentLoading = false,
 }: TagManagerProps) {
   const [newLabel, setNewLabel] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
@@ -27,6 +27,7 @@ export default function TagManager({
 
   const canAddMore = currentTags.length < 4;
   const hasNoTags = availableTags.length === 0;
+  const isLoading = loading || isParentLoading;
 
   const handleCreateAndAdd = async () => {
     if (!newLabel.trim()) return;
@@ -67,10 +68,10 @@ export default function TagManager({
 
         <button
           onClick={handleCreateAndAdd}
-          disabled={!newLabel.trim() || loading}
+          disabled={!newLabel.trim() || isLoading}
           className="w-full py-2 px-4 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Création...' : 'Créer et ajouter'}
+          {isLoading ? 'Création...' : 'Créer et ajouter'}
         </button>
       </div>
     );
@@ -136,10 +137,10 @@ export default function TagManager({
           <div className="flex gap-2">
             <button
               onClick={handleCreateAndAdd}
-              disabled={!newLabel.trim() || loading}
+              disabled={!newLabel.trim() || isLoading}
               className="flex-1 py-2 px-4 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Création...' : 'Créer et poser'}
+              {isLoading ? 'Création...' : 'Créer et poser'}
             </button>
             <button
               onClick={() => {
