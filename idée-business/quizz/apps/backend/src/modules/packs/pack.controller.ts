@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Param, Req, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Query } from '@nestjs/common';
 import { PackService } from './pack.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { PackType } from '@prisma/client';
 
 @Controller('packs')
@@ -21,8 +22,7 @@ export class PackController {
    * Query param: ?opened=true/false (optionnel)
    */
   @Get('my-packs')
-  async getMyPacks(@Req() req: any, @Query('opened') opened?: string) {
-    const userId = req.user.id;
+  async getMyPacks(@CurrentUser() userId: string, @Query('opened') opened?: string) {
     const openedFilter = opened === 'true' ? true : opened === 'false' ? false : undefined;
     return await this.packService.getUserPacks(userId, openedFilter);
   }
@@ -31,8 +31,7 @@ export class PackController {
    * Récupérer le pity counter pour un type de pack
    */
   @Get('pity/:packType')
-  async getPityCounter(@Req() req: any, @Param('packType') packType: PackType) {
-    const userId = req.user.id;
+  async getPityCounter(@CurrentUser() userId: string, @Param('packType') packType: PackType) {
     return await this.packService.getPityCounter(userId, packType);
   }
 
@@ -40,8 +39,7 @@ export class PackController {
    * Acheter un pack
    */
   @Post('purchase/:packType')
-  async purchasePack(@Req() req: any, @Param('packType') packType: PackType) {
-    const userId = req.user.id;
+  async purchasePack(@CurrentUser() userId: string, @Param('packType') packType: PackType) {
     return await this.packService.purchasePack(userId, packType);
   }
 
@@ -49,8 +47,7 @@ export class PackController {
    * Ouvrir un pack
    */
   @Post('open/:packId')
-  async openPack(@Req() req: any, @Param('packId') packId: string) {
-    const userId = req.user.id;
+  async openPack(@CurrentUser() userId: string, @Param('packId') packId: string) {
     return await this.packService.openPack(userId, packId);
   }
 }

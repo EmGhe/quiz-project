@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Delete, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, UseGuards } from '@nestjs/common';
 import { FragmentService } from './fragment.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 
 @Controller('fragments')
 @UseGuards(JwtAuthGuard)
@@ -11,8 +12,7 @@ export class FragmentController {
    * Récupérer le solde fragments de l'utilisateur courant
    */
   @Get('balance')
-  async getBalance(@Req() req: any) {
-    const userId = req.user.id;
+  async getBalance(@CurrentUser() userId: string) {
     const balance = await this.fragmentService.getBalance(userId);
     return { fragments: balance };
   }
@@ -21,8 +21,7 @@ export class FragmentController {
    * Récupérer l'historique des transactions fragments
    */
   @Get('history')
-  async getHistory(@Req() req: any) {
-    const userId = req.user.id;
+  async getHistory(@CurrentUser() userId: string) {
     const transactions = await this.fragmentService.getTransactionHistory(userId);
     return { transactions };
   }
@@ -31,8 +30,7 @@ export class FragmentController {
    * Récupérer les statistiques fragments
    */
   @Get('stats')
-  async getStats(@Req() req: any) {
-    const userId = req.user.id;
+  async getStats(@CurrentUser() userId: string) {
     const stats = await this.fragmentService.getFragmentStats(userId);
     return stats;
   }
@@ -57,8 +55,7 @@ export class FragmentController {
    * Détruire une carte pour obtenir des fragments
    */
   @Delete('cards/:userCardId')
-  async destroyCard(@Req() req: any, @Param('userCardId') userCardId: string) {
-    const userId = req.user.id;
+  async destroyCard(@CurrentUser() userId: string, @Param('userCardId') userCardId: string) {
     return await this.fragmentService.destroyCard(userId, userCardId);
   }
 
@@ -66,8 +63,7 @@ export class FragmentController {
    * Améliorer une carte en dépensant des fragments
    */
   @Post('cards/:userCardId/upgrade')
-  async upgradeCard(@Req() req: any, @Param('userCardId') userCardId: string) {
-    const userId = req.user.id;
+  async upgradeCard(@CurrentUser() userId: string, @Param('userCardId') userCardId: string) {
     return await this.fragmentService.upgradeCard(userId, userCardId);
   }
 }

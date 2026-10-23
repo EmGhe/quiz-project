@@ -1,5 +1,6 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { GoldService } from './gold.service';
 
 @Controller('gold')
@@ -12,8 +13,8 @@ export class GoldController {
    * Récupère le solde Gold de l'utilisateur connecté
    */
   @Get('balance')
-  async getBalance(@Req() req: any) {
-    const balance = await this.goldService.getBalance(req.user.userId);
+  async getBalance(@CurrentUser() userId: string) {
+    const balance = await this.goldService.getBalance(userId);
 
     return {
       gold: balance,
@@ -25,8 +26,8 @@ export class GoldController {
    * Récupère l'historique des transactions Gold
    */
   @Get('transactions')
-  async getTransactions(@Req() req: any) {
-    const transactions = await this.goldService.getTransactionHistory(req.user.userId, 50);
+  async getTransactions(@CurrentUser() userId: string) {
+    const transactions = await this.goldService.getTransactionHistory(userId, 50);
 
     return {
       transactions,
@@ -38,8 +39,8 @@ export class GoldController {
    * Récupère les statistiques Gold de l'utilisateur
    */
   @Get('stats')
-  async getStats(@Req() req: any) {
-    const stats = await this.goldService.getGoldStats(req.user.userId);
+  async getStats(@CurrentUser() userId: string) {
+    const stats = await this.goldService.getGoldStats(userId);
 
     return stats;
   }
