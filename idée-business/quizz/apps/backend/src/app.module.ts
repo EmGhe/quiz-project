@@ -13,6 +13,7 @@ import { PvpModule } from './modules/pvp/pvp.module';
 import { GoldModule } from './modules/gold/gold.module';
 import { FragmentModule } from './modules/fragments/fragment.module';
 import { PackModule } from './modules/packs/pack.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PackModule } from './modules/packs/pack.module';
     GoldModule,
     FragmentModule,
     PackModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
