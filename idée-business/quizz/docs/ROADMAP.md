@@ -4,15 +4,19 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 
 ## Overview
 
-| Phase | Focus | Tasks | Estimated Time | Priority |
-|-------|-------|-------|----------------|----------|
+| Phase | Focus | Tasks | Estimated Time | Status |
+|-------|-------|-------|----------------|--------|
 | **MVP1** | Daily Challenge | ~12 tasks | 2-3 weeks | ✅ Complete |
-| **POST-MVP1** | Question Database + Images | ~18 tasks | 2-3 weeks | 🔴 Critical |
-| **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🟠 High |
-| **V2** | Collection System | ~16 tasks | 2-3 weeks | 🟡 Medium |
-| **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 🟢 Low |
+| **POST-MVP1** | Question Database + Images | ~18 tasks | 2-3 weeks | 🚧 In Progress (60%) |
+| **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🚧 In Progress (80%) |
+| **MVP3 Phase 1** | Collection Read-only | ~10 tasks | 1-2 weeks | ✅ Complete |
+| **Gold Economy** | Virtual Currency System | ~12 tasks | 1 week | ✅ Complete |
+| **MVP3 Phase 2** | User Ownership Layer | ~8 tasks | 1-2 weeks | 📋 Planned |
+| **V2** | Advanced Features | ~16 tasks | 2-3 weeks | 📋 Planned |
+| **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 📋 Planned |
 
-**Total estimated time:** 11-16 weeks (3-4 months) for complete platform
+**Total estimated time:** 14-19 weeks (3.5-5 months) for complete platform  
+**Current progress:** ~50% complete (MVP1 + POST-MVP1 60% + MVP2 80% + MVP3 Phase 1 + Gold Economy)
 
 ---
 
@@ -621,40 +625,107 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ---
 
-## V2 - Collection System (Monetization Layer)
+## Gold Economy System (MVP3 Phase 1.5)
 
-**Goal:** Retention through collection + Gold economy (no Pay-to-Win)
+**Goal:** Virtual currency system for collection engagement (no Pay-to-Win)
+
+**Status:** ✅ Complete (2026-10-23)
+
+**Documentation:** `docs/GOLD/README.md` (38 pages), `apps/frontend/ECONOMY_GUIDE.md`
+
+### Completed Features
+
+**Backend (100%):**
+- ✅ Prisma migration: `gold`, `fragments`, `gold_transactions`, `fragment_transactions`, `packs`, `pack_configs`, `user_pity_counters`, `user_cards`, `streak_rewards`
+- ✅ **GoldModule** - Transaction tracking, Daily rewards, streak milestones
+- ✅ **FragmentModule** - Card destruction (10-400 fragments), card upgrade (30-300 fragments)
+- ✅ **PackModule** - RNG system with pity guarantees, 3 pack types (Bronze/Silver/Gold)
+- ✅ Integrated into DailyService - Automatic Gold rewards after quiz completion
+- ✅ Streak milestone system - Bonus at 5, 10, 20, 30, 50, 75, 100 days
+- ✅ Seed script for pack configurations
+
+**Frontend (100%):**
+- ✅ API clients: `gold.ts`, `fragments.ts`, `packs.ts`
+- ✅ Zustand stores: `goldStore`, `fragmentStore`, `packStore`
+- ✅ UI Components:
+  - `GoldBalance`, `FragmentBalance`, `CurrencyDisplay`
+  - `PackCard`, `PackShop`, `PackOpening` with animations
+  - `Header` with global currency display
+- ✅ ShopPage with pack purchase and opening
+- ✅ Gold reward display after Daily completion
+
+### Economy Parameters
+
+**Gold Earning:**
+- **Daily formula:** `(Correct answers × 3) + (Time bonus × 2)`
+  - Time bonus = `max(0, (25 - seconds) / 25) × 2`
+  - Max theoretical: 50 Gold/quiz (10/10 perfect)
+  - Expert realistic: ~46 Gold/quiz
+
+**Pack Prices:**
+- Bronze: 500 Gold (~11 days expert)
+- Silver: 1200 Gold (~26 days expert)
+- Gold: 3000 Gold (~65 days expert)
+
+**Pity System (backend-only, hidden from UI):**
+- Bronze: Epic/12 packs, Legendary/30 packs
+- Silver: Epic/6 packs, Legendary/15 packs
+- Gold: Epic/guaranteed, Legendary/10 packs
+
+**Fragments:**
+- Destruction values: Common=10, Rare=35, Epic=120, Legendary=400
+- Upgrade costs: C→R=30, R→E=100, E→L=300
+
+### Technical Highlights
+- **Atomic transactions:** All Gold/Fragment operations use Prisma transactions
+- **Pity tracking:** Per-user, per-pack-type counters (automatic reset on drop)
+- **RNG fairness:** Probabilistic card generation with guaranteed minimums
+- **No Pay-to-Win:** Gold earned only through gameplay (Daily, streaks, PvP)
+- **Frontend privacy:** Probabilities and pity counters hidden from UI (backend-only)
+
+### Success Metrics (To Monitor)
+- Gold sink/source ratio: 0.9-1.1 (balanced economy)
+- Pack purchase rate > 30% of Daily players
+- Average user opens first pack within 14 days
+- Fragments encourage card management (destruction/upgrade)
+
+---
+
+## V2 - Collection System (Ownership Layer)
+
+**Goal:** User ownership of cards + pack opening rewards
 
 **Status:** 📋 Planned
 
 **Plan:** `docs/superpowers/plans/2026-10-09-v2-collection-system.md`
 
 ### Key Features
-- ✅ Card system (Common → Mythic, Shiny variants)
-- ✅ Pack opening (Bronze/Silver/Gold packs, server RNG)
-- ✅ Albums (thematic collections, exclusive rewards)
-- ✅ Gold economy (earn from Dailies/PvP, spend on packs/customization)
-- ✅ Achievements (badges, titles)
-- ✅ Profile customization (avatars, frames, backgrounds)
-- ✅ Educational card info (learn while collecting)
+- ⏳ User-card ownership mapping (User ↔ Cards)
+- ⏳ Pack opening adds cards to collection
+- ⏳ Duplicate handling (fragments or display duplicates)
+- ⏳ Album completion rewards
+- ⏳ Achievements (badges, titles)
+- ⏳ Profile customization (avatars, frames, backgrounds)
+- ⏳ Trading system (peer-to-peer swaps)
 
 ### Critical Success Metrics
 - Card collection engagement > 40% of active users
-- Gold sink/source ratio: 0.9-1.1 (balanced economy)
 - Album completion rate < 5% per album (creates long-term goals)
 - Average user owns 50-100 cards after 1 month
+- Duplicate management keeps players engaged
 
 ### Technical Highlights
-- **Gold duplication prevention:** Atomic transactions with row locks
-- **Pack RNG fairness:** Crypto-secure random, audit logs, 10k simulation tests
-- **Album completion atomicity:** Reward triggered exactly once
-- **No Pay-to-Win:** Cards are purely cosmetic/educational
+- **Pack opening flow:** Purchase → RNG generation → Add to user collection → Update pity
+- **Duplicate detection:** Check `UserCard` before adding, offer destruction for fragments
+- **Album completion:** Trigger rewards exactly once per album
+- **Educational value:** Cards display Wikidata info (learn while collecting)
 
 ### Dependencies
-- ✅ MVP1 + POST-MVP1 + MVP2 complete (Gold earning mechanisms exist)
-- ⏳ Create 100+ card entries with educational descriptions
-- ⏳ Source/generate card images (Cloudinary/S3 setup)
-- ⏳ Balance Gold earning rates
+- ✅ MVP3 Phase 1 complete (52 cards, albums, raretés)
+- ✅ Gold Economy System complete (earning + spending mechanisms)
+- ⏳ Create 100+ additional card entries
+- ⏳ Source/generate more card images
+- ⏳ Balance Gold earning/spending rates based on metrics
 
 ---
 
@@ -824,7 +895,7 @@ Start free, scale only when users validate the product.
 
 ---
 
-## Next Steps (Révisé 2026-10-23)
+## Next Steps (Mis à jour 2026-10-23)
 
 ### **Semaines 1-2: POST-MVP1 - Questions & Qualité**
 
@@ -840,83 +911,108 @@ Start free, scale only when users validate the product.
    - [ ] Script équilibrage catégories (min 50 questions/catégorie)
    - [ ] Script distribution difficulté (20/60/20)
 
-### **Semaines 3-4: MVP2 Finition + Gold Economy**
+### **Semaines 3-4: MVP2 Finition + Intégrations**
 
 3. **PvP Polish**
    - [ ] Vérifier/compléter UI Ranks (badges, progression)
    - [ ] Tests de charge WebSocket (50-100 joueurs simultanés)
    - [ ] Debug final et optimisations
+   - [ ] Intégration Gold rewards (victoire/défaite)
 
-4. **Économie Gold (nouveau - priorité haute)**
-   - [x] Migration Prisma : champs `gold` et table `gold_transactions` ✅
-   - [x] Backend : `GoldService`, `GoldController`, `GoldModule` ✅
-   - [ ] Intégration Daily : récompense = score exact du Daily
-   - [ ] Intégration PvP : victoire/défaite
-   - [ ] Frontend : Store Zustand, composants UI
-   - [ ] Tests : vérifier atomicité des transactions
+4. **Gold Economy - Intégrations** ✅ **Système complet** (2026-10-23)
+   - [x] Migration Prisma complète (gold, fragments, packs, pity counters) ✅
+   - [x] Backend modules complets (Gold, Fragment, Pack) ✅
+   - [x] Intégration Daily → Gold automatique après quiz ✅
+   - [x] Système Fragments (destruction/upgrade cartes) ✅
+   - [x] Frontend complet (stores, composants, pages) ✅
+   - [x] PackShop avec achat et ouverture animée ✅
+   - [x] Display Gold gagné après Daily ✅
+   - [x] Header avec currency display global ✅
+   - [x] Probabilities & pity cachées de l'UI (backend-only) ✅
+   - [ ] Intégration PvP : victoire/défaite (futur)
 
-### **Semaines 5-6: Polish & Beta Testing**
+### **Semaines 5-6: Polish & Ownership Layer**
 
-5. **Esthétique & UX**
-   - [ ] **Cartes Collection** : bordures gradients, animations hover, effets 3D
-   - [ ] **Raretés** : logos par rareté + couleurs distinctives
+5. **Collection - User Ownership (MVP3 Phase 2)**
+   - [x] Backend pack opening RNG ✅ (déjà implémenté)
+   - [ ] Mapper packs ouverts → UserCard (ajouter cartes à la collection)
+   - [ ] Gestion doublons (afficher + option destruction pour fragments)
+   - [ ] Rewards album completion (vérifier 100% → bonus Gold/fragments)
+   - [ ] Display "owned" vs "not owned" dans CollectionPage
+
+6. **Esthétique & UX**
+   - [ ] **Header intégré partout** (Daily ✅, Shop ✅, Collection, PvP)
+   - [ ] **Cartes Collection** : bordures gradients, animations hover
+   - [ ] **Raretés visuelles** : logos distinctifs par rareté
      - Common: ⚪ cercle gris
      - Uncommon: 🟢 losange vert
      - Rare: 🔵 étoile bleue
      - Epic: 🟣 couronne violette
      - Legendary: 🟡 dragon doré avec animation pulse
    - [ ] **Ranks PvP** : badges visuels, progression animée
-   - [ ] **Gold UI** : icône brillante, compteur animé, historique timeline
-   - [ ] **Pages** : améliorer Daily, Training, PvP, Collection
+   - [ ] **Gold UI** : animations transitions, historique transactions
+   - [ ] **Toast notifications** : achats, ouvertures, destructions
 
-6. **Beta Testing**
+7. **Beta Testing**
    - [ ] Recruter 20-50 testeurs
    - [ ] Collecter feedback via formulaire
-   - [ ] Mesurer métriques (temps matchmaking, taux participation PvP, questions signalées)
+   - [ ] Mesurer métriques clés :
+     - Temps moyen pour acheter premier pack
+     - Taux participation PvP
+     - Questions signalées vs total
+     - Gold sink/source ratio
 
-### **Mois 2+: MVP3 Phase 2 & V2**
+### **Mois 2+: V2 Features**
 
-7. **Ownership Layer Collection**
-   - [ ] Table User_Card (mapping users ↔ cards)
-   - [ ] Système d'ouverture de packs (Bronze/Silver/Gold)
-   - [ ] RNG serveur pour cartes aléatoires
-   - [ ] Rewards complétion albums
+8. **V2 Advanced Features**
+   - [ ] Achievements & badges system
+   - [ ] Personnalisation profil (avatars, frames, backgrounds)
+   - [ ] Stats & analytics page (Gold earned/spent, collection progress)
+   - [ ] Missions hebdomadaires PvP (avec rewards)
+   - [ ] Seasons system PvP (soft reset tous les 6 mois)
 
-8. **V2 & V3 Features**
-   - [ ] Achievements & badges
-   - [ ] Personnalisation profil
-   - [ ] Marketplace (V3)
-   - [ ] Trading (V3)
+9. **V3 Social & Marketplace** (futur lointain)
+   - [ ] Marketplace (buy/sell cards, 10% tax)
+   - [ ] Trading system (peer-to-peer swaps)
+   - [ ] Tournois "Nuit des Érudits"
+   - [ ] Friend system & private leagues
 
 ---
 
-**Latest Update:** 2026-10-15
+**Latest Update:** 2026-10-23
 **Status:** 
-- MVP1 implementation complete ✅
-- POST-MVP1 Question Database Pipeline planned and ready to execute 🚧
+- **MVP1 implementation complete** ✅
+- **POST-MVP1 Question Database Pipeline in progress** 🚧
+  - 87 questions imported from QuizzAPI.fr ✅ (Session 2026-10-23)
+  - Admin dashboard complete ✅
+  - QA duplicate detection script ✅
+  - Next: Import 400+ more questions to reach 500+ total
 - **MVP2 PvP Competition in progress (80% complete)** 🚧
   - Backend core complete: Schema, ELO, WebSocket, Matchmaking, Match Flow ✅
   - Frontend matchmaking UI complete ✅
   - Frontend match UI complete (synchronized gameplay, MCQ, timer, results) ✅
-  - **UI/UX Polish complete (Session 2026-10-15)** ✅
-    - Player profiles with rank/ELO in header
-    - Ready/Go countdown animation
-    - Timer animation sync fix
-    - Rematch system with popup
-    - Accurate match statistics
-  - **Critical bugs fixed (Session 2026-10-15)** ✅
-    - Match ID mismatch (matchId vs id)
-    - Score calculation stale closure
-    - Match statistics calculation
-    - Rematch state reset
-  - NestJS upgraded to v12 for security & compatibility ✅
-  - Match flow simplified (category ban on stand by) ✅
-  - Comprehensive logging added for debugging ✅
+  - UI/UX Polish complete (Session 2026-10-15) ✅
+  - Critical bugs fixed (Session 2026-10-15) ✅
+  - NestJS upgraded to v12 for security ✅
   - Next: Ranks & Missions UI, Seasons System, Weekly Missions
-- Task 15 (User reporting system) completed ✅ (Session 2026-10-13)
-- Task 12 (Image Pipeline Infrastructure) added with design spec 📋
-- Task 14 (Rematch System) completed ✅ (Session 2026-10-15)
-- Content strategy documented in `brainstorm/stratégie_bdd_quiz.md`
-- Image pipeline strategy documented in `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
-- PVP technical guidelines documented in `docs/PVP-GUIDELINES.md` 📋 (Session 2026-10-15)
+- **MVP3 Phase 1 Collection complete** ✅
+  - 52 cards across 5 albums ✅
+  - Read-only catalog with filters ✅
+  - Rarity algorithm & distribution ✅
+- **Gold Economy System complete** ✅ (Session 2026-10-23)
+  - Backend: Gold, Fragment, Pack modules complete ✅
+  - Frontend: Stores, components, ShopPage complete ✅
+  - Daily integration: Auto Gold rewards ✅
+  - Streak milestones: 5-100 days bonuses ✅
+  - Pack system: Purchase + opening with RNG + pity ✅
+  - Fragment system: Destruction + upgrade ✅
+  - UI: Currency display, pack shop, animations ✅
+  - Documentation: 38-page guide + frontend guide ✅
+  - Next: MVP3 Phase 2 (user ownership layer)
+- **Documentation complete:**
+  - Content strategy: `brainstorm/stratégie_bdd_quiz.md`
+  - Image pipeline: `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
+  - PVP guidelines: `docs/PVP-GUIDELINES.md`
+  - Gold economy: `docs/GOLD/README.md` (38 pages)
+  - Frontend economy: `apps/frontend/ECONOMY_GUIDE.md`
 
