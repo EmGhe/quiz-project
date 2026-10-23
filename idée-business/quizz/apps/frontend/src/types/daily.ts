@@ -45,4 +45,5 @@ export interface AnswerSubmission {
 export interface SubmitDailyResponse {
   submission: DailySubmission;
   dailyNumber: number;
+  goldAwarded: number;
 }

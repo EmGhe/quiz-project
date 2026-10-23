@@ -4,6 +4,7 @@ import { dailyApi } from '@/api/daily';
 import type { DailySubmission, DailyQuestion } from '@/types/daily';
 import ShareCard from './ShareCard';
 import ReportQuestionModal from './ReportQuestionModal';
+import { Coins } from 'lucide-react';
 
 interface QuizResultsProps {
   submission: DailySubmission;
@@ -11,6 +12,7 @@ interface QuizResultsProps {
   totalQuestions: number;
   questions: DailyQuestion[];
   currentStreak: number;
+  goldAwarded: number;
   onClose: () => void;
 }
 
@@ -23,7 +25,7 @@ interface LeaderboardEntry {
   correctCount: number;
 }
 
-export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, currentStreak, onClose }: QuizResultsProps) {
+export default function QuizResults({ submission, dailyNumber, totalQuestions, questions, currentStreak, goldAwarded, onClose }: QuizResultsProps) {
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
@@ -72,7 +74,7 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
             <p className="text-6xl font-bold">{submission.score}</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-3 gap-4 text-center mb-6">
             <div className="bg-white bg-opacity-20 rounded-lg p-4">
               <p className="text-sm opacity-90">Correct</p>
               <p className="text-2xl font-bold">{submission.correctCount}/{totalQuestions}</p>
@@ -84,6 +86,18 @@ export default function QuizResults({ submission, dailyNumber, totalQuestions, q
             <div className="bg-white bg-opacity-20 rounded-lg p-4">
               <p className="text-sm opacity-90">Avg Time</p>
               <p className="text-2xl font-bold">{avgTimePerQuestion}s</p>
+            </div>
+          </div>
+
+          {/* Gold Reward */}
+          <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg p-6 shadow-xl border-2 border-yellow-300">
+            <div className="flex items-center justify-center gap-3">
+              <Coins size={32} className="text-yellow-900" />
+              <div className="text-center">
+                <p className="text-yellow-900 font-semibold mb-1">Gold gagné</p>
+                <p className="text-4xl font-bold text-yellow-900">+{goldAwarded}</p>
+              </div>
+              <Coins size={32} className="text-yellow-900" />
             </div>
           </div>
         </div>

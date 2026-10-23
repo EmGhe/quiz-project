@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
+import { useGoldStore } from '@/store/goldStore';
 import { dailyApi } from '@/api/daily';
 import type { Daily, AnswerSubmission, SubmitDailyResponse } from '@/types/daily';
 import QuizResults from '@/components/QuizResults';
@@ -8,6 +9,7 @@ import ReportQuestionModal from '@/components/ReportQuestionModal';
 
 export default function DailyPage() {
   const { user, streak, logout } = useAuthStore();
+  const { fetchBalance } = useGoldStore();
   const navigate = useNavigate();
 
   const [daily, setDaily] = useState<Daily | null>(null);
@@ -143,6 +145,9 @@ export default function DailyPage() {
       const result = await dailyApi.submit(submissions);
       setSubmissionResult(result);
       setShowResults(true);
+
+      // Refresh gold balance after completing Daily
+      await fetchBalance();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to submit');
     }
@@ -164,6 +169,7 @@ export default function DailyPage() {
         totalQuestions={daily.questions.length}
         questions={daily.questions}
         currentStreak={streak?.currentStreak || 0}
+        goldAwarded={submissionResult.goldAwarded}
         onClose={() => {
           setShowResults(false);
           loadDaily();
