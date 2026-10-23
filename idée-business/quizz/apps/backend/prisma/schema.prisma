@@ -210,7 +210,42 @@ model User {
   elo             UserElo?
   missionProgress MissionProgress[]
 
+  // Tags (for card collection organization)
+  tags      Tag[]
+  cardTags  CardTag[]
+
   @@map("users")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  userId    String
+  label     String
+  color     String
+  createdAt DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardTags  CardTag[]
+
+  @@unique([userId, label])
+  @@index([userId])
+  @@map("tags")
+}
+
+model CardTag {
+  id     String @id @default(uuid())
+  cardId String
+  tagId  String
+  userId String
+
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, tagId, userId])
+  @@index([userId])
+  @@index([tagId])
+  @@map("card_tags")
 }
 
 model GoldTransaction {
@@ -443,6 +478,7 @@ model Card {
   entity      Entity      @relation(fields: [entityId], references: [id])
   albums      CardAlbum[]
   userCards   UserCard[]  // Users who own this card
+  tags        CardTag[]
 
   @@map("cards")
 }
