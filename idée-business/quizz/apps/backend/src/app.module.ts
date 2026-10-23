@@ -10,6 +10,9 @@ import { AdminModule } from './modules/admin/admin.module';
 import { CollectionModule } from './modules/collection/collection.module';
 import { ProxyModule } from './modules/proxy/proxy.module';
 import { PvpModule } from './modules/pvp/pvp.module';
+import { GoldModule } from './modules/gold/gold.module';
+import { FragmentModule } from './modules/fragments/fragment.module';
+import { PackModule } from './modules/packs/pack.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { PvpModule } from './modules/pvp/pvp.module';
     CollectionModule,
     ProxyModule,
     PvpModule,
+    GoldModule,
+    FragmentModule,
+    PackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

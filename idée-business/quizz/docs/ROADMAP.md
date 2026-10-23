@@ -200,17 +200,27 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 ### Phase 4: Industrialization Tools (parallel to content creation)
 
 #### Task 13: Admin dashboard (basic)
-- [ ] View all questions (filterable by category, difficulty, status)
-- [ ] Approve/reject/edit draft questions
-- [ ] View question stats (success rate, avg time, times asked)
-- [ ] Bulk actions (approve multiple, delete multiple)
+- [x] View all questions (filterable by category, difficulty, status) ✅ Complété
+- [x] Approve/reject/edit draft questions ✅ Complété
+- [x] View question stats (success rate, avg time, times asked) ✅ Complété
+- [x] Bulk actions (approve multiple, delete multiple) ✅ Complété
+
+**Pages créées:**
+- `AdminDashboard.tsx` - Vue d'ensemble
+- `AdminQuestions.tsx` - Liste et filtres
+- `AdminQuestionDetail.tsx` - Édition détaillée
+- `AdminReportedQuestions.tsx` - File de questions signalées
 
 #### Task 14: Automated quality checks
-- [ ] Duplicate detection: flag questions with >80% similar text
-- [ ] Distractor validation: ensure 4-5 unique distractors per MCQ question
-- [ ] Answer validation: canonical_answer must be in accepted_answers list
-- [ ] Category balance check: warn if category has <50 questions
-- [ ] Difficulty distribution: visualize easy/medium/hard ratio
+- [x] **Duplicate detection intelligent** ✅ Script créé `scripts/qa/detect-duplicate-questions.ts`
+  - Ignore les questions de type "image" avec même texte (images différentes)
+  - Extraction d'entités nommées (pays, villes, personnes)
+  - Similarité sémantique vs textuelle
+  - Exemple : "Capitale de l'Algérie" vs "Capitale de la Tunisie" → DIFFÉRENTES (95% similarité textuelle mais entités différentes)
+- [ ] **Distractor validation**: ensure 4 unique distractors per MCQ question
+- [ ] **Answer validation**: canonical_answer must be in accepted_answers list
+- [ ] **Category balance check**: warn if category has <50 questions
+- [ ] **Difficulty distribution**: visualize easy/medium/hard ratio (20/60/20 target)
 
 #### Task 15: User reporting system
 - [x] Add "Report Question" button in frontend ✅ Session 2026-10-13
@@ -814,31 +824,69 @@ Start free, scale only when users validate the product.
 
 ---
 
-## Next Steps
+## Next Steps (Révisé 2026-10-23)
 
-1. **Immediate (Week 1-2): POST-MVP1 Phase 1-2**
-   - Design database schema for facts/questions/answers/distractors
-   - Set up Wikidata integration (SPARQL queries)
-   - POC: Generate 200 capital questions with variants + distractors
-   - Manual QA review of first 50 questions
+### **Semaines 1-2: POST-MVP1 - Questions & Qualité**
 
-2. **Short-term (Weeks 3-4): POST-MVP1 Phase 3-4**
-   - Extend to 4 more domains (Geography, Cinema, Science, Flags)
-   - Target: 500-700 published questions
-   - Build admin dashboard for question management
-   - Set up automated quality checks and user reporting
+1. **Import de contenu (priorité haute)**
+   - [x] Import QuizzAPI.fr : 87 questions ✅ Complété 2026-10-23
+   - [ ] Importer 400+ questions supplémentaires pour atteindre 500+ total
+   - [ ] Diversifier sources (Wikidata, autres APIs publiques)
+   - [ ] Validation manuelle des questions importées
 
-3. **Medium-term (Weeks 5-6): POST-MVP1 Phase 5 + MVP1 Beta Testing**
-   - Deploy new question database to production
-   - Replace template questions in MVP1
-   - Recruit 20-50 beta testers
-   - Measure Day 1 & Day 7 retention with real content
+2. **Quality Assurance (priorité haute)**
+   - [x] Checks qualité automatiques - Script duplicate detection ✅
+   - [ ] Script validation distracteurs (4 uniques par MCQ)
+   - [ ] Script équilibrage catégories (min 50 questions/catégorie)
+   - [ ] Script distribution difficulté (20/60/20)
 
-4. **Long-term (Months 2-4):**
-   - Execute MVP2 if retention validates concept
-   - Continue content expansion (target 1000+ questions)
-   - Execute V2 & V3
-   - Scale infrastructure as user base grows
+### **Semaines 3-4: MVP2 Finition + Gold Economy**
+
+3. **PvP Polish**
+   - [ ] Vérifier/compléter UI Ranks (badges, progression)
+   - [ ] Tests de charge WebSocket (50-100 joueurs simultanés)
+   - [ ] Debug final et optimisations
+
+4. **Économie Gold (nouveau - priorité haute)**
+   - [x] Migration Prisma : champs `gold` et table `gold_transactions` ✅
+   - [x] Backend : `GoldService`, `GoldController`, `GoldModule` ✅
+   - [ ] Intégration Daily : récompense = score exact du Daily
+   - [ ] Intégration PvP : victoire/défaite
+   - [ ] Frontend : Store Zustand, composants UI
+   - [ ] Tests : vérifier atomicité des transactions
+
+### **Semaines 5-6: Polish & Beta Testing**
+
+5. **Esthétique & UX**
+   - [ ] **Cartes Collection** : bordures gradients, animations hover, effets 3D
+   - [ ] **Raretés** : logos par rareté + couleurs distinctives
+     - Common: ⚪ cercle gris
+     - Uncommon: 🟢 losange vert
+     - Rare: 🔵 étoile bleue
+     - Epic: 🟣 couronne violette
+     - Legendary: 🟡 dragon doré avec animation pulse
+   - [ ] **Ranks PvP** : badges visuels, progression animée
+   - [ ] **Gold UI** : icône brillante, compteur animé, historique timeline
+   - [ ] **Pages** : améliorer Daily, Training, PvP, Collection
+
+6. **Beta Testing**
+   - [ ] Recruter 20-50 testeurs
+   - [ ] Collecter feedback via formulaire
+   - [ ] Mesurer métriques (temps matchmaking, taux participation PvP, questions signalées)
+
+### **Mois 2+: MVP3 Phase 2 & V2**
+
+7. **Ownership Layer Collection**
+   - [ ] Table User_Card (mapping users ↔ cards)
+   - [ ] Système d'ouverture de packs (Bronze/Silver/Gold)
+   - [ ] RNG serveur pour cartes aléatoires
+   - [ ] Rewards complétion albums
+
+8. **V2 & V3 Features**
+   - [ ] Achievements & badges
+   - [ ] Personnalisation profil
+   - [ ] Marketplace (V3)
+   - [ ] Trading (V3)
 
 ---
 

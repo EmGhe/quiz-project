@@ -5,6 +5,7 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import DailyPage from '@/pages/DailyPage';
 import CollectionPage from '@/pages/CollectionPage';
+import ShopPage from '@/pages/ShopPage';
 import PvpMatchmakingPage from '@/pages/PvpMatchmakingPage';
 import PvpMatchPage from '@/pages/PvpMatchPage';
 import PvpResultsPage from '@/pages/PvpResultsPage';
@@ -46,6 +47,10 @@ function App() {
         <Route
           path="/collec"
           element={user ? <CollectionPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/shop"
+          element={user ? <ShopPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/pvp"

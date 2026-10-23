@@ -3,12 +3,14 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AnswerValidatorService } from './answer-validator.service';
 import { ReportQuestionDto } from './dto/report-question.dto';
+import { GoldService } from '../gold/gold.service';
 
 @Injectable()
 export class DailyService {
   constructor(
     private prisma: PrismaService,
     private answerValidator: AnswerValidatorService,
+    private goldService: GoldService,
   ) {}
 
   private getTodayDateUTC(): string {
@@ -375,12 +377,36 @@ export class DailyService {
       },
     });
 
+    // Calculate Gold reward
+    // Formula: For each correct answer: 3 Gold + time bonus (0 to 2 Gold)
+    // Time bonus = max(0, (25 - timeSeconds) / 25) × 2
+    let totalGold = 0;
+    for (const ans of answersData) {
+      if (ans.correct) {
+        const baseGold = 3;
+        const timeSeconds = ans.timeMs / 1000;
+        const timeBonus = Math.max(0, (25 - timeSeconds) / 25) * 2;
+        totalGold += baseGold + timeBonus;
+      }
+    }
+
+    // Round to nearest integer
+    totalGold = Math.round(totalGold);
+
+    // Reward Gold
+    await this.goldService.rewardDailyCompletion(userId, totalGold, {
+      dailyId: daily.id,
+      questionsCorrect: correctCount,
+      totalQuestions: answers.length,
+    });
+
     // Update streak
     await this.updateStreak(userId, today);
 
     return {
       submission,
       dailyNumber: daily.dailyNumber,
+      goldAwarded: totalGold,
     };
   }
 
@@ -398,6 +424,7 @@ export class DailyService {
           lastDailyDate: todayDate,
         },
       });
+      // Check for streak milestone (first day = level 1, no bonus)
       return;
     }
 
@@ -434,6 +461,42 @@ export class DailyService {
         lastDailyDate: todayDate,
       },
     });
+
+    // Check for streak milestones (5, 10, 20, 30, 50, 75, 100)
+    const milestones = [5, 10, 20, 30, 50, 75, 100];
+    for (const milestone of milestones) {
+      if (newStreak === milestone) {
+        // Check if already rewarded
+        const existingReward = await this.prisma.streakReward.findUnique({
+          where: {
+            userId_streakLevel: {
+              userId,
+              streakLevel: milestone,
+            },
+          },
+        });
+
+        if (!existingReward) {
+          // Reward the streak milestone
+          const { goldAwarded } = await this.goldService.rewardStreakMilestone(
+            userId,
+            milestone
+          );
+
+          // Record the reward
+          await this.prisma.streakReward.create({
+            data: {
+              userId,
+              streakLevel: milestone,
+              rewardGold: goldAwarded,
+            },
+          });
+
+          console.log(`🎉 User ${userId} reached streak ${milestone}! Rewarded ${goldAwarded} Gold`);
+        }
+        break; // Only one milestone per day
+      }
+    }
   }
 
   async getLeaderboard(dailyId: string, limit: number = 100) {
