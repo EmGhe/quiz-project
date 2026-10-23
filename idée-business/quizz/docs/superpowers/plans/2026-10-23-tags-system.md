@@ -1272,6 +1272,125 @@ git commit -m "feat(collection): add tag filter to cards endpoint
 
 ---
 
+## Task 9.5: Cards Service - Toggle Favorite
+
+**Files:**
+- Modify: `apps/backend/src/modules/collection/services/cards.service.ts`
+- Modify: `apps/backend/src/modules/collection/services/cards.service.spec.ts`
+- Modify: `apps/backend/src/modules/collection/controllers/cards.controller.ts`
+
+**Interfaces:**
+- Consumes: Existing `CardsService`, `UserCard` model
+- Produces: `toggleFavorite(userId: string, cardId: string): Promise<UserCard>` that toggles `isFavorite` field
+
+- [ ] **Step 1: Write failing test for toggleFavorite**
+
+Add to `apps/backend/src/modules/collection/services/cards.service.spec.ts`:
+
+```typescript
+describe('toggleFavorite', () => {
+  it('should toggle favorite to true', async () => {
+    const userId = 'user-123';
+    const cardId = 'card-1';
+    const mockUserCard = {
+      id: 'uc-1',
+      userId,
+      cardId,
+      isFavorite: false,
+    };
+    const updatedUserCard = { ...mockUserCard, isFavorite: true };
+
+    jest.spyOn(prisma.userCard, 'findUnique').mockResolvedValue(mockUserCard as any);
+    jest.spyOn(prisma.userCard, 'update').mockResolvedValue(updatedUserCard as any);
+
+    const result = await service.toggleFavorite(userId, cardId);
+
+    expect(result.isFavorite).toBe(true);
+    expect(prisma.userCard.update).toHaveBeenCalledWith({
+      where: { id: 'uc-1' },
+      data: { isFavorite: true },
+    });
+  });
+
+  it('should throw if user does not own card', async () => {
+    const userId = 'user-123';
+    const cardId = 'card-1';
+
+    jest.spyOn(prisma.userCard, 'findUnique').mockResolvedValue(null);
+
+    await expect(service.toggleFavorite(userId, cardId)).rejects.toThrow(
+      'Tu ne possèdes pas cette carte',
+    );
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+```bash
+npm test cards.service.spec.ts
+```
+
+Expected: FAIL - Method not defined
+
+- [ ] **Step 3: Implement toggleFavorite in CardsService**
+
+Add to `apps/backend/src/modules/collection/services/cards.service.ts`:
+
+```typescript
+async toggleFavorite(userId: string, cardId: string) {
+  const userCard = await this.prisma.userCard.findUnique({
+    where: { userId_cardId: { userId, cardId } },
+  });
+
+  if (!userCard) {
+    throw new NotFoundException('Tu ne possèdes pas cette carte');
+  }
+
+  return await this.prisma.userCard.update({
+    where: { id: userCard.id },
+    data: { isFavorite: !userCard.isFavorite },
+  });
+}
+```
+
+- [ ] **Step 4: Add endpoint to CardsController**
+
+Add to `apps/backend/src/modules/collection/controllers/cards.controller.ts`:
+
+```typescript
+@Patch(':cardId/favorite')
+@UseGuards(JwtAuthGuard)
+async toggleFavorite(
+  @Param('cardId') cardId: string,
+  @CurrentUser() user: User,
+) {
+  return this.cardsService.toggleFavorite(user.id, cardId);
+}
+```
+
+- [ ] **Step 5: Run tests to verify they pass**
+
+```bash
+npm test cards.service.spec.ts
+```
+
+Expected: PASS
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/modules/collection/services/cards.service.ts src/modules/collection/controllers/cards.controller.ts src/modules/collection/services/cards.service.spec.ts
+git commit -m "feat(collection): add toggle favorite endpoint
+
+- toggleFavorite service method
+- PATCH /api/cards/:cardId/favorite endpoint
+- Verify card ownership before toggle
+- Unit tests for toggle and ownership check"
+```
+
+---
+
 ## Task 10: Frontend Types - Tag
 
 **Files:**
@@ -1361,6 +1480,11 @@ export const tagsApi = {
     axios.delete(`/api/tags/${tagId}/cards/${cardId}`),
 
   getCardTags: (cardId: string) => axios.get<Tag[]>(`/api/cards/${cardId}/tags`),
+};
+
+export const cardsApi = {
+  toggleFavorite: (cardId: string) =>
+    axios.patch(`/api/cards/${cardId}/favorite`),
 };
 ```
 
@@ -1656,6 +1780,71 @@ git commit -m "feat(ui): add TagBadge component
 - Optional remove button
 - Truncate long labels option
 - Custom color via inline style"
+```
+
+---
+
+## Task 14.5: FavoriteIcon Component
+
+**Files:**
+- Create: `apps/frontend/src/components/collection/FavoriteIcon.tsx`
+
+**Interfaces:**
+- Consumes: Nothing
+- Produces: `FavoriteIcon` component with props: `isFavorite: boolean`, `onToggle: () => void`, `size?: 'sm' | 'md' | 'lg'`
+
+- [ ] **Step 1: Create FavoriteIcon component**
+
+Create `apps/frontend/src/components/collection/FavoriteIcon.tsx`:
+
+```tsx
+interface FavoriteIconProps {
+  isFavorite: boolean;
+  onToggle: () => void;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export default function FavoriteIcon({
+  isFavorite,
+  onToggle,
+  size = 'md',
+}: FavoriteIconProps) {
+  const sizeClasses = {
+    sm: 'text-lg',
+    md: 'text-2xl',
+    lg: 'text-3xl',
+  };
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle();
+      }}
+      className={`hover:scale-110 transition-transform ${sizeClasses[size]}`}
+      aria-label={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+    >
+      {isFavorite ? '⭐' : '☆'}
+    </button>
+  );
+}
+```
+
+- [ ] **Step 2: Verify component renders**
+
+Test manually with both states (`isFavorite={true}` and `isFavorite={false}`)
+
+Expected: Gray star (☆) when false, yellow star (⭐) when true
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/components/collection/FavoriteIcon.tsx
+git commit -m "feat(ui): add FavoriteIcon component
+
+- Toggle between ☆ (gray) and ⭐ (yellow)
+- Stop propagation to prevent card click
+- Configurable size (sm, md, lg)"
 ```
 
 ---
@@ -2010,8 +2199,8 @@ git commit -m "feat(ui): add TagFilter component
 - Modify: `apps/frontend/src/components/collection/CardDetailModal.tsx`
 
 **Interfaces:**
-- Consumes: `Card` from existing types, `TagManager` from Task 16, `useTagStore` from Task 12
-- Produces: Modified `CardDetailModal` with two-panel layout and tag management section
+- Consumes: `Card` from existing types, `TagManager` from Task 16, `FavoriteIcon` from Task 14.5, `useTagStore` from Task 12, `cardsApi` from Task 11
+- Produces: Modified `CardDetailModal` with two-panel layout, favorite star, and tag management section
 
 - [ ] **Step 1: Refactor CardDetailModal structure**
 
@@ -2022,8 +2211,10 @@ import { useEffect, useState } from 'react';
 import { Card } from '../../types/collection';
 import { Tag } from '../../types/tag';
 import { useTagStore } from '../../stores/tagStore';
+import { cardsApi } from '../../services/tags.api';
 import RarityBadge from './RarityBadge';
 import TagManager from './TagManager';
+import FavoriteIcon from './FavoriteIcon';
 
 interface CardDetailModalProps {
   card: Card;
@@ -2033,6 +2224,7 @@ interface CardDetailModalProps {
 export default function CardDetailModal({ card, onClose }: CardDetailModalProps) {
   const tagStore = useTagStore();
   const [currentTags, setCurrentTags] = useState<Tag[]>([]);
+  const [isFavorite, setIsFavorite] = useState(card.isFavorite || false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -2042,6 +2234,15 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
   const loadCardTags = async () => {
     await tagStore.fetchCardTags(card.id);
     setCurrentTags(tagStore.getCardTags(card.id));
+  };
+
+  const handleToggleFavorite = async () => {
+    try {
+      await cardsApi.toggleFavorite(card.id);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddTag = async (tagId: string) => {
@@ -2102,7 +2303,14 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                 style={{ maxHeight: '400px', objectFit: 'contain' }}
               />
             </div>
-            <h2 className="text-2xl font-bold text-center mt-4">{card.entity.label}</h2>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <FavoriteIcon 
+                isFavorite={isFavorite} 
+                onToggle={handleToggleFavorite} 
+                size="lg" 
+              />
+              <h2 className="text-2xl font-bold text-center">{card.entity.label}</h2>
+            </div>
             <p className="text-gray-700 text-center mt-2">{card.entity.description}</p>
           </div>
 
@@ -2165,15 +2373,16 @@ npm run dev
 
 Navigate to collection page, click a card
 
-Expected: Two-panel modal with TagManager at bottom of right panel
+Expected: Two-panel modal with favorite star left of title (left panel) and TagManager at bottom of right panel
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add src/components/collection/CardDetailModal.tsx
-git commit -m "feat(ui): refactor CardDetailModal with tag management
+git commit -m "feat(ui): refactor CardDetailModal with favorites and tag management
 
 - Two-panel layout (card visual + details)
+- Favorite star left of card title
 - Integrate TagManager component
 - Load and manage card tags
 - Create, add, remove tags from modal"
@@ -2187,18 +2396,21 @@ git commit -m "feat(ui): refactor CardDetailModal with tag management
 - Modify: `apps/frontend/src/components/collection/CardComponent.tsx`
 
 **Interfaces:**
-- Consumes: `Card` from existing types, `TagBadge` from Task 14, `useTagStore` from Task 12
-- Produces: Modified `CardComponent` with tags displayed in bottom-left corner
+- Consumes: `Card` from existing types, `TagBadge` from Task 14, `FavoriteIcon` from Task 14.5, `useTagStore` from Task 12, `cardsApi` from Task 11
+- Produces: Modified `CardComponent` with favorite star (top-left) and tags (bottom-left)
 
-- [ ] **Step 1: Add tags display to CardComponent**
+- [ ] **Step 1: Add favorite star and tags display to CardComponent**
 
 Modify `apps/frontend/src/components/collection/CardComponent.tsx`:
 
 ```tsx
+import { useState } from 'react';
 import { Card } from '../../types/collection';
 import { useTagStore } from '../../stores/tagStore';
+import { cardsApi } from '../../services/tags.api';
 import RarityBadge from './RarityBadge';
 import TagBadge from './TagBadge';
+import FavoriteIcon from './FavoriteIcon';
 
 interface CardComponentProps {
   card: Card;
@@ -2208,12 +2420,28 @@ interface CardComponentProps {
 export default function CardComponent({ card, onClick }: CardComponentProps) {
   const tagStore = useTagStore();
   const cardTags = tagStore.getCardTags(card.id);
+  const [isFavorite, setIsFavorite] = useState(card.isFavorite || false);
+
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await cardsApi.toggleFavorite(card.id);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div
       className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
       onClick={onClick}
     >
+      {/* Étoile favoris - coin supérieur gauche */}
+      <div className="absolute top-2 left-2 z-10">
+        <FavoriteIcon isFavorite={isFavorite} onToggle={handleToggleFavorite} size="md" />
+      </div>
+
       <img src={card.imageUrl} alt={card.entity.label} className="w-full h-48 object-cover" />
 
       <div className="p-4">
@@ -2240,14 +2468,15 @@ export default function CardComponent({ card, onClick }: CardComponentProps) {
 
 - [ ] **Step 2: Test in dev**
 
-Expected: Tags appear in bottom-left corner of each card
+Expected: Favorite star in top-left corner, tags in bottom-left corner
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add src/components/collection/CardComponent.tsx
-git commit -m "feat(ui): display tags on card grid items
+git commit -m "feat(ui): add favorite star and tags to card grid items
 
+- Favorite star (☆/⭐) in top-left corner
 - Show up to 3 tags in bottom-left corner
 - Display +N for additional tags
 - Truncate long labels"
