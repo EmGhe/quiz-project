@@ -71,11 +71,12 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
   fetchCards: async () => {
     set({ loading: true, error: null });
     try {
-      const { albumId, rarity, search } = get().filters;
+      const { albumId, rarity, search, tagId } = get().filters;
       const cards = await collectionApi.getCards({
         albumId: albumId || undefined,
         rarity: rarity || undefined,
         search: search || undefined,
+        tagId: tagId || undefined,
       });
       set({ cards, loading: false });
     } catch (error: any) {

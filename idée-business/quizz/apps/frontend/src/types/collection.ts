@@ -62,4 +62,5 @@ export interface FindCardsParams {
   albumId?: string;
   rarity?: string;
   search?: string;
+  tagId?: string;
 }
