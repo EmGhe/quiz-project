@@ -24,6 +24,7 @@ Un utilisateur peut :
 3. Voir les étiquettes directement sur les cartes dans la grille (coin inférieur gauche)
 4. Filtrer sa collection par étiquette
 5. Gérer ses étiquettes (créer, modifier, supprimer, réutiliser)
+6. Marquer une carte comme favorite via une étoile cliquable (grise → jaune)
 
 ---
 
@@ -55,6 +56,7 @@ User 1──n Tag 1──n CardTag n──1 Card
 | **Affichage** | Visibles dans la grille | Organisation visible sans cliquer |
 | **Filtrage** | Côté serveur | Performance pour grandes collections |
 | **Couleurs** | Palette prédéfinie (12 couleurs) | Cohérence visuelle |
+| **Favoris** | Étoile cliquable sur la carte | Toggle rapide, champ UserCard existant |
 
 ---
 
@@ -415,6 +417,37 @@ async findCardTags(userId: string, cardId: string): Promise<Tag[]> {
   });
 
   return cardTags.map(ct => ct.tag);
+}
+```
+
+### Nouveau module `favorites` (endpoints pour favoris)
+
+**CardsController** (ajout d'endpoint) :
+```typescript
+@Patch(':cardId/favorite')
+async toggleFavorite(
+  @Param('cardId') cardId: string,
+  @CurrentUser() user: User,
+) {
+  return this.cardsService.toggleFavorite(user.id, cardId);
+}
+```
+
+**CardsService** (nouvelle méthode) :
+```typescript
+async toggleFavorite(userId: string, cardId: string): Promise<UserCard> {
+  const userCard = await this.prisma.userCard.findUnique({
+    where: { userId_cardId: { userId, cardId } }
+  });
+
+  if (!userCard) {
+    throw new NotFoundException('Tu ne possèdes pas cette carte');
+  }
+
+  return await this.prisma.userCard.update({
+    where: { id: userCard.id },
+    data: { isFavorite: !userCard.isFavorite }
+  });
 }
 ```
 
@@ -928,6 +961,35 @@ export default function TagManager({
 }
 ```
 
+#### FavoriteIcon
+
+**Props** :
+```typescript
+interface FavoriteIconProps {
+  isFavorite: boolean;
+  onToggle: () => void;
+  size?: 'sm' | 'md' | 'lg';
+}
+```
+
+**Rendu** :
+```jsx
+<button
+  onClick={(e) => {
+    e.stopPropagation(); // Ne pas déclencher l'ouverture du modal
+    onToggle();
+  }}
+  className="hover:scale-110 transition-transform"
+  aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+>
+  {isFavorite ? '⭐' : '☆'}
+</button>
+```
+
+**Positionnement** :
+- Dans la grille : coin supérieur gauche de la carte
+- Dans le modal : à gauche du nom de la carte (panneau de gauche)
+
 #### TagFilter
 
 **Props** :
@@ -1050,9 +1112,16 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
                 style={{ maxHeight: '400px', objectFit: 'contain' }}
               />
             </div>
-            <h2 className="text-2xl font-bold text-center mt-4">
-              {card.entity.label}
-            </h2>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <FavoriteIcon 
+                isFavorite={isFavorite} 
+                onToggle={handleToggleFavorite} 
+                size="lg" 
+              />
+              <h2 className="text-2xl font-bold text-center">
+                {card.entity.label}
+              </h2>
+            </div>
             <p className="text-gray-700 text-center mt-2">
               {card.entity.description}
             </p>
@@ -1120,17 +1189,33 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
 
 ### Modification de CardItem
 
-**Ajout des étiquettes dans la grille** :
+**Ajout des étiquettes et étoile favoris dans la grille** :
 ```tsx
 export default function CardItem({ card, onClick }: CardItemProps) {
   const tagStore = useTagStore();
   const cardTags = tagStore.getCardTags(card.id);
+  const [isFavorite, setIsFavorite] = useState(card.isFavorite || false);
+
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await cardsApi.toggleFavorite(card.id);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div 
       className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
       onClick={onClick}
     >
+      {/* Étoile favoris - coin supérieur gauche */}
+      <div className="absolute top-2 left-2 z-10">
+        <FavoriteIcon isFavorite={isFavorite} onToggle={handleToggleFavorite} size="md" />
+      </div>
+
       {/* Image et contenu existant */}
       <img src={card.imageUrl} alt={card.entity.label} className="w-full h-48 object-cover" />
       
