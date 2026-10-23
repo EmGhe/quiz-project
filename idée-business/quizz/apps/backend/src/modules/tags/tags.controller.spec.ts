@@ -35,12 +35,12 @@ describe('TagsController', () => {
 
   describe('GET /api/tags', () => {
     it('should return user tags', async () => {
-      const mockUser = { id: 'user-123' };
+      const userId = 'user-123';
       const mockTags = [{ id: 'tag-1', label: 'Favoris', cardCount: 3 }];
 
       jest.spyOn(service, 'findAllByUser').mockResolvedValue(mockTags as any);
 
-      const result = await controller.findAll(mockUser as any);
+      const result = await controller.findAll(userId);
 
       expect(result).toEqual(mockTags);
       expect(service.findAllByUser).toHaveBeenCalledWith('user-123');
@@ -49,13 +49,13 @@ describe('TagsController', () => {
 
   describe('POST /api/tags', () => {
     it('should create a tag', async () => {
-      const mockUser = { id: 'user-123' };
+      const userId = 'user-123';
       const dto = { label: 'Favoris', color: '#EF4444' };
       const mockTag = { id: 'tag-1', ...dto };
 
       jest.spyOn(service, 'create').mockResolvedValue(mockTag as any);
 
-      const result = await controller.create(dto, mockUser as any);
+      const result = await controller.create(dto, userId);
 
       expect(result).toEqual(mockTag);
     });
