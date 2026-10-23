@@ -14,7 +14,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "reset:daily": "tsx scripts/dev/reset-daily.ts"
+    "reset:daily": "tsx scripts/dev/reset-daily.ts",
+    "give-all-cards": "tsx scripts/give-all-cards-to-user.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.1.3",

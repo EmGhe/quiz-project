@@ -13,8 +13,16 @@ export class CardsService {
     tagId?: string;
     userId?: string;
   }) {
+    // Si pas de userId, retourner tableau vide (collection = cartes possédées)
+    if (!filters.userId) {
+      return [];
+    }
+
     const where: any = {
-      active: true,
+      userId: filters.userId,
+      card: {
+        active: true,
+      },
     };
 
     if (filters.rarity) {
@@ -22,46 +30,67 @@ export class CardsService {
     }
 
     if (filters.search) {
-      where.entity = {
-        label: {
-          contains: filters.search,
-          mode: 'insensitive',
+      where.card = {
+        ...where.card,
+        entity: {
+          label: {
+            contains: filters.search,
+            mode: 'insensitive',
+          },
         },
       };
     }
 
     if (filters.albumId) {
-      where.albums = {
-        some: {
-          albumId: filters.albumId,
+      where.card = {
+        ...where.card,
+        albums: {
+          some: {
+            albumId: filters.albumId,
+          },
         },
       };
     }
 
-    if (filters.tagId && filters.userId) {
-      where.cardTags = {
-        some: {
-          tagId: filters.tagId,
-          userId: filters.userId,
+    if (filters.tagId) {
+      where.card = {
+        ...where.card,
+        cardTags: {
+          some: {
+            tagId: filters.tagId,
+            userId: filters.userId,
+          },
         },
       };
     }
 
-    return this.prisma.card.findMany({
+    // Récupérer les UserCards avec les infos de Card
+    const userCards = await this.prisma.userCard.findMany({
       where,
       include: {
-        entity: true,
-        albums: {
+        card: {
           include: {
-            album: true,
+            entity: true,
+            albums: {
+              include: {
+                album: true,
+              },
+            },
           },
         },
       },
       orderBy: [
-        { displayOrder: 'asc' },
-        { createdAt: 'desc' },
+        { obtainedAt: 'desc' },
       ],
     });
+
+    // Transformer pour matcher l'ancien format attendu par le frontend
+    return userCards.map((uc) => ({
+      ...uc.card,
+      rarity: uc.rarity, // Utiliser la rareté de UserCard (peut avoir évolué)
+      isFavorite: uc.isFavorite,
+      obtainedAt: uc.obtainedAt,
+    }));
   }
 
   async findOne(id: string) {
