@@ -15,7 +15,6 @@ export default function PvpMatchPage() {
     matchQuestions,
     currentQuestionIndex,
     playerAnswer,
-    opponentAnswered,
     setPlayerAnswer,
     setOpponentAnswered,
     resetPlayerAnswer,
@@ -31,7 +30,7 @@ export default function PvpMatchPage() {
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [totalAnswered, setTotalAnswered] = useState(0);
+  const [_totalAnswered, setTotalAnswered] = useState(0);
   const [showAbandonDialog, setShowAbandonDialog] = useState(false);
 
   // Check user and match

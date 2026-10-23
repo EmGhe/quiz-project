@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { adminApi } from '@/api/admin';
 
 export default function AdminQuestionDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [question, setQuestion] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

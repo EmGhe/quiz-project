@@ -28,7 +28,7 @@ interface FragmentStore {
   reset: () => void;
 }
 
-export const useFragmentStore = create<FragmentStore>((set, get) => ({
+export const useFragmentStore = create<FragmentStore>((set, _get) => ({
   balance: 0,
   transactions: [],
   stats: null,
@@ -89,7 +89,7 @@ export const useFragmentStore = create<FragmentStore>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const result = await fragmentApi.destroyCard(userCardId);
-      set((state) => ({
+      set((_state) => ({
         balance: result.newBalance,
         loading: false,
       }));
@@ -107,7 +107,7 @@ export const useFragmentStore = create<FragmentStore>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const result = await fragmentApi.upgradeCard(userCardId);
-      set((state) => ({
+      set((_state) => ({
         balance: result.newBalance,
         loading: false,
       }));

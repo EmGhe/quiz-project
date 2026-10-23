@@ -28,7 +28,7 @@ interface PackStore {
   reset: () => void;
 }
 
-export const usePackStore = create<PackStore>((set, get) => ({
+export const usePackStore = create<PackStore>((set, _get) => ({
   configs: [],
   myPacks: [],
   unopenedPacks: [],

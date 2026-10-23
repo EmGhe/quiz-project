@@ -35,7 +35,6 @@ export function PackOpening({ packId, onClose }: PackOpeningProps) {
   const { openPack } = usePackStore();
   const [stage, setStage] = useState<'opening' | 'revealing' | 'complete'>('opening');
   const [cards, setCards] = useState<PackCardType[]>([]);
-  const [pityInfo, setPityInfo] = useState<{ epic: boolean; legendary: boolean } | null>(null);
   const [revealedCount, setRevealedCount] = useState(0);
 
   const handleOpen = async () => {
@@ -46,7 +45,6 @@ export function PackOpening({ packId, onClose }: PackOpeningProps) {
 
       const result = await openPack(packId);
       setCards(result.cards);
-      setPityInfo(result.pityTriggered);
       setStage('revealing');
 
       // Auto-reveal cards one by one

@@ -12,7 +12,6 @@ export default function PvpMatchmakingPage() {
     matchmakingStatus,
     setMatchmakingStatus,
     resetMatchmaking,
-    currentMatch,
     setCurrentMatch,
     setMatchQuestions,
     resetMatch,

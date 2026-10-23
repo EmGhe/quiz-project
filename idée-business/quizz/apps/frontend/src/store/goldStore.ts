@@ -16,7 +16,7 @@ interface GoldStore {
   reset: () => void;
 }
 
-export const useGoldStore = create<GoldStore>((set, get) => ({
+export const useGoldStore = create<GoldStore>((set, _get) => ({
   balance: 0,
   transactions: [],
   stats: null,
