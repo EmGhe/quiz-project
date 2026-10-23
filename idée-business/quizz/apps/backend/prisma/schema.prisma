@@ -190,11 +190,19 @@ model User {
   username     String   @unique
   email        String   @unique
   passwordHash String
+  gold         Int      @default(0) // Virtual currency
+  fragments    Int      @default(0) // Fragment currency (from card destruction)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  submissions DailySubmission[]
-  streaks     UserStreak[]
+  submissions          DailySubmission[]
+  streaks              UserStreak[]
+  goldTransactions     GoldTransaction[]
+  fragmentTransactions FragmentTransaction[]
+  packs                Pack[]
+  userCards            UserCard[]
+  pityCounters         UserPityCounter[]
+  streakRewards        StreakReward[]
 
   // PvP relations
   player1Matches  PvpMatch[]        @relation("Player1Matches")
@@ -203,6 +211,129 @@ model User {
   missionProgress MissionProgress[]
 
   @@map("users")
+}
+
+model GoldTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Int // Positive for earning, negative for spending
+  reason    String // 'daily_completion', 'pvp_victory', 'pack_purchase', etc.
+  metadata  Json? // Additional context (dailyId, matchId, etc.)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([reason])
+  @@map("gold_transactions")
+}
+
+model FragmentTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Int      // Positive for earning (destruction), negative for spending (upgrade)
+  reason    String   // 'card_destruction', 'card_upgrade'
+  metadata  Json?    // {cardId, fromRarity, toRarity}
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("fragment_transactions")
+}
+
+enum PackType {
+  BRONZE
+  SILVER
+  GOLD
+}
+
+model PackConfig {
+  id              String   @id @default(uuid())
+  type            PackType @unique
+  cost            Int      // 500, 1200, 3000
+  cardCount       Int      @default(5)
+
+  // Probabilities (percentages)
+  commonChance    Int      // 65, 45, 20
+  rareChance      Int      // 28, 40, 45
+  epicChance      Int      // 7, 13, 30
+  legendaryChance Float    // 0.5, 2, 5
+
+  // Guarantees
+  minRares        Int      // 1, 2, 2
+  minEpics        Int      // 0, 0, 1
+
+  // Pity systems
+  epicPityCount      Int   // 6, 3, 0
+  legendaryPityCount Int   // 25, 12, 5
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("pack_configs")
+}
+
+model Pack {
+  id        String    @id @default(uuid())
+  userId    String
+  type      PackType
+  cost      Int
+  opened    Boolean   @default(false)
+  cards     Json?     // [{cardId, rarity}, ...] generated on opening
+  openedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, opened])
+  @@map("packs")
+}
+
+model UserPityCounter {
+  id                        String   @id @default(uuid())
+  userId                    String
+  packType                  PackType
+  packsOpenedSinceLegendary Int      @default(0)
+  packsOpenedSinceEpic      Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, packType])
+  @@map("user_pity_counters")
+}
+
+model UserCard {
+  id          String    @id @default(uuid())
+  userId      String
+  cardId      String
+  rarity      String    // Current rarity (can evolve)
+  baseRarity  String    // Original rarity
+  isFavorite  Boolean   @default(false)
+  obtainedAt  DateTime  @default(now())
+  upgradedAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+  card Card @relation(fields: [cardId], references: [id])
+
+  @@unique([userId, cardId]) // One user can have ONE instance of a card
+  @@index([userId])
+  @@map("user_cards")
+}
+
+model StreakReward {
+  id          String   @id @default(uuid())
+  userId      String
+  streakLevel Int      // 5, 10, 20, 30, 50, 75, 100
+  rewardGold  Int
+  claimedAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, streakLevel]) // Each streak level rewarded once
+  @@map("streak_rewards")
 }
 
 model UserStreak {
@@ -311,6 +442,7 @@ model Card {
 
   entity      Entity      @relation(fields: [entityId], references: [id])
   albums      CardAlbum[]
+  userCards   UserCard[]  // Users who own this card
 
   @@map("cards")
 }
