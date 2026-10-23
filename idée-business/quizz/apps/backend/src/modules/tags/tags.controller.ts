@@ -14,7 +14,7 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
-@Controller('tags')
+@Controller('api/tags')
 @UseGuards(JwtAuthGuard)
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}

@@ -17,7 +17,7 @@ export const tagsApi = {
   removeTagFromCard: (tagId: string, cardId: string) =>
     axios.delete(`/api/tags/${tagId}/cards/${cardId}`),
 
-  getCardTags: (cardId: string) => axios.get<Tag[]>(`/api/cards/${cardId}/tags`),
+  getCardTags: (cardId: string) => axios.get<Tag[]>(`/api/tags/cards/${cardId}`),
 };
 
 export const cardsApi = {
