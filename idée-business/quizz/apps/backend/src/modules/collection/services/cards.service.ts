@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
@@ -9,6 +9,8 @@ export class CardsService {
     albumId?: string;
     rarity?: string;
     search?: string;
+    tagId?: string;
+    userId?: string;
   }) {
     const where: any = {
       active: true,
@@ -31,6 +33,15 @@ export class CardsService {
       where.albums = {
         some: {
           albumId: filters.albumId,
+        },
+      };
+    }
+
+    if (filters.tagId && filters.userId) {
+      where.cardTags = {
+        some: {
+          tagId: filters.tagId,
+          userId: filters.userId,
         },
       };
     }
@@ -94,5 +105,20 @@ export class CardsService {
     });
 
     return { total, byRarity, byAlbum };
+  }
+
+  async toggleFavorite(userId: string, cardId: string) {
+    const userCard = await this.prisma.userCard.findUnique({
+      where: { userId_cardId: { userId, cardId } },
+    });
+
+    if (!userCard) {
+      throw new NotFoundException('Tu ne possèdes pas cette carte');
+    }
+
+    return await this.prisma.userCard.update({
+      where: { id: userCard.id },
+      data: { isFavorite: !userCard.isFavorite },
+    });
   }
 }

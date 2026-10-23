@@ -12,4 +12,8 @@ export class FindCardsQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsUUID()
+  tagId?: string;
 }
