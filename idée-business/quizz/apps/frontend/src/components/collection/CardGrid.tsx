@@ -20,7 +20,7 @@ export default function CardGrid({ cards, onCardClick }: CardGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {cards.map((card) => (
-        <CardComponent key={card.id} card={card} onClick={onCardClick} />
+        <CardComponent key={card.id} card={card} onClick={() => onCardClick(card)} />
       ))}
     </div>
   );
