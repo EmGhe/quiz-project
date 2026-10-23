@@ -692,16 +692,49 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ---
 
-## V2 - Collection System (Ownership Layer)
+## MVP3 Phase 2 - Tags System & Personal Collection
 
-**Goal:** User ownership of cards + pack opening rewards
+**Goal:** User ownership of cards + organization with tags & favorites
+
+**Status:** ✅ Complete (2026-10-24)
+
+**Plan:** `docs/superpowers/plans/2026-10-23-tags-system.md`
+
+### Completed Features
+- ✅ **Tags System** - Create, edit, delete custom tags
+  - ✅ Color-coded tags (12 preset colors)
+  - ✅ Add up to 4 tags per card
+  - ✅ Tag filtering in collection
+  - ✅ Tag management UI (create, delete)
+  - ✅ Tags displayed on cards (max 3 + counter)
+- ✅ **Favorites System** - Star/unstar cards
+  - ✅ Favorite icon on cards (grid + modal)
+  - ✅ Toggle favorite status
+  - ✅ Persisted per user
+- ✅ **User Ownership** - Collection shows only user's cards
+  - ✅ User-card mapping (UserCard model)
+  - ✅ Filters work on owned cards only
+  - ✅ Statistics reflect user's collection
+  - ✅ Script to give all cards to admin for testing
+
+### Technical Highlights
+- **Backend:** Tag/CardTag models, Tags CRUD endpoints, JWT auth
+- **Frontend:** TagManager, ColorPicker, FavoriteIcon components
+- **Database:** Proper foreign keys, cascade deletes, unique constraints
+- **Auth:** All collection endpoints require authentication
+- **UX:** Hover effects, confirmation dialogs, loading states
+
+---
+
+## V2 - Collection System (Advanced Features)
+
+**Goal:** Pack opening rewards + advanced organization
 
 **Status:** 📋 Planned
 
 **Plan:** `docs/superpowers/plans/2026-10-09-v2-collection-system.md`
 
 ### Key Features
-- ⏳ User-card ownership mapping (User ↔ Cards)
 - ⏳ Pack opening adds cards to collection
 - ⏳ Duplicate handling (convert to fragments or keep for display)
 - ⏳ Collection milestones (25%, 50%, 75%, 100% completion rewards)
@@ -938,14 +971,26 @@ Start free, scale only when users validate the product.
 
 ### **Semaines 5-6: Polish & Ownership Layer**
 
-5. **Collection - User Ownership (MVP3 Phase 2)**
-   - [x] Backend pack opening RNG ✅ (déjà implémenté)
-   - [ ] Mapper packs ouverts → UserCard (ajouter cartes à la collection)
+5. **Collection - Tags & Ownership (MVP3 Phase 2)** ✅ **Système complet** (2026-10-24)
+   - [x] Backend pack opening RNG ✅
+   - [x] **Tags System** complet ✅
+     - [x] Tag CRUD (create, read, update, delete) ✅
+     - [x] Add/remove tags to/from cards (max 4 per card) ✅
+     - [x] Color-coded tags (12 preset colors) ✅
+     - [x] Tag filtering in collection ✅
+     - [x] Tag management UI with delete functionality ✅
+   - [x] **Favorites System** complet ✅
+     - [x] Star/unstar cards (persisted per user) ✅
+     - [x] Favorite icon on cards (grid + modal) ✅
+   - [x] **User Ownership** implémenté ✅
+     - [x] Collection shows ONLY user's cards ✅
+     - [x] Statistics reflect user's collection ✅
+     - [x] Script to give all cards for testing ✅
+   - [ ] **Next:** Pack opening → UserCard integration
    - [ ] Gestion doublons (afficher + option destruction pour fragments)
    - [ ] Rewards collection milestones (25%, 50%, 75%, 100% → bonus Gold/fragments)
    - [ ] Rewards rarity sets (all Common, all Rare, etc.)
-   - [ ] Display "owned" vs "not owned" dans CollectionPage
-   - [ ] Collection progress bar (X/52 cards)
+   - [ ] Collection progress bar (X/total cards)
 
 6. **Esthétique & UX**
    - [ ] **Header intégré partout** (Daily ✅, Shop ✅, Collection, PvP)
