@@ -20,48 +20,45 @@ export class CardsService {
 
     const where: any = {
       userId: filters.userId,
-      card: {
-        active: true,
-      },
     };
 
-    if (filters.rarity) {
-      where.rarity = filters.rarity;
-    }
+    // Construire le filtre card séparément
+    const cardWhere: any = {
+      active: true,
+    };
 
     if (filters.search) {
-      where.card = {
-        ...where.card,
-        entity: {
-          label: {
-            contains: filters.search,
-            mode: 'insensitive',
-          },
+      cardWhere.entity = {
+        label: {
+          contains: filters.search,
+          mode: 'insensitive',
         },
       };
     }
 
     if (filters.albumId) {
-      where.card = {
-        ...where.card,
-        albums: {
-          some: {
-            albumId: filters.albumId,
-          },
+      cardWhere.albums = {
+        some: {
+          albumId: filters.albumId,
         },
       };
     }
 
     if (filters.tagId) {
-      where.card = {
-        ...where.card,
-        cardTags: {
-          some: {
-            tagId: filters.tagId,
-            userId: filters.userId,
-          },
+      cardWhere.cardTags = {
+        some: {
+          tagId: filters.tagId,
+          userId: filters.userId,
         },
       };
+    }
+
+    // Appliquer le filtre card
+    where.card = cardWhere;
+
+    // Le filtre rarity s'applique sur UserCard, pas sur Card
+    if (filters.rarity) {
+      where.rarity = filters.rarity;
     }
 
     // Récupérer les UserCards avec les infos de Card
