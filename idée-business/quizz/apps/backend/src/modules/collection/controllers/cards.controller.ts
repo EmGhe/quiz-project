@@ -13,13 +13,14 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 
 @Controller('api/cards')
+@UseGuards(JwtAuthGuard)
 export class CardsController {
   constructor(private cardsService: CardsService) {}
 
   @Get()
   async findAll(
     @Query() query: FindCardsQueryDto,
-    @CurrentUser() userId?: string,
+    @CurrentUser() userId: string,
   ) {
     return this.cardsService.findAll({
       ...query,
@@ -28,7 +29,7 @@ export class CardsController {
   }
 
   @Get('stats')
-  async getStats(@CurrentUser() userId?: string) {
+  async getStats(@CurrentUser() userId: string) {
     return this.cardsService.getStats(userId);
   }
 
@@ -42,7 +43,6 @@ export class CardsController {
   }
 
   @Patch(':cardId/favorite')
-  @UseGuards(JwtAuthGuard)
   async toggleFavorite(
     @Param('cardId') cardId: string,
     @CurrentUser() userId: string,
