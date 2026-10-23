@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { Tag } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -68,5 +68,58 @@ export class TagsService {
     }
 
     await this.prisma.tag.delete({ where: { id: tagId } });
+  }
+
+  async addToCard(userId: string, tagId: string, cardId: string) {
+    const tag = await this.prisma.tag.findUnique({ where: { id: tagId } });
+    if (!tag || tag.userId !== userId) {
+      throw new NotFoundException('Étiquette introuvable');
+    }
+
+    const userCard = await this.prisma.userCard.findUnique({
+      where: { userId_cardId: { userId, cardId } },
+    });
+    if (!userCard) {
+      throw new ForbiddenException('Tu ne possèdes pas cette carte');
+    }
+
+    const currentTagCount = await this.prisma.cardTag.count({
+      where: { userId, cardId },
+    });
+    if (currentTagCount >= 4) {
+      throw new BadRequestException('Maximum 4 étiquettes par carte');
+    }
+
+    try {
+      return await this.prisma.cardTag.create({
+        data: { userId, cardId, tagId },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Cette étiquette est déjà posée sur cette carte');
+      }
+      throw error;
+    }
+  }
+
+  async removeFromCard(userId: string, tagId: string, cardId: string): Promise<void> {
+    const cardTag = await this.prisma.cardTag.findFirst({
+      where: { userId, cardId, tagId },
+    });
+
+    if (!cardTag) {
+      throw new NotFoundException('Association introuvable');
+    }
+
+    await this.prisma.cardTag.delete({ where: { id: cardTag.id } });
+  }
+
+  async findCardTags(userId: string, cardId: string) {
+    const cardTags = await this.prisma.cardTag.findMany({
+      where: { userId, cardId },
+      include: { tag: true },
+    });
+
+    return cardTags.map((ct) => ct.tag);
   }
 }

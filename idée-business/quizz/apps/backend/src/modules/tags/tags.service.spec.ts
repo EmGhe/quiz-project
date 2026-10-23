@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TagsService } from './tags.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('TagsService', () => {
   let service: TagsService;
@@ -158,6 +158,94 @@ describe('TagsService', () => {
       await service.delete(userId, tagId);
 
       expect(prisma.tag.delete).toHaveBeenCalledWith({ where: { id: tagId } });
+    });
+  });
+
+  describe('addToCard', () => {
+    it('should add tag to card', async () => {
+      const userId = 'user-123';
+      const tagId = 'tag-1';
+      const cardId = 'card-1';
+      const mockTag = { id: tagId, userId };
+      const mockUserCard = { userId, cardId };
+      const mockCardTag = { id: 'ct-1', userId, tagId, cardId, createdAt: new Date() };
+
+      jest.spyOn(prisma.tag, 'findUnique').mockResolvedValue(mockTag as any);
+      jest.spyOn(prisma.userCard, 'findUnique').mockResolvedValue(mockUserCard as any);
+      jest.spyOn(prisma.cardTag, 'count').mockResolvedValue(2);
+      jest.spyOn(prisma.cardTag, 'create').mockResolvedValue(mockCardTag as any);
+
+      const result = await service.addToCard(userId, tagId, cardId);
+
+      expect(result).toEqual(mockCardTag);
+    });
+
+    it('should throw if user does not own card', async () => {
+      const userId = 'user-123';
+      const tagId = 'tag-1';
+      const cardId = 'card-1';
+      const mockTag = { id: tagId, userId };
+
+      jest.spyOn(prisma.tag, 'findUnique').mockResolvedValue(mockTag as any);
+      jest.spyOn(prisma.userCard, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.addToCard(userId, tagId, cardId)).rejects.toThrow(
+        'Tu ne possèdes pas cette carte',
+      );
+    });
+
+    it('should throw if 4 tag limit reached', async () => {
+      const userId = 'user-123';
+      const tagId = 'tag-1';
+      const cardId = 'card-1';
+      const mockTag = { id: tagId, userId };
+      const mockUserCard = { userId, cardId };
+
+      jest.spyOn(prisma.tag, 'findUnique').mockResolvedValue(mockTag as any);
+      jest.spyOn(prisma.userCard, 'findUnique').mockResolvedValue(mockUserCard as any);
+      jest.spyOn(prisma.cardTag, 'count').mockResolvedValue(4);
+
+      await expect(service.addToCard(userId, tagId, cardId)).rejects.toThrow(
+        'Maximum 4 étiquettes par carte',
+      );
+    });
+  });
+
+  describe('removeFromCard', () => {
+    it('should remove tag from card', async () => {
+      const userId = 'user-123';
+      const tagId = 'tag-1';
+      const cardId = 'card-1';
+      const mockCardTag = { id: 'ct-1', userId, tagId, cardId };
+
+      jest.spyOn(prisma.cardTag, 'findFirst').mockResolvedValue(mockCardTag as any);
+      jest.spyOn(prisma.cardTag, 'delete').mockResolvedValue(mockCardTag as any);
+
+      await service.removeFromCard(userId, tagId, cardId);
+
+      expect(prisma.cardTag.delete).toHaveBeenCalledWith({ where: { id: 'ct-1' } });
+    });
+  });
+
+  describe('findCardTags', () => {
+    it('should return tags for a card', async () => {
+      const userId = 'user-123';
+      const cardId = 'card-1';
+      const mockCardTags = [
+        {
+          id: 'ct-1',
+          userId,
+          cardId,
+          tagId: 'tag-1',
+          tag: { id: 'tag-1', userId, label: 'Favoris', color: '#EF4444', createdAt: new Date() },
+        },
+      ];
+
+      jest.spyOn(prisma.cardTag, 'findMany').mockResolvedValue(mockCardTags as any);
+
+      const result = await service.findCardTags(userId, cardId);
+
+      expect(result).toEqual([mockCardTags[0].tag]);
     });
   });
 });
