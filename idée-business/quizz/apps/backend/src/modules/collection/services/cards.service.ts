@@ -18,6 +18,24 @@ export class CardsService {
       return [];
     }
 
+    // Si filtre par tag, récupérer les cardIds concernés d'abord
+    let cardIds: string[] | undefined;
+    if (filters.tagId) {
+      const cardTags = await this.prisma.cardTag.findMany({
+        where: {
+          tagId: filters.tagId,
+          userId: filters.userId,
+        },
+        select: { cardId: true },
+      });
+      cardIds = cardTags.map((ct) => ct.cardId);
+
+      // Si aucune carte n'a ce tag, retourner vide
+      if (cardIds.length === 0) {
+        return [];
+      }
+    }
+
     const where: any = {
       userId: filters.userId,
     };
@@ -26,6 +44,10 @@ export class CardsService {
     const cardWhere: any = {
       active: true,
     };
+
+    if (cardIds) {
+      cardWhere.id = { in: cardIds };
+    }
 
     if (filters.search) {
       cardWhere.entity = {
@@ -40,15 +62,6 @@ export class CardsService {
       cardWhere.albums = {
         some: {
           albumId: filters.albumId,
-        },
-      };
-    }
-
-    if (filters.tagId) {
-      cardWhere.cardTags = {
-        some: {
-          tagId: filters.tagId,
-          userId: filters.userId,
         },
       };
     }
