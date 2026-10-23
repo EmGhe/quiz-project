@@ -61,37 +61,10 @@ export function PackCard({ config, onPurchase, userGold, disabled = false }: Pac
       </div>
 
       {/* Pack Info */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className={`text-center ${colors.text}`}>
-          <p className="text-sm opacity-90">{config.cardCount} cartes</p>
-        </div>
-
-        {/* Probabilities */}
-        <div className="space-y-1 text-xs">
-          <div className="flex justify-between text-white/80">
-            <span>Commune</span>
-            <span className="font-mono">{config.commonChance}%</span>
-          </div>
-          <div className="flex justify-between text-blue-200">
-            <span>Rare</span>
-            <span className="font-mono">{config.rareChance}%</span>
-          </div>
-          <div className="flex justify-between text-purple-200">
-            <span>Épique</span>
-            <span className="font-mono">{config.epicChance}%</span>
-          </div>
-          <div className="flex justify-between text-orange-200">
-            <span>Légendaire</span>
-            <span className="font-mono">{config.legendaryChance}%</span>
-          </div>
-        </div>
-
-        {/* Guarantees */}
-        <div className="border-t border-white/20 pt-2 space-y-1 text-xs text-white/70">
-          {config.minRares > 0 && <p>✓ Min. {config.minRares} Rare{config.minRares > 1 ? 's' : ''}</p>}
-          {config.minEpics > 0 && <p>✓ Min. {config.minEpics} Épique{config.minEpics > 1 ? 's' : ''}</p>}
-          {config.epicPityCount > 0 && <p>⚡ Pity Épique: {config.epicPityCount} packs</p>}
-          <p>⚡ Pity Légendaire: {config.legendaryPityCount} packs</p>
+          <p className="text-lg font-semibold">{config.cardCount} cartes</p>
+          <p className="text-sm opacity-75 mt-2">Contient un mélange de cartes de différentes raretés</p>
         </div>
 
         {/* Price */}

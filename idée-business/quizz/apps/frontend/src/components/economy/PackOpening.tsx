@@ -107,15 +107,6 @@ export function PackOpening({ packId, onClose }: PackOpeningProps) {
           {/* Card Reveal */}
           {(stage === 'revealing' || stage === 'complete') && (
             <div>
-              {/* Pity Notification */}
-              {pityInfo && (pityInfo.epic || pityInfo.legendary) && (
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg mb-6 text-center font-semibold">
-                  🎉 Pity system activé !
-                  {pityInfo.legendary && ' Légendaire garantie !'}
-                  {pityInfo.epic && !pityInfo.legendary && ' Épique garantie !'}
-                </div>
-              )}
-
               {/* Cards Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cards.map((card, index) => {

@@ -116,6 +116,20 @@ const RARITY_COLORS = {
 
 ---
 
+## 🔒 Informations confidentielles (backend uniquement)
+
+**Les informations suivantes ne sont PAS affichées aux joueurs :**
+- ❌ Probabilités exactes des raretés
+- ❌ Compteurs pity
+- ❌ Garanties minimales par pack
+- ❌ Notification de pity activé
+
+**Raison :** Préserver le mystère et l'excitation de l'ouverture de packs.
+
+Ces mécanismes fonctionnent en backend pour garantir l'équité, mais restent cachés de l'interface utilisateur.
+
+---
+
 ## 🔄 Workflow utilisateur
 
 ### Gagner du Gold
