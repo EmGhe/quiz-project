@@ -1,5 +1,10 @@
 # 📋 TODO - Images Collection (2026-10-18)
 
+> **⚠️ ARCHIVED - 2026-10-24**  
+> Ce document est conservé pour référence historique.  
+> Les tâches de téléchargement d'images ont été complétées.  
+> Voir `LEARNINGS-2026-10-21.md` pour les solutions apportées.
+
 ## 🎯 Objectif du Jour
 Télécharger 30-35 images avec validation automatique (taux de succès 70-80%)
 

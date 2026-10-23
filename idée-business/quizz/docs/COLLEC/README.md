@@ -5,13 +5,15 @@
 Le module COLLECTION gère un système de **cartes à collectionner** basé sur des entités Wikidata (personnalités, lieux, œuvres, etc.). Chaque carte a une **rareté** calculée selon sa popularité et la profondeur de son contenu Wikipedia.
 
 **Responsabilités** :
-- Affichage des cartes disponibles
-- Filtrage par album, rareté, recherche
+- Gestion de la collection personnelle de l'utilisateur
+- Système de possession de cartes (UserCard)
+- Organisation par étiquettes personnalisées (tags)
+- Favoris et filtrage avancé
 - Calcul de rareté (basé sur pageviews et longueur Wikipedia)
-- Statistiques de collection
+- Statistiques de collection personnelle
 - Organisation par albums thématiques
 
-**État** : MVP3, système de base implémenté. Pas encore de système d'acquisition (drops, achats) ni de collection utilisateur.
+**État** : MVP3 Phase 2 complet. Collection personnelle, tags, favoris implémentés. Système d'acquisition (packs, achats) en cours.
 
 ---
 
@@ -22,14 +24,28 @@ Scripts (génération)
     ↓
 Wikidata → Entity → Card → Album
     ↓
-Backend API
-    ├─ GET /api/cards (filtres)
-    ├─ GET /api/cards/stats
-    ├─ GET /api/albums
+Backend API (JWT Protected)
+    ├─ CardsController
+    │   ├─ GET /api/cards (collection personnelle)
+    │   ├─ GET /api/cards/stats (stats personnelles)
+    │   ├─ GET /api/cards/:id
+    │   └─ PATCH /api/cards/:cardId/favorite
+    ├─ TagsController
+    │   ├─ GET /api/tags (tags utilisateur)
+    │   ├─ POST /api/tags (créer tag)
+    │   ├─ PATCH /api/tags/:id (modifier tag)
+    │   ├─ DELETE /api/tags/:id (supprimer tag)
+    │   ├─ POST /api/tags/:tagId/cards/:cardId
+    │   ├─ DELETE /api/tags/:tagId/cards/:cardId
+    │   └─ GET /api/tags/cards/:cardId
     └─ RarityService (calcul)
     ↓
-Frontend
-    └─ CollectionPage (affichage grille)
+Frontend (Zustand stores)
+    ├─ CollectionPage
+    │   ├─ TagFilter
+    │   ├─ CardGrid (cartes possédées)
+    │   └─ CardDetailModal (tags + favoris)
+    └─ tagStore (gestion tags)
 ```
 
 ---
@@ -111,39 +127,125 @@ model CardAlbum {
 }
 ```
 
+### Table : `user_cards`
+
+Cartes possédées par les utilisateurs (collection personnelle).
+
+```prisma
+model UserCard {
+  id         String
+  userId     String
+  cardId     String
+  isFavorite Boolean @default(false)
+  obtainedAt DateTime @default(now())
+  
+  user       User
+  card       Card
+  
+  @@unique([userId, cardId])
+}
+```
+
+### Table : `tags`
+
+Étiquettes personnalisées créées par les utilisateurs.
+
+```prisma
+model Tag {
+  id        String
+  userId    String
+  label     String
+  color     String
+  createdAt DateTime @default(now())
+  
+  user      User
+  cardTags  CardTag[]
+  
+  @@unique([userId, label])
+}
+```
+
+### Table : `card_tags`
+
+Association entre cartes et étiquettes (scoped par utilisateur).
+
+```prisma
+model CardTag {
+  id        String
+  userId    String
+  cardId    String
+  tagId     String
+  createdAt DateTime @default(now())
+  
+  user      User
+  card      Card
+  tag       Tag
+  
+  @@unique([userId, cardId, tagId])
+}
+```
+
 ---
 
 ## Backend
 
 ### Routes
 
+**CardsController** (JWT requis)
+
 | Méthode | Route | Rôle |
 |---------|-------|------|
-| `GET` | `/api/cards` | Liste filtrée des cartes |
-| `GET` | `/api/cards/stats` | Statistiques globales |
-| `GET` | `/api/cards/:id` | Détail d'une carte |
+| `GET` | `/api/cards` | Collection personnelle (filtrable) |
+| `GET` | `/api/cards/stats` | Statistiques personnelles |
+| `GET` | `/api/cards/:id` | Détail d'une carte possédée |
+| `PATCH` | `/api/cards/:cardId/favorite` | Toggle favori |
+
+**TagsController** (JWT requis)
+
+| Méthode | Route | Rôle |
+|---------|-------|------|
+| `GET` | `/api/tags` | Tags de l'utilisateur |
+| `POST` | `/api/tags` | Créer un tag |
+| `PATCH` | `/api/tags/:id` | Modifier un tag |
+| `DELETE` | `/api/tags/:id` | Supprimer un tag |
+| `POST` | `/api/tags/:tagId/cards/:cardId` | Ajouter tag à carte |
+| `DELETE` | `/api/tags/:tagId/cards/:cardId` | Retirer tag de carte |
+| `GET` | `/api/tags/cards/:cardId` | Tags d'une carte |
+
+**AlbumsController**
+
+| Méthode | Route | Rôle |
+|---------|-------|------|
 | `GET` | `/api/albums` | Liste des albums |
 | `GET` | `/api/albums/:slug` | Détail d'un album |
 
 ### CardsService
 
-#### `findAll(filters)`
+#### `findAll(userId, filters)`
+
+**Important :** Requête sur `UserCard`, pas `Card` → affiche uniquement les cartes possédées.
 
 Filtres supportés :
 - `albumId` : cartes d'un album spécifique
 - `rarity` : common, uncommon, rare, epic, legendary
 - `search` : recherche dans `entity.label` (insensible à la casse)
+- `tagId` : cartes avec un tag spécifique (requête 2 étapes via CardTag)
+- `isFavorite` : filtrer les favoris
 
 **Tri** : `displayOrder ASC`, puis `createdAt DESC`
 
-**Inclusions** : `entity`, `albums` avec `album`
+**Inclusions** : `card.entity`, `card.albums`
 
-#### `getStats()`
+**Filtrage par tag :** Utilise une requête en 2 étapes (limitation Prisma sur relations imbriquées) :
+1. Récupérer les `cardId` via `CardTag.findMany({ where: { tagId, userId } })`
+2. Filtrer `UserCard` avec `card: { id: { in: cardIds } }`
 
-Retourne :
-- `total` : nombre total de cartes actives
-- `byRarity` : comptage par niveau de rareté
-- `byAlbum` : comptage par album
+#### `getStats(userId)`
+
+Retourne les statistiques de la collection personnelle :
+- `total` : nombre de cartes possédées
+- `byRarity` : comptage par rareté (cartes possédées uniquement)
+- `byAlbum` : comptage par album (cartes possédées uniquement)
 
 ---
 
@@ -194,18 +296,29 @@ score = 25 × log10(pageviews / 100)
 ### CollectionPage
 
 **Composants** :
-- `CollectionStats` : Statistiques globales
+- `CollectionStats` : Statistiques personnelles
+- `TagFilter` : Filtrage par étiquettes
 - `AlbumFilter` : Filtrage par album
 - `RarityFilter` : Filtrage par rareté
 - `SearchInput` : Recherche par nom
-- `CardGrid` : Grille de cartes
-- `CardDetailModal` : Modal de détail
+- `CardGrid` : Grille de cartes possédées
+- `CardDetailModal` : Modal avec tags + favoris
+- `CardComponent` : Affichage carte avec étoile favori + tags
+- `TagManager` : Gestionnaire de tags (création, ajout, suppression)
+- `TagBadge` : Badge tag coloré
+- `FavoriteIcon` : Icône étoile (☆/⭐)
 
-**Store** : `useCollectionStore` (Zustand)
-- `fetchAll()` : Charge cartes + albums + stats
-- `setFilter()` : Applique un filtre (côté client)
+**Stores Zustand** :
+- `useCollectionStore` : Cartes, albums, stats
+  - `fetchAll()` : Charge collection personnelle
+  - `setFilter()` : Applique filtres côté client
+- `useTagStore` : Tags et associations
+  - `tags: Tag[]` : Tags de l'utilisateur
+  - `cardTags: Record<cardId, Tag[]>` : Tags par carte
+  - CRUD actions avec error handling
+  - Limite 4 tags par carte
 
-**Filtrage** : Actuellement côté client, devrait être côté serveur pour les grandes collections.
+**Filtrage** : Hybride (tag via API, autres côté client).
 
 ---
 
@@ -233,40 +346,67 @@ score = 25 × log10(pageviews / 100)
 
 ```
 COLLECTION
- ├── Utilise : AUTH (protection future, non implémenté)
+ ├── Utilise : AUTH (JWT requis sur tous les endpoints collection/tags)
  ├── Source : Wikidata, Wikipedia
  └── Lié à : QUESTIONS (potentiellement, via entités communes)
 ```
 
-**Note** : Actuellement **aucune protection par authentification**. Les routes sont publiques.
+**Authentification** :
+- Tous les endpoints `/api/cards` et `/api/tags` nécessitent JWT
+- `@UseGuards(JwtAuthGuard)` au niveau controller
+- `@CurrentUser()` decorator pour récupérer userId
+- Frontend : `apiClient` configuré avec `withCredentials: true`
 
 ---
 
 ## Points clés
 
-1. **Rareté basée sur métriques objectives** : Popularité (pageviews) + Profondeur (longueur wiki)
+1. **Collection personnelle** : Chaque utilisateur a sa propre collection (UserCard), pas d'affichage de cartes non possédées
 
-2. **Pondération 40/60** : Favorise les entités bien documentées sur les simples célébrités
+2. **Système de tags** : Étiquettes personnalisées colorées, max 4 par carte, 12 couleurs preset
 
-3. **Pas de collection utilisateur** : Le système de "possession" des cartes n'est pas implémenté (MVP3 partiel)
+3. **Favoris** : Toggle étoile sur chaque carte, filtre favoris
 
-4. **Albums thématiques** : Une carte peut appartenir à plusieurs albums
+4. **Rareté basée sur métriques objectives** : Popularité (pageviews) + Profondeur (longueur wiki)
 
-5. **Images depuis Wikimedia Commons** : Téléchargées et servies localement
+5. **Pondération 40/60** : Favorise les entités bien documentées sur les simples célébrités
 
-6. **Filtrage côté client** : Doit être migré côté serveur pour scaler
+6. **Albums thématiques** : Une carte peut appartenir à plusieurs albums
+
+7. **Images depuis Wikimedia Commons** : Téléchargées et servies localement
+
+8. **Authentification obligatoire** : JWT requis pour accéder à la collection et aux tags
 
 ---
 
-## Amélioration potentielles
+## Améliorations potentielles
 
-1. **Collection par utilisateur** : Système de possession, obtention de cartes
-2. **Authentification** : Protéger les routes
-3. **Filtrage côté serveur** : Pagination et filtres en DB
-4. **Système d'acquisition** : Drops après quiz, achats, échanges
+### ✅ Implémenté (MVP3 Phase 2)
+- ✅ Collection par utilisateur (UserCard)
+- ✅ Authentification (JWT sur toutes les routes)
+- ✅ Tags personnalisés (création, ajout, suppression)
+- ✅ Système de favoris
+- ✅ Filtrage par tags
+- ✅ Statistiques personnelles
+
+### 🚧 En cours / Priorité haute
+1. **Système d'acquisition** : Packs → UserCard integration, gestion doublons
+2. **Collection milestones** : Rewards à 25%, 50%, 75%, 100% completion
+3. **Rarity sets** : Compléter toutes les Common/Rare → rewards
+
+### 🔮 Futur
+4. **Filtrage côté serveur** : Pagination et tous filtres en DB
 5. **Validation d'images** : Vérifier dimensions, format, poids
 6. **Cache** : Métriques Wikidata/Wikipedia (éviter requêtes répétées)
 7. **Albums dynamiques** : Génération automatique basée sur catégories Wikidata
 8. **Recherche avancée** : Par type d'entité, période, nationalité, etc.
-9. **Statistiques utilisateur** : Progression, cartes manquantes
+9. **Achievements & badges** : Titres personnalisés, badges collection complète
 10. **Trading** : Échange de cartes entre joueurs
+
+---
+
+## Documentation détaillée
+
+- **Tags System :** Voir `TAGS-SYSTEM-2026-10-24.md` pour l'architecture complète du système de tags
+- **Learnings :** Voir `LEARNINGS-2026-10-21.md` pour les problèmes résolus lors de l'intégration Wikidata
+- **Scripts :** Voir `script-feedbacks.md` pour les règles métier de calcul de rareté
