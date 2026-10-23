@@ -5,9 +5,10 @@ import { AlbumsService } from './services/albums.service';
 import { CardsController } from './controllers/cards.controller';
 import { AlbumsController } from './controllers/albums.controller';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [CardsController, AlbumsController],
   providers: [RarityService, CardsService, AlbumsService],
   exports: [RarityService, CardsService, AlbumsService],
