@@ -6,6 +6,7 @@ import { dailyApi } from '@/api/daily';
 import type { Daily, AnswerSubmission, SubmitDailyResponse } from '@/types/daily';
 import QuizResults from '@/components/QuizResults';
 import ReportQuestionModal from '@/components/ReportQuestionModal';
+import { Header } from '@/components/Header';
 
 export default function DailyPage() {
   const { user, streak, logout } = useAuthStore();
@@ -280,8 +281,10 @@ export default function DailyPage() {
   const progress = ((currentQuestionIndex + 1) / daily.questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-8">
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto p-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
@@ -451,19 +454,20 @@ export default function DailyPage() {
         </div>
       </div>
 
-      {/* Report Question Modal */}
-      {showReportModal && (
-        <ReportQuestionModal
-          questionId={currentQuestion.questionId}
-          questionText={currentQuestion.text}
-          onClose={() => setShowReportModal(false)}
-          onSuccess={() => {
-            setShowReportModal(false);
-            setReportSuccess(true);
-            setTimeout(() => setReportSuccess(false), 5000);
-          }}
-        />
-      )}
-    </div>
+        {/* Report Question Modal */}
+        {showReportModal && (
+          <ReportQuestionModal
+            questionId={currentQuestion.questionId}
+            questionText={currentQuestion.text}
+            onClose={() => setShowReportModal(false)}
+            onSuccess={() => {
+              setShowReportModal(false);
+              setReportSuccess(true);
+              setTimeout(() => setReportSuccess(false), 5000);
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 }
