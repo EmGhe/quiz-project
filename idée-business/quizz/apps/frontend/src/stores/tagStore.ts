@@ -47,39 +47,78 @@ export const useTagStore = create<TagStore>((set, get) => ({
   },
 
   createTag: async (label: string, color: string) => {
-    const response = await tagsApi.createTag({ label, color });
-    set((state) => ({ tags: [...state.tags, response.data] }));
-    return response.data;
+    set({ loading: true, error: null });
+    try {
+      const response = await tagsApi.createTag({ label, color });
+      set((state) => ({ tags: [...state.tags, response.data], loading: false }));
+      return response.data;
+    } catch (error) {
+      set({ error: 'Erreur lors de la création de l\'étiquette', loading: false });
+      throw error;
+    }
   },
 
   updateTag: async (tagId: string, updates: Partial<Tag>) => {
-    const response = await tagsApi.updateTag(tagId, updates);
-    set((state) => ({
-      tags: state.tags.map((t) => (t.id === tagId ? response.data : t)),
-    }));
+    set({ loading: true, error: null });
+    try {
+      const response = await tagsApi.updateTag(tagId, updates);
+      set((state) => ({
+        tags: state.tags.map((t) => (t.id === tagId ? response.data : t)),
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: 'Erreur lors de la mise à jour de l\'étiquette', loading: false });
+      throw error;
+    }
   },
 
   deleteTag: async (tagId: string) => {
-    await tagsApi.deleteTag(tagId);
-    set((state) => ({
-      tags: state.tags.filter((t) => t.id !== tagId),
-      cardTags: Object.fromEntries(
-        Object.entries(state.cardTags).map(([cardId, tags]) => [
-          cardId,
-          tags.filter((t) => t.id !== tagId),
-        ]),
-      ),
-    }));
+    set({ loading: true, error: null });
+    try {
+      await tagsApi.deleteTag(tagId);
+      set((state) => ({
+        tags: state.tags.filter((t) => t.id !== tagId),
+        cardTags: Object.fromEntries(
+          Object.entries(state.cardTags).map(([cardId, tags]) => [
+            cardId,
+            tags.filter((t) => t.id !== tagId),
+          ]),
+        ),
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: 'Erreur lors de la suppression de l\'étiquette', loading: false });
+      throw error;
+    }
   },
 
   addTagToCard: async (tagId: string, cardId: string) => {
-    await tagsApi.addTagToCard(tagId, cardId);
-    await get().fetchCardTags(cardId);
+    if (!get().canAddTagToCard(cardId)) {
+      const error = 'Cette carte a atteint le nombre maximal d\'étiquettes (4)';
+      set({ error });
+      throw new Error(error);
+    }
+    set({ loading: true, error: null });
+    try {
+      await tagsApi.addTagToCard(tagId, cardId);
+      await get().fetchCardTags(cardId);
+      set({ loading: false });
+    } catch (error) {
+      set({ error: 'Erreur lors de l\'ajout de l\'étiquette à la carte', loading: false });
+      throw error;
+    }
   },
 
   removeTagFromCard: async (tagId: string, cardId: string) => {
-    await tagsApi.removeTagFromCard(tagId, cardId);
-    await get().fetchCardTags(cardId);
+    set({ loading: true, error: null });
+    try {
+      await tagsApi.removeTagFromCard(tagId, cardId);
+      await get().fetchCardTags(cardId);
+      set({ loading: false });
+    } catch (error) {
+      set({ error: 'Erreur lors de la suppression de l\'étiquette de la carte', loading: false });
+      throw error;
+    }
   },
 
   getCardTags: (cardId: string) => {
