@@ -397,14 +397,15 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 **Plan:** `docs/superpowers/plans/2026-10-16-mvp3-collection-system.md`
 
 ### Completed Features
-- ✅ 52 cards with Wikidata entities across 5 albums
-- ✅ 5 meta-albums (Personnalités, Culture, Lieux, Symboles, Divers)
+- ✅ 52 cards with Wikidata entities (personalities, landmarks, monuments, symbols)
 - ✅ Rarity system with algorithmic distribution (40% pageviews + 60% wiki depth)
 - ✅ `/collec` page with grid display and lazy loading
-- ✅ Filters: album selection, rarity tiers, text search
-- ✅ Card detail modal with entity information
+- ✅ Filters: rarity tiers, entity type, text search
+- ✅ Card detail modal with Wikidata entity information
 - ✅ Collection statistics (total cards, rarity breakdown)
 - ✅ Responsive design (mobile 2 cols / tablet 3 cols / desktop 4 cols)
+
+**Note:** Albums system deprecated - cards are now organized by rarity and entity type only.
 
 ### Rarity Distribution (Achieved)
 - Common: 23 (target 20)
@@ -702,30 +703,34 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 ### Key Features
 - ⏳ User-card ownership mapping (User ↔ Cards)
 - ⏳ Pack opening adds cards to collection
-- ⏳ Duplicate handling (fragments or display duplicates)
-- ⏳ Album completion rewards
+- ⏳ Duplicate handling (convert to fragments or keep for display)
+- ⏳ Collection milestones (25%, 50%, 75%, 100% completion rewards)
+- ⏳ Rarity set completion (collect all Common, all Rare, etc.)
 - ⏳ Achievements (badges, titles)
 - ⏳ Profile customization (avatars, frames, backgrounds)
 - ⏳ Trading system (peer-to-peer swaps)
 
 ### Critical Success Metrics
 - Card collection engagement > 40% of active users
-- Album completion rate < 5% per album (creates long-term goals)
+- Collection completion rate < 10% (creates long-term goal)
 - Average user owns 50-100 cards after 1 month
-- Duplicate management keeps players engaged
+- Rarity set completion provides mid-term goals
+- Duplicate management keeps players engaged (fragments system)
 
 ### Technical Highlights
 - **Pack opening flow:** Purchase → RNG generation → Add to user collection → Update pity
 - **Duplicate detection:** Check `UserCard` before adding, offer destruction for fragments
-- **Album completion:** Trigger rewards exactly once per album
+- **Collection milestones:** Trigger rewards at 25%, 50%, 75%, 100% completion
+- **Rarity sets:** Track completion of each rarity tier independently
 - **Educational value:** Cards display Wikidata info (learn while collecting)
 
 ### Dependencies
-- ✅ MVP3 Phase 1 complete (52 cards, albums, raretés)
+- ✅ MVP3 Phase 1 complete (52 cards, raretés)
 - ✅ Gold Economy System complete (earning + spending mechanisms)
-- ⏳ Create 100+ additional card entries
-- ⏳ Source/generate more card images
+- ⏳ Create 100+ additional card entries (target 150-200 total)
+- ⏳ Source/generate more card images (Wikidata Commons)
 - ⏳ Balance Gold earning/spending rates based on metrics
+- ⏳ Design collection milestone rewards system
 
 ---
 
@@ -937,8 +942,10 @@ Start free, scale only when users validate the product.
    - [x] Backend pack opening RNG ✅ (déjà implémenté)
    - [ ] Mapper packs ouverts → UserCard (ajouter cartes à la collection)
    - [ ] Gestion doublons (afficher + option destruction pour fragments)
-   - [ ] Rewards album completion (vérifier 100% → bonus Gold/fragments)
+   - [ ] Rewards collection milestones (25%, 50%, 75%, 100% → bonus Gold/fragments)
+   - [ ] Rewards rarity sets (all Common, all Rare, etc.)
    - [ ] Display "owned" vs "not owned" dans CollectionPage
+   - [ ] Collection progress bar (X/52 cards)
 
 6. **Esthétique & UX**
    - [ ] **Header intégré partout** (Daily ✅, Shop ✅, Collection, PvP)

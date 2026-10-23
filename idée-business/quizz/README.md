@@ -25,11 +25,11 @@ Application de quiz quotidien avec système de streak, PvP compétitif, collecti
 
 ### ✅ MVP3 Phase 1 - Collection (Read-only)
 - **52 cartes** - Entities Wikidata avec images
-- **5 albums thématiques** - Personnalités, Culture, Lieux, Symboles, Divers
 - **Système de raretés** - Common, Uncommon, Rare, Epic, Legendary
-- **Filtres & recherche** - Par album, rareté, texte
-- **Card detail modal** - Infos éducatives sur chaque entité
+- **Filtres & recherche** - Par rareté, type d'entité, texte
+- **Card detail modal** - Infos éducatives sur chaque entité (Wikidata)
 - **Responsive design** - Mobile, tablet, desktop
+- **Distribution algorithmique** - Raretés basées sur pageviews + profondeur wiki
 
 ### ✅ Gold Economy System (Complete)
 - **Monnaie virtuelle** - Gold gagné en jouant
@@ -302,10 +302,10 @@ npx prisma studio
 ## 📊 Statistiques Actuelles
 
 - **Questions** : ~147 (87 QuizzAPI + 60 existantes)
-- **Cartes Collection** : 52 entités Wikidata
-- **Albums** : 5 thématiques
-- **Packs** : 3 types (Bronze/Silver/Gold)
+- **Cartes Collection** : 52 entités Wikidata avec images
 - **Raretés** : 5 niveaux (Common → Legendary)
+- **Packs** : 3 types (Bronze/Silver/Gold)
+- **Types d'entités** : Personnalités, lieux emblématiques, symboles, monuments
 
 ## 🎯 Objectif Court Terme
 
