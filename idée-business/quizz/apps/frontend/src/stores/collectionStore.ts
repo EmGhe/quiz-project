@@ -15,6 +15,7 @@ interface CollectionStore {
     albumId: string | null;
     rarity: string | null;
     search: string;
+    tagId: string | null;
   };
 
   // Actions
@@ -38,6 +39,7 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
     albumId: null,
     rarity: null,
     search: '',
+    tagId: null,
   },
 
   // Set filter
@@ -59,6 +61,7 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
         albumId: null,
         rarity: null,
         search: '',
+        tagId: null,
       },
     });
     get().fetchCards();
