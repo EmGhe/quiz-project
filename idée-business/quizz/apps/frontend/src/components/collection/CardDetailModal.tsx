@@ -1,5 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Card } from '../../types/collection';
+import { Tag } from '../../types/tag';
+import { useTagStore } from '../../stores/tagStore';
+import { cardsApi } from '../../services/tags.api';
 import RarityBadge from './RarityBadge';
+import TagManager from './TagManager';
+import FavoriteIcon from './FavoriteIcon';
 
 interface CardDetailModalProps {
   card: Card;
@@ -7,57 +13,133 @@ interface CardDetailModalProps {
 }
 
 export default function CardDetailModal({ card, onClose }: CardDetailModalProps) {
+  const tagStore = useTagStore();
+  const [currentTags, setCurrentTags] = useState<Tag[]>([]);
+  const [isFavorite, setIsFavorite] = useState(card.isFavorite || false);
+
+  useEffect(() => {
+    loadCardTags();
+  }, [card.id]);
+
+  const loadCardTags = async () => {
+    await tagStore.fetchCardTags(card.id);
+    setCurrentTags(tagStore.getCardTags(card.id));
+  };
+
+  const handleToggleFavorite = async () => {
+    try {
+      await cardsApi.toggleFavorite(card.id);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAddTag = async (tagId: string) => {
+    try {
+      await tagStore.addTagToCard(tagId, card.id);
+      await loadCardTags();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRemoveTag = async (tagId: string) => {
+    try {
+      await tagStore.removeTagFromCard(tagId, card.id);
+      await loadCardTags();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreateAndAdd = async (label: string, color: string) => {
+    try {
+      const newTag = await tagStore.createTag(label, color);
+      await tagStore.addTagToCard(newTag.id, card.id);
+      await loadCardTags();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Rarity Badge - Top Left */}
-        <div className="p-6 pb-2">
-          <RarityBadge rarity={card.rarity} />
-        </div>
-
-        {/* Entity Name - Centered */}
-        <div className="px-6 pb-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800">
-            {card.entity.label}
-          </h2>
-        </div>
-
-        {/* Image - ~90% width */}
-        <div className="px-8 pb-6">
-          <img
-            src={card.imageUrl}
-            alt={card.entity.label}
-            className="w-full rounded-lg shadow-md"
-            style={{ maxHeight: '400px', objectFit: 'contain' }}
-          />
-        </div>
-
-        {/* Description */}
-        <div className="px-8 pb-6">
-          <p className="text-gray-700 leading-relaxed">
-            {card.entity.description}
-          </p>
-        </div>
-
-        {/* Wikipedia Link */}
-        {card.entity.wikipediaUrl && (
-          <div className="px-8 pb-8">
-            <a
-              href={card.entity.wikipediaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-3 px-4 bg-blue-600 text-white text-center font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              🔗 Plus d'info sur Wikipédia
-            </a>
+        <div className="flex flex-col md:flex-row">
+          {/* Left Panel */}
+          <div className="md:w-1/2 p-6 bg-gray-50">
+            <div className="relative">
+              <RarityBadge rarity={card.rarity} />
+              <img
+                src={card.imageUrl}
+                alt={card.entity.label}
+                className="w-full rounded-lg shadow-md mt-4"
+                style={{ maxHeight: '400px', objectFit: 'contain' }}
+              />
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <FavoriteIcon
+                isFavorite={isFavorite}
+                onToggle={handleToggleFavorite}
+                size="lg"
+              />
+              <h2 className="text-2xl font-bold text-center">{card.entity.label}</h2>
+            </div>
+            <p className="text-gray-700 text-center mt-2">{card.entity.description}</p>
           </div>
-        )}
+
+          {/* Right Panel */}
+          <div className="md:w-1/2 p-6 space-y-6">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+            >
+              ×
+            </button>
+
+            <h2 className="text-3xl font-bold">{card.entity.label}</h2>
+
+            <div>
+              <RarityBadge rarity={card.rarity} />
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-gray-600">Type de la carte</h3>
+              <p className="text-gray-800">{card.entity.type}</p>
+            </div>
+
+            <div className="border border-gray-300 rounded-lg p-4">
+              <p className="text-gray-700 text-sm leading-relaxed">{card.entity.description}</p>
+            </div>
+
+            {card.entity.wikipediaUrl && (
+              <a
+                href={card.entity.wikipediaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+              >
+                🔗 Lien Wikipédia
+              </a>
+            )}
+
+            <TagManager
+              cardId={card.id}
+              currentTags={currentTags}
+              availableTags={tagStore.tags}
+              onAddTag={handleAddTag}
+              onRemoveTag={handleRemoveTag}
+              onCreateAndAdd={handleCreateAndAdd}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ export interface Card {
   imageSourceUrl: string | null;
   displayOrder: number | null;
   active: boolean;
+  isFavorite?: boolean;
   createdAt: string;
   updatedAt: string;
   entity: Entity;
