@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { UserCard } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
@@ -107,7 +108,7 @@ export class CardsService {
     return { total, byRarity, byAlbum };
   }
 
-  async toggleFavorite(userId: string, cardId: string) {
+  async toggleFavorite(userId: string, cardId: string): Promise<UserCard> {
     const userCard = await this.prisma.userCard.findUnique({
       where: { userId_cardId: { userId, cardId } },
     });
