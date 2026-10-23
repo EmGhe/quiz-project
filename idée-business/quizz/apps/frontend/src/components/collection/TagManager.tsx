@@ -10,6 +10,7 @@ interface TagManagerProps {
   onAddTag: (tagId: string) => Promise<void>;
   onRemoveTag: (tagId: string) => Promise<void>;
   onCreateAndAdd: (label: string, color: string) => Promise<void>;
+  onDeleteTag: (tagId: string) => Promise<void>;
   isParentLoading?: boolean;
 }
 
@@ -18,12 +19,14 @@ export default function TagManager({
   availableTags,
   onRemoveTag,
   onCreateAndAdd,
+  onDeleteTag,
   isParentLoading = false,
 }: TagManagerProps) {
   const [newLabel, setNewLabel] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showManageMode, setShowManageMode] = useState(false);
 
   const canAddMore = currentTags.length < 4;
   const hasNoTags = availableTags.length === 0;
@@ -88,8 +91,45 @@ export default function TagManager({
             </span>
           )}
         </h3>
-        <button className="text-sm text-blue-400 hover:text-blue-300">Gérer</button>
+        <button
+          onClick={() => setShowManageMode(!showManageMode)}
+          className="text-sm text-blue-400 hover:text-blue-300"
+        >
+          {showManageMode ? 'Fermer' : 'Gérer'}
+        </button>
       </div>
+
+      {showManageMode && (
+        <div className="border-t border-gray-700 pt-3 space-y-2">
+          <p className="text-sm text-gray-300">Mes étiquettes :</p>
+          {availableTags.length === 0 ? (
+            <p className="text-sm text-gray-400">Aucune étiquette créée</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {availableTags.map((tag) => (
+                <div key={tag.id} className="relative group">
+                  <TagBadge label={tag.label} color={tag.color} size="md" />
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Supprimer l'étiquette "${tag.label}" ? Elle sera retirée de toutes les cartes.`,
+                        )
+                      ) {
+                        onDeleteTag(tag.id);
+                      }
+                    }}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Supprimer définitivement"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {currentTags.length > 0 && (
         <div className="flex flex-wrap gap-2">

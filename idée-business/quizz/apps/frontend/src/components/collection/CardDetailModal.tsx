@@ -75,6 +75,20 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
     }
   };
 
+  const handleDeleteTag = async (tagId: string) => {
+    setLoading(true);
+    try {
+      await tagStore.deleteTag(tagId);
+      await tagStore.fetchUserTags();
+      await tagStore.fetchCardTags(card.id);
+      setCurrentTags(tagStore.getCardTags(card.id));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -149,6 +163,7 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
               onAddTag={handleAddTag}
               onRemoveTag={handleRemoveTag}
               onCreateAndAdd={handleCreateAndAdd}
+              onDeleteTag={handleDeleteTag}
               isParentLoading={loading}
             />
           </div>
