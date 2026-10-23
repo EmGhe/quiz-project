@@ -8,7 +8,7 @@ export class CreateTagDto {
 
   @IsString()
   @Matches(/^#[0-9A-Fa-f]{6}$/, {
-    message: 'Color must be a valid hex code (e.g., #FF5733)',
+    message: 'La couleur doit être un code hexadécimal valide (ex: #FF5733)',
   })
   color: string;
 }
