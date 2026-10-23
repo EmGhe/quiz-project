@@ -1,4 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
+import { Tag } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 
@@ -6,7 +7,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateTagDto) {
+  async create(userId: string, dto: CreateTagDto): Promise<Tag> {
     try {
       return await this.prisma.tag.create({
         data: {
