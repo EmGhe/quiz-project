@@ -32,7 +32,7 @@ export default function TagFilter({ tags, selectedTagId, onSelect }: TagFilterPr
           }`}
         >
           <TagBadge label={tag.label} color={tag.color} size="sm" />
-          <span className="text-sm text-gray-500">({tag.cardCount})</span>
+          {tag.cardCount && <span className="text-sm text-gray-500">({tag.cardCount})</span>}
         </button>
       ))}
     </div>
