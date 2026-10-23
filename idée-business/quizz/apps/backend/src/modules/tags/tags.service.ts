@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { Tag } from '@prisma/client';
+import { Tag, CardTag } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -70,7 +70,7 @@ export class TagsService {
     await this.prisma.tag.delete({ where: { id: tagId } });
   }
 
-  async addToCard(userId: string, tagId: string, cardId: string) {
+  async addToCard(userId: string, tagId: string, cardId: string): Promise<CardTag> {
     const tag = await this.prisma.tag.findUnique({ where: { id: tagId } });
     if (!tag || tag.userId !== userId) {
       throw new NotFoundException('Étiquette introuvable');
@@ -114,7 +114,7 @@ export class TagsService {
     await this.prisma.cardTag.delete({ where: { id: cardTag.id } });
   }
 
-  async findCardTags(userId: string, cardId: string) {
+  async findCardTags(userId: string, cardId: string): Promise<Tag[]> {
     const cardTags = await this.prisma.cardTag.findMany({
       where: { userId, cardId },
       include: { tag: true },
