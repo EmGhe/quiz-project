@@ -107,28 +107,37 @@ export class CardsService {
     });
   }
 
-  async getStats() {
-    const cards = await this.prisma.card.findMany({
-      where: { active: true },
+  async getStats(userId?: string) {
+    // Si pas d'userId, retourner des stats vides
+    if (!userId) {
+      return { total: 0, byRarity: {}, byAlbum: {} };
+    }
+
+    const userCards = await this.prisma.userCard.findMany({
+      where: { userId },
       include: {
-        albums: {
+        card: {
           include: {
-            album: true,
+            albums: {
+              include: {
+                album: true,
+              },
+            },
           },
         },
       },
     });
 
-    const total = cards.length;
+    const total = userCards.length;
     const byRarity: Record<string, number> = {};
     const byAlbum: Record<string, number> = {};
 
-    cards.forEach((card) => {
-      // Count by rarity
-      byRarity[card.rarity] = (byRarity[card.rarity] || 0) + 1;
+    userCards.forEach((userCard) => {
+      // Count by current rarity (peut avoir évolué)
+      byRarity[userCard.rarity] = (byRarity[userCard.rarity] || 0) + 1;
 
       // Count by album
-      card.albums.forEach((cardAlbum) => {
+      userCard.card.albums.forEach((cardAlbum) => {
         const albumName = cardAlbum.album.name;
         byAlbum[albumName] = (byAlbum[albumName] || 0) + 1;
       });

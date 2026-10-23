@@ -28,8 +28,8 @@ export class CardsController {
   }
 
   @Get('stats')
-  async getStats() {
-    return this.cardsService.getStats();
+  async getStats(@CurrentUser() userId?: string) {
+    return this.cardsService.getStats(userId);
   }
 
   @Get(':id')
