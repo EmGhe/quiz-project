@@ -745,12 +745,13 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
   - Open pack → add cards to user's collection
   - Duplicate detection (check if user already owns card)
   - Duplicate handling UI (keep for display or convert to fragments)
-- ⏳ **Collection milestones** (25%, 50%, 75%, 100% completion rewards)
-  - Progress tracking with visual progress bar
-  - Bonus Gold/fragments at each milestone
+- ⏳ **Collection milestones** (seuils absolus: 10, 25, 50, 100, 150 cartes)
+  - Bonus Gold/fragments à chaque seuil
+  - **Note:** JAMAIS afficher de total ou % ("23 cartes" OK, "23/150" ou "15%" NON)
 - ⏳ **Rarity set completion** (collect all Common, all Rare, etc.)
-  - Per-rarity completion tracking
-  - Special rewards for completing full rarity sets
+  - Backend détection quand joueur possède 100% d'une rareté
+  - Notification surprise: "🎉 Collection Common complète !"
+  - Joueur ne sait PAS à l'avance combien manquent
 - ⏳ **Achievements & badges** (Collection-focused)
   - "First Legendary" badge
   - "50 cards collected" achievement
@@ -771,9 +772,10 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 ### Technical Highlights
 - **Pack opening flow:** Purchase → RNG → Add to UserCard → Check duplicates → Offer fragment conversion
 - **Duplicate detection:** Query `UserCard.findFirst({ userId, cardId })` before adding
-- **Milestone triggers:** Calculate % on each card add, trigger rewards at thresholds
-- **Rarity sets:** Track per-user completion of each tier (hasAllCommon, hasAllRare, etc.)
+- **Milestone triggers:** Count total cards owned, trigger at 10/25/50/100/150
+- **Rarity sets:** Backend calculates if user owns ALL cards of a rarity → surprise reward
 - **Educational value:** Cards display Wikidata info (learn while collecting)
+- **Total cards SECRET:** UI shows only owned count, never reveals total or %
 
 ### Dependencies
 - ✅ MVP3 Phase 1 complete (52 cards, raretés)

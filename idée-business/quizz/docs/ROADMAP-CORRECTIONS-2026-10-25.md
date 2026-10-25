@@ -121,16 +121,20 @@ Au lieu de "25% completion", utiliser des seuils absolus :
 - ✅ "100 cartes collectées" → reward
 - ✅ "Toutes les Common collectées" → reward (on peut calculer le total des Common sans révéler le total global)
 
-**Rarity Set Completion - Exception:**
+**Rarity Set Completion - PAS d'exception:**
 
-On **peut** afficher le total par rareté individuellement :
-- ✅ "Common: 8/15 collectées"
-- ✅ "Rare: 3/10 collectées"
+On **ne peut PAS** afficher le total par rareté non plus :
+- ❌ ~~"Common: 8/15 collectées"~~
+- ❌ ~~"Rare: 3/10 collectées"~~
+- ✅ "8 Common collectées" (nombre possédé uniquement)
+- ✅ "3 Rare collectées"
 
-**Pourquoi l'exception ?** 
-- Chaque rareté est un sous-ensemble fini et connu
-- Ça donne un objectif de collection par tier
-- Ça ne révèle pas le total global (Common + Rare + Epic + Legendary + ?)
+**Principe absolu:** Aucun total ne doit être visible, ni global, ni par rareté.
+
+**Rewards "Rarity Set":**
+- Le système backend peut détecter quand un joueur possède TOUTES les cartes d'une rareté
+- L'utilisateur reçoit une notification surprise : "🎉 Collection Common complète !"
+- Mais il ne sait pas à l'avance combien il en manquait
 
 ---
 
