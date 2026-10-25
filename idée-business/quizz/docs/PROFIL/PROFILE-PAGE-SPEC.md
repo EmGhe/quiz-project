@@ -162,56 +162,86 @@ Pour les joueurs excellant dans **plusieurs domaines** simultanément.
 ### Sections de la Page
 
 ```
-┌─────────────────────────────────────────────┐
-│  [Avatar]    Nom d'utilisateur              │
-│              🔍 Explorateur                  │  ← Surnom dynamique
-│              Niveau 12 • 2,450 XP            │
-│                                              │
-│  ┌──────────────────────────────────────┐   │
-│  │ STATISTIQUES DAILY                   │   │
-│  │ Streak actuel: 7 jours 🔥           │   │
-│  │ Record streak: 15 jours              │   │
-│  │ Daily complétés: 32                  │   │
-│  │ Taux de réussite: 85%                │   │
-│  │ Gold total gagné: 1,450              │   │
-│  └──────────────────────────────────────┘   │
-│                                              │
-│  ┌──────────────────────────────────────┐   │
-│  │ STATISTIQUES PVP                     │   │
-│  │ Rang actuel: Silver 2 🛡️            │   │
-│  │ ELO: 1,285                           │   │
-│  │ Victoires: 23 | Défaites: 18         │   │
-│  │ Winrate: 56%                         │   │
-│  │ Série actuelle: 3 victoires 🔥       │   │
-│  └──────────────────────────────────────┘   │
-│                                              │
-│  ┌──────────────────────────────────────┐   │
-│  │ COLLECTION                           │   │
-│  │ Cartes possédées: 42                 │   │
-│  │ Raretés:                             │   │
-│  │   Common: 18 | Rare: 15              │   │
-│  │   Epic: 7 | Legendary: 2             │   │
-│  │ Favoris: 8 cartes ⭐                │   │
-│  │ Tags créés: 5                        │   │
-│  └──────────────────────────────────────┘   │
-│                                              │
-│  ┌──────────────────────────────────────┐   │
-│  │ BADGES & ACHIEVEMENTS                │   │
-│  │ [Badge 1] [Badge 2] [Badge 3]        │   │
-│  │ [Badge 4] [Badge 5] [Badge 6]        │   │
-│  └──────────────────────────────────────┘   │
-│                                              │
-│  ┌──────────────────────────────────────┐   │
-│  │ HISTORIQUE SURNOMS                   │   │
-│  │ • Gardien du Savoir (2026-09-15)     │   │
-│  │ • Maître du Quotidien (2026-08-01)   │   │
-│  │ • Sage du Quotidien (2026-07-15)     │   │
-│  │ • Explorateur (2026-06-20)           │   │
-│  └──────────────────────────────────────┘   │
-│                                              │
-│  [MODIFIER PROFIL] [PARAMÈTRES]              │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│                    PROFIL                        │
+│                                                  │
+│  ┌────────────────────────────────────────────┐ │
+│  │                                             │ │
+│  │    [Photo]     Nom du joueur                │ │
+│  │   de profil                                 │ │
+│  │    (cercle)    "Explorateur"  ← Surnom     │ │
+│  │                                             │ │
+│  │                ◇ Silver 2 ◇  ← Badge PvP   │ │
+│  │              (nom rang + logo)              │ │
+│  │                 ELO: 1,285                  │ │
+│  │                                             │ │
+│  └────────────────────────────────────────────┘ │
+│                                                  │
+│  ┌────────────────────────────────────────────┐ │
+│  │              MES STATS                      │ │
+│  │                                             │ │
+│  │  Daily Challenge:                           │ │
+│  │  • Streak: 7 jours 🔥                      │ │
+│  │  • Record: 15 jours                         │ │
+│  │  • Complétés: 32                           │ │
+│  │  • Réussite: 85%                           │ │
+│  │  • Gold gagné: 1,450                       │ │
+│  │                                             │ │
+│  │  PvP:                                       │ │
+│  │  • Rang: Silver 2                          │ │
+│  │  • V/D: 23/18 (56%)                        │ │
+│  │  • Série: 3 victoires 🔥                   │ │
+│  │                                             │ │
+│  │  Collection:                                │ │
+│  │  • Cartes: 42                              │ │
+│  │  • Common: 18 | Rare: 15                   │ │
+│  │  • Epic: 7 | Legendary: 2                  │ │
+│  │  • Favoris: 8 ⭐                           │ │
+│  │                                             │ │
+│  └────────────────────────────────────────────┘ │
+│                                                  │
+│  ┌────────────────────────────────────────────┐ │
+│  │              MA VITRINE                     │ │
+│  │                                             │ │
+│  │  [Carte 1] [Carte 2] [Carte 3] [Carte 4]   │ │
+│  │  [Carte 5] [Carte 6] [Carte 7] [Carte 8]   │ │
+│  │  [Carte 9] [Carte 10]                      │ │
+│  │                                             │ │
+│  │  (Max 10 cartes favorites à exhiber)       │ │
+│  │                                             │ │
+│  └────────────────────────────────────────────┘ │
+│                                                  │
+│  [Voir toute ma collec] [Retour à l'accueil]    │
+│                                                  │
+└─────────────────────────────────────────────────┘
 ```
+
+### Notes de Design
+
+**Section En-tête:**
+- Photo de profil circulaire (avatar)
+- Nom d'utilisateur
+- Surnom dynamique (calculé selon perfs)
+- Badge PvP en forme de losange avec:
+  - Nom du rang (ex: "Silver 2")
+  - Logo/icône du rang
+  - ELO en dessous
+
+**Section "Mes Stats":**
+- Une seule zone regroupant TOUTES les stats
+- Organisées par domaine (Daily, PvP, Collection)
+- Stats essentielles uniquement (pas de surcharge)
+
+**Section "Ma Vitrine":**
+- Affiche les **cartes favorites** (marquées ⭐ dans la collection)
+- Maximum 10 cartes affichées
+- Grid responsive (5 cols desktop, 3 cols tablet, 2 cols mobile)
+- Le joueur choisit les cartes à exhiber dans son profil
+- Permet de montrer ses plus belles cartes (Legendary, rares, préférées)
+
+**Boutons d'action:**
+- "Voir toute ma collec" → Redirige vers `/collec`
+- "Retour à la page d'accueil" → Redirige vers `/`
 
 ---
 
@@ -263,6 +293,31 @@ interface CollectionStats {
 }
 ```
 
+### Showcase (Vitrine)
+
+```typescript
+interface ShowcaseCard {
+  id: string;
+  imageUrl: string;
+  rarity: string;
+  entity: {
+    label: string;
+  };
+}
+
+interface Showcase {
+  cards: ShowcaseCard[];           // Max 10 cartes
+  lastUpdated: Date;               // Dernière modification
+}
+```
+
+**Règles:**
+- Seulement les cartes **possédées** par l'utilisateur
+- Maximum 10 cartes dans la vitrine
+- Par défaut: affiche les 10 premières cartes favorites
+- Utilisateur peut réorganiser l'ordre (drag & drop future feature)
+- Si < 10 favoris: affiche slots vides
+
 ---
 
 ## Backend Implementation
@@ -295,6 +350,9 @@ model UserProfile {
   favoriteCount        Int      @default(0)
   tagsCreated          Int      @default(0)
   
+  // Vitrine (showcase)
+  showcaseCardIds      String[] // Array de cardIds (max 10)
+  
   // Surnom actuel
   currentTitle         String   @default("Explorateur")
   titleUpdatedAt       DateTime @default(now())
@@ -317,6 +375,8 @@ model TitleHistory {
   @@index([profileId, earnedAt])
 }
 ```
+
+**Note:** `showcaseCardIds` est un array de cardIds. Le frontend récupère ensuite les détails des cartes via les UserCards.
 
 ### 2. Title Calculation Service
 
@@ -513,14 +573,75 @@ class ProfileService {
     });
     
     if (!profile) {
-      // Create default profile
       return this.createProfile(userId);
     }
     
     // Recalculate title
     await this.updateTitle(userId);
     
-    return profile;
+    // Get showcase cards
+    const showcaseCards = await this.getShowcaseCards(userId, profile.showcaseCardIds);
+    
+    return {
+      ...profile,
+      showcaseCards,
+    };
+  }
+  
+  async getShowcaseCards(userId: string, cardIds: string[]) {
+    if (!cardIds || cardIds.length === 0) {
+      // Default: get first 10 favorite cards
+      const favorites = await this.prisma.userCard.findMany({
+        where: { userId, isFavorite: true },
+        take: 10,
+        include: { card: { include: { entity: true } } },
+        orderBy: { createdAt: 'desc' },
+      });
+      
+      return favorites.map(uc => ({
+        id: uc.card.id,
+        imageUrl: uc.card.imageUrl,
+        rarity: uc.card.rarity,
+        entity: uc.card.entity,
+      }));
+    }
+    
+    // Get specific cards in order
+    const userCards = await this.prisma.userCard.findMany({
+      where: { userId, cardId: { in: cardIds } },
+      include: { card: { include: { entity: true } } },
+    });
+    
+    // Preserve order from showcaseCardIds
+    return cardIds
+      .map(id => userCards.find(uc => uc.card.id === id))
+      .filter(Boolean)
+      .map(uc => ({
+        id: uc.card.id,
+        imageUrl: uc.card.imageUrl,
+        rarity: uc.card.rarity,
+        entity: uc.card.entity,
+      }));
+  }
+  
+  async updateShowcase(userId: string, cardIds: string[]) {
+    if (cardIds.length > 10) {
+      throw new Error('Maximum 10 cartes dans la vitrine');
+    }
+    
+    // Verify user owns all cards
+    const userCards = await this.prisma.userCard.findMany({
+      where: { userId, cardId: { in: cardIds } },
+    });
+    
+    if (userCards.length !== cardIds.length) {
+      throw new Error('Certaines cartes ne sont pas possédées');
+    }
+    
+    await this.prisma.userProfile.update({
+      where: { userId },
+      data: { showcaseCardIds: cardIds },
+    });
   }
   
   async updateTitle(userId: string) {
@@ -614,6 +735,7 @@ export const useProfileStore = create<ProfileStore>((set) => ({
 
 export default function ProfilePage() {
   const { profile, loading, fetchProfile } = useProfileStore();
+  const navigate = useNavigate();
   
   useEffect(() => {
     fetchProfile();
@@ -623,13 +745,233 @@ export default function ProfilePage() {
   if (!profile) return <Error />;
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ProfileHeader profile={profile} />
-      <DailyStatsCard stats={profile.dailyStats} />
-      <PvPStatsCard stats={profile.pvpStats} />
-      <CollectionStatsCard stats={profile.collectionStats} />
-      <BadgesSection badges={profile.badges} />
-      <TitleHistory history={profile.titleHistory} />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">PROFIL</h1>
+        
+        {/* Header: Photo + Nom + Surnom + Badge PvP */}
+        <ProfileHeader 
+          avatarUrl={profile.avatarUrl}
+          displayName={profile.displayName}
+          title={profile.currentTitle}
+          rank={profile.pvpStats.currentRank}
+          elo={profile.pvpStats.currentElo}
+        />
+        
+        {/* Mes Stats (tout en un) */}
+        <StatsCard 
+          dailyStats={profile.dailyStats}
+          pvpStats={profile.pvpStats}
+          collectionStats={profile.collectionStats}
+        />
+        
+        {/* Ma Vitrine (10 cartes favorites) */}
+        <ShowcaseSection 
+          cards={profile.showcaseCards}
+          maxCards={10}
+        />
+        
+        {/* Boutons */}
+        <div className="flex gap-4 justify-center mt-8">
+          <button
+            onClick={() => navigate('/collec')}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Voir toute ma collec
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+          >
+            Retour à la page d'accueil
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### ProfileHeader Component
+
+```typescript
+// apps/frontend/src/components/profile/ProfileHeader.tsx
+
+interface ProfileHeaderProps {
+  avatarUrl?: string;
+  displayName: string;
+  title: string;
+  rank: string;
+  elo: number;
+}
+
+export default function ProfileHeader({ 
+  avatarUrl, 
+  displayName, 
+  title, 
+  rank, 
+  elo 
+}: ProfileHeaderProps) {
+  const rankBadge = getRankBadge(rank); // Returns logo + color
+  
+  return (
+    <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+      <div className="flex flex-col items-center gap-4">
+        {/* Avatar */}
+        <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl">
+              👤
+            </div>
+          )}
+        </div>
+        
+        {/* Nom + Surnom */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">{displayName}</h2>
+          <p className="text-lg text-gray-600 mt-1">"{title}"</p>
+        </div>
+        
+        {/* Badge PvP (losange) */}
+        <div className="relative">
+          <div 
+            className="w-24 h-24 transform rotate-45 flex items-center justify-center"
+            style={{ backgroundColor: rankBadge.color }}
+          >
+            <div className="transform -rotate-45 text-center">
+              <div className="text-2xl">{rankBadge.icon}</div>
+              <div className="text-xs font-bold text-white mt-1">
+                {rankBadge.name}
+              </div>
+            </div>
+          </div>
+          <div className="text-center mt-2">
+            <span className="text-sm text-gray-600">ELO: {elo}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### StatsCard Component
+
+```typescript
+// apps/frontend/src/components/profile/StatsCard.tsx
+
+export default function StatsCard({ dailyStats, pvpStats, collectionStats }) {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+      <h3 className="text-2xl font-bold mb-6 text-center">MES STATS</h3>
+      
+      <div className="space-y-6">
+        {/* Daily Challenge */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3 text-blue-600">Daily Challenge</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <StatItem label="Streak" value={`${dailyStats.currentStreak} jours 🔥`} />
+            <StatItem label="Record" value={`${dailyStats.longestStreak} jours`} />
+            <StatItem label="Complétés" value={dailyStats.totalDailyCompleted} />
+            <StatItem label="Réussite" value={`${dailyStats.averageSuccessRate}%`} />
+            <StatItem label="Gold gagné" value={dailyStats.totalGoldEarned} />
+          </div>
+        </div>
+        
+        {/* PvP */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3 text-purple-600">PvP</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <StatItem label="Rang" value={pvpStats.currentRank} />
+            <StatItem label="V/D" value={`${pvpStats.totalVictories}/${pvpStats.totalDefeats} (${pvpStats.winrate}%)`} />
+            <StatItem label="Série" value={`${pvpStats.currentWinStreak} victoires 🔥`} />
+          </div>
+        </div>
+        
+        {/* Collection */}
+        <div>
+          <h4 className="font-semibold text-lg mb-3 text-green-600">Collection</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <StatItem label="Cartes" value={collectionStats.totalCards} />
+            <StatItem label="Common" value={collectionStats.commonCount} />
+            <StatItem label="Rare" value={collectionStats.rareCount} />
+            <StatItem label="Epic" value={collectionStats.epicCount} />
+            <StatItem label="Legendary" value={collectionStats.legendaryCount} />
+            <StatItem label="Favoris" value={`${collectionStats.favoriteCount} ⭐`} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatItem({ label, value }) {
+  return (
+    <div>
+      <span className="text-sm text-gray-600">{label}:</span>
+      <span className="ml-2 font-medium">{value}</span>
+    </div>
+  );
+}
+```
+
+### ShowcaseSection Component
+
+```typescript
+// apps/frontend/src/components/profile/ShowcaseSection.tsx
+
+export default function ShowcaseSection({ cards, maxCards = 10 }) {
+  const emptySlots = maxCards - cards.length;
+  
+  return (
+    <div className="bg-white rounded-lg shadow-md p-8">
+      <h3 className="text-2xl font-bold mb-6 text-center">MA VITRINE</h3>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {/* Cartes favorites */}
+        {cards.map((card) => (
+          <ShowcaseCard key={card.id} card={card} />
+        ))}
+        
+        {/* Slots vides */}
+        {Array.from({ length: emptySlots }).map((_, i) => (
+          <EmptySlot key={`empty-${i}`} />
+        ))}
+      </div>
+      
+      <p className="text-center text-sm text-gray-500 mt-4">
+        {cards.length}/{maxCards} cartes • Les cartes favorites s'affichent automatiquement
+      </p>
+    </div>
+  );
+}
+
+function ShowcaseCard({ card }) {
+  return (
+    <div className="relative group cursor-pointer">
+      <div className={`rounded-lg overflow-hidden border-2 ${getRarityBorder(card.rarity)}`}>
+        <img 
+          src={card.imageUrl} 
+          alt={card.entity.label}
+          className="w-full aspect-[3/4] object-cover"
+        />
+      </div>
+      {/* Tooltip on hover */}
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity rounded-lg flex items-center justify-center">
+        <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+          {card.entity.label}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function EmptySlot() {
+  return (
+    <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 aspect-[3/4] flex items-center justify-center">
+      <span className="text-4xl text-gray-300">+</span>
     </div>
   );
 }
@@ -650,24 +992,31 @@ export default function ProfilePage() {
 ## Next Steps
 
 1. **Backend:**
-   - [ ] Migration Prisma (UserProfile, TitleHistory)
+   - [ ] Migration Prisma (UserProfile avec showcaseCardIds, TitleHistory)
    - [ ] TitleCalculatorService implementation
-   - [ ] ProfileService implementation
+   - [ ] ProfileService implementation (getProfile, updateTitle, updateShowcase)
    - [ ] GET /api/profile endpoint
    - [ ] PATCH /api/profile endpoint
+   - [ ] PATCH /api/profile/showcase endpoint (update vitrine)
+   - [ ] Auto-update stats (Daily completion, PvP match end, Collection change)
 
 2. **Frontend:**
    - [ ] ProfileStore (Zustand)
    - [ ] ProfilePage component
-   - [ ] Stats cards (Daily, PvP, Collection)
-   - [ ] Title display avec badge/emoji
-   - [ ] Title history timeline
+   - [ ] ProfileHeader component (avatar + surnom + badge PvP)
+   - [ ] StatsCard component (tout-en-un Daily/PvP/Collection)
+   - [ ] ShowcaseSection component (10 cartes favorites)
+   - [ ] EmptySlot component (slots vides vitrine)
+   - [ ] Rank badge helper (getRankBadge avec couleur + icône)
+   - [ ] Navigation buttons (Voir collec, Retour accueil)
 
 3. **UX:**
    - [ ] Animation changement de surnom
    - [ ] Notification "Nouveau surnom débloqué !"
    - [ ] Tooltip explication conditions surnom
-   - [ ] Share card avec surnom
+   - [ ] Badge PvP en losange (transform rotate-45)
+   - [ ] Hover effect sur cartes vitrine (affiche nom)
+   - [ ] Responsive grid vitrine (2 cols mobile → 5 cols desktop)
 
 ---
 
