@@ -17,6 +17,7 @@ interface TagManagerProps {
 export default function TagManager({
   currentTags,
   availableTags,
+  onAddTag,
   onRemoveTag,
   onCreateAndAdd,
   onDeleteTag,
@@ -31,6 +32,9 @@ export default function TagManager({
   const canAddMore = currentTags.length < 4;
   const hasNoTags = availableTags.length === 0;
   const isLoading = loading || isParentLoading;
+
+  const currentTagIds = new Set(currentTags.map(t => t.id));
+  const availableToAdd = availableTags.filter(tag => !currentTagIds.has(tag.id));
 
   const handleCreateAndAdd = async () => {
     if (!newLabel.trim()) return;
@@ -150,6 +154,33 @@ export default function TagManager({
         <p className="text-sm text-amber-500">
           Limite de 4 étiquettes atteinte. Retire-en une pour en ajouter une nouvelle.
         </p>
+      )}
+
+      {canAddMore && availableToAdd.length > 0 && (
+        <div className="border-t border-gray-700 pt-3 space-y-2">
+          <p className="text-sm text-gray-300">Ajouter une étiquette existante :</p>
+          <div className="flex flex-wrap gap-2">
+            {availableToAdd.map((tag) => (
+              <button
+                key={tag.id}
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    await onAddTag(tag.id);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={isLoading}
+                className="hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                <TagBadge label={tag.label} color={tag.color} size="md" />
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {canAddMore && !showCreateForm && (
