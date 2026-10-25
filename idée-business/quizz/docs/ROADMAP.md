@@ -990,7 +990,7 @@ Start free, scale only when users validate the product.
    - [x] Display Gold gagné après Daily ✅
    - [x] Header avec currency display global ✅
    - [x] Probabilities & pity cachées de l'UI (backend-only) ✅
-   - [ ] Intégration PvP : victoire/défaite (futur)
+   - [ ] Intégration PvP : Rank Promotion Rewards (voir section MVP2)
 
 ### **Semaines 5-6: Polish & Ownership Layer**
 
