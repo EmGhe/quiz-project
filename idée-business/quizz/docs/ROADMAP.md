@@ -964,16 +964,19 @@ Start free, scale only when users validate the product.
 2. **Quality Assurance (priorité haute)**
    - [x] Checks qualité automatiques - Script duplicate detection ✅
    - [ ] Script validation distracteurs (4 uniques par MCQ)
-   - [ ] Script équilibrage catégories (min 50 questions/catégorie)
-   - [ ] Script distribution difficulté (20/60/20)
 
 ### **Semaines 3-4: MVP2 Finition + Intégrations**
 
-3. **PvP Polish**
+3. **PvP Polish & Rank Rewards**
    - [ ] Vérifier/compléter UI Ranks (badges, progression)
+   - [ ] **Rank Promotion Rewards System** (5-7 jours)
+     - [ ] Backend: UserSeasonRankReward model + Season model
+     - [ ] Service: RankRewardsService avec anti-farming
+     - [ ] Intégration match flow (détection promotion → distribution)
+     - [ ] Frontend: Popup promotion + historique rewards saison
+     - **Spec:** `docs/PVP-RANK-REWARDS.md`
    - [ ] Tests de charge WebSocket (50-100 joueurs simultanés)
    - [ ] Debug final et optimisations
-   - [ ] Intégration Gold rewards (victoire/défaite)
 
 4. **Gold Economy - Intégrations** ✅ **Système complet** (2026-10-23)
    - [x] Migration Prisma complète (gold, fragments, packs, pity counters) ✅
@@ -1010,9 +1013,9 @@ Start free, scale only when users validate the product.
      - [x] COLLEC/README.md (schemas, routes, architecture) ✅
    - [ ] **Next (V2):** Pack opening → UserCard integration
    - [ ] Gestion doublons (afficher + option destruction pour fragments)
-   - [ ] Rewards collection milestones (25%, 50%, 75%, 100% → bonus Gold/fragments)
+   - [ ] Rewards collection milestones (seuils absolus: 10, 25, 50, 100, 150 cartes)
    - [ ] Rewards rarity sets (all Common, all Rare, etc.)
-   - [ ] Collection progress bar (X/total cards)
+   - [ ] **Note:** NE PAS afficher le total global de cartes (mystère)
 
 6. **Esthétique & UX**
    - [ ] **Header intégré partout** (Daily ✅, Shop ✅, Collection, PvP)
