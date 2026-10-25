@@ -976,7 +976,7 @@ Start free, scale only when users validate the product.
      - [ ] Service: RankRewardsService avec anti-farming
      - [ ] Intégration match flow (détection promotion → distribution)
      - [ ] Frontend: Popup promotion + historique rewards saison
-     - **Spec:** `docs/PVP-RANK-REWARDS.md`
+     - **Spec:** `docs/PVP/RANK-REWARDS.md`
    - [ ] Tests de charge WebSocket (50-100 joueurs simultanés)
    - [ ] Debug final et optimisations
 
