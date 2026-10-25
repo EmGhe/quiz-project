@@ -17,6 +17,7 @@ interface TagStore {
   removeTagFromCard: (tagId: string, cardId: string) => Promise<void>;
   getCardTags: (cardId: string) => Tag[];
   canAddTagToCard: (cardId: string) => boolean;
+  getTagsWithCardCount: () => (Tag & { cardCount: number })[];
 }
 
 export const useTagStore = create<TagStore>((set, get) => ({
@@ -128,5 +129,23 @@ export const useTagStore = create<TagStore>((set, get) => ({
   canAddTagToCard: (cardId: string) => {
     const tags = get().getCardTags(cardId);
     return tags.length < 4;
+  },
+
+  getTagsWithCardCount: () => {
+    const state = get();
+    const tagCounts = new Map<string, number>();
+
+    Object.values(state.cardTags).forEach((tags) => {
+      tags.forEach((tag) => {
+        tagCounts.set(tag.id, (tagCounts.get(tag.id) || 0) + 1);
+      });
+    });
+
+    return state.tags
+      .map((tag) => ({
+        ...tag,
+        cardCount: tagCounts.get(tag.id) || 0,
+      }))
+      .filter((tag) => tag.cardCount > 0);
   },
 }));

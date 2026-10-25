@@ -86,7 +86,7 @@ export default function CollectionPage() {
           <div>
             <h3 className="text-sm font-semibold text-gray-600 mb-2">Étiquettes</h3>
             <TagFilter
-              tags={tagStore.tags}
+              tags={tagStore.getTagsWithCardCount()}
               selectedTagId={filters.tagId}
               onSelect={(tagId) => setFilter('tagId', tagId)}
             />
