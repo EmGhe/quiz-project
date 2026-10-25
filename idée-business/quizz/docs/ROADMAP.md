@@ -11,12 +11,12 @@ Complete implementation roadmap from MVP1 to V3, with task breakdown and effort 
 | **MVP2** | PvP Competition | ~15 tasks | 2-3 weeks | 🚧 In Progress (80%) |
 | **MVP3 Phase 1** | Collection Read-only | ~10 tasks | 1-2 weeks | ✅ Complete |
 | **Gold Economy** | Virtual Currency System | ~12 tasks | 1 week | ✅ Complete |
-| **MVP3 Phase 2** | User Ownership Layer | ~8 tasks | 1-2 weeks | 📋 Planned |
+| **MVP3 Phase 2** | Tags & Personal Collection | ~21 tasks | 1-2 weeks | ✅ Complete |
 | **V2** | Advanced Features | ~16 tasks | 2-3 weeks | 📋 Planned |
 | **V3** | Social & Marketplace | ~20 tasks | 3-4 weeks | 📋 Planned |
 
 **Total estimated time:** 14-19 weeks (3.5-5 months) for complete platform  
-**Current progress:** ~50% complete (MVP1 + POST-MVP1 60% + MVP2 80% + MVP3 Phase 1 + Gold Economy)
+**Current progress:** ~65% complete (MVP1 + POST-MVP1 60% + MVP2 80% + MVP3 Phase 1 + Gold Economy + MVP3 Phase 2)
 
 ---
 
@@ -701,69 +701,87 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 **Plan:** `docs/superpowers/plans/2026-10-23-tags-system.md`
 
 ### Completed Features
-- ✅ **Tags System** - Create, edit, delete custom tags
+- ✅ **Tags System** - Create, edit, delete, reuse custom tags
   - ✅ Color-coded tags (12 preset colors)
   - ✅ Add up to 4 tags per card
-  - ✅ Tag filtering in collection
-  - ✅ Tag management UI (create, delete)
-  - ✅ Tags displayed on cards (max 3 + counter)
+  - ✅ Reuse existing tags across multiple cards (select from available list)
+  - ✅ Tag filtering in collection (only shows tags with ≥1 card)
+  - ✅ Tag management UI (create, delete with confirmation)
+  - ✅ Tags displayed on cards (max 3 visible + "+N" counter)
 - ✅ **Favorites System** - Star/unstar cards
-  - ✅ Favorite icon on cards (grid + modal)
-  - ✅ Toggle favorite status
-  - ✅ Persisted per user
+  - ✅ Favorite icon on cards (grid + modal, ☆/⭐)
+  - ✅ Toggle favorite status with instant feedback
+  - ✅ Persisted per user in UserCard model
 - ✅ **User Ownership** - Collection shows only user's cards
-  - ✅ User-card mapping (UserCard model)
-  - ✅ Filters work on owned cards only
-  - ✅ Statistics reflect user's collection
+  - ✅ User-card mapping (UserCard model with isFavorite)
+  - ✅ All filters work on owned cards only (tags, rarity, search, album)
+  - ✅ Statistics reflect user's personal collection
   - ✅ Script to give all cards to admin for testing
 
 ### Technical Highlights
-- **Backend:** Tag/CardTag models, Tags CRUD endpoints, JWT auth
-- **Frontend:** TagManager, ColorPicker, FavoriteIcon components
-- **Database:** Proper foreign keys, cascade deletes, unique constraints
-- **Auth:** All collection endpoints require authentication
-- **UX:** Hover effects, confirmation dialogs, loading states
+- **Backend:** Tag/CardTag models, Tags CRUD endpoints, JWT auth on all routes
+- **Frontend:** TagManager, TagFilter, ColorPicker, FavoriteIcon, TagBadge components
+- **Database:** Proper foreign keys, cascade deletes, unique constraints (userId+label, userId+cardId+tagId)
+- **Auth:** All collection/tags endpoints require JWT authentication
+- **UX:** Hover effects, confirmation dialogs, loading states, tag reuse UI
+- **Query Optimization:** Two-step query for tag filtering (Prisma limitation workaround)
+
+### Documentation
+- **Complete Guide:** `docs/COLLEC/TAGS-SYSTEM-2026-10-24.md` (architecture, features, troubleshooting)
+- **Updated README:** `docs/COLLEC/README.md` (schemas, routes, services updated)
 
 ---
 
-## V2 - Collection System (Advanced Features)
+## V2 - Collection Rewards & Profile System
 
-**Goal:** Pack opening rewards + advanced organization
+**Goal:** Pack rewards integration + achievements + profile customization
 
 **Status:** 📋 Planned
 
 **Plan:** `docs/superpowers/plans/2026-10-09-v2-collection-system.md`
 
 ### Key Features
-- ⏳ Pack opening adds cards to collection
-- ⏳ Duplicate handling (convert to fragments or keep for display)
-- ⏳ Collection milestones (25%, 50%, 75%, 100% completion rewards)
-- ⏳ Rarity set completion (collect all Common, all Rare, etc.)
-- ⏳ Achievements (badges, titles)
-- ⏳ Profile customization (avatars, frames, backgrounds)
-- ⏳ Trading system (peer-to-peer swaps)
+- ⏳ **Pack opening → UserCard integration**
+  - Open pack → add cards to user's collection
+  - Duplicate detection (check if user already owns card)
+  - Duplicate handling UI (keep for display or convert to fragments)
+- ⏳ **Collection milestones** (25%, 50%, 75%, 100% completion rewards)
+  - Progress tracking with visual progress bar
+  - Bonus Gold/fragments at each milestone
+- ⏳ **Rarity set completion** (collect all Common, all Rare, etc.)
+  - Per-rarity completion tracking
+  - Special rewards for completing full rarity sets
+- ⏳ **Achievements & badges** (Collection-focused)
+  - "First Legendary" badge
+  - "50 cards collected" achievement
+  - Display achievements on profile
+- ⏳ **Profile customization**
+  - Avatars (unlockable + purchasable with Gold)
+  - Card frames (earned through achievements)
+  - Profile backgrounds (themed, rare drops)
+- ⏳ **Trading system** (peer-to-peer card swaps, future)
 
 ### Critical Success Metrics
 - Card collection engagement > 40% of active users
 - Collection completion rate < 10% (creates long-term goal)
 - Average user owns 50-100 cards after 1 month
-- Rarity set completion provides mid-term goals
-- Duplicate management keeps players engaged (fragments system)
+- Duplicate management increases fragment circulation
+- Milestone rewards encourage completion
 
 ### Technical Highlights
-- **Pack opening flow:** Purchase → RNG generation → Add to user collection → Update pity
-- **Duplicate detection:** Check `UserCard` before adding, offer destruction for fragments
-- **Collection milestones:** Trigger rewards at 25%, 50%, 75%, 100% completion
-- **Rarity sets:** Track completion of each rarity tier independently
+- **Pack opening flow:** Purchase → RNG → Add to UserCard → Check duplicates → Offer fragment conversion
+- **Duplicate detection:** Query `UserCard.findFirst({ userId, cardId })` before adding
+- **Milestone triggers:** Calculate % on each card add, trigger rewards at thresholds
+- **Rarity sets:** Track per-user completion of each tier (hasAllCommon, hasAllRare, etc.)
 - **Educational value:** Cards display Wikidata info (learn while collecting)
 
 ### Dependencies
 - ✅ MVP3 Phase 1 complete (52 cards, raretés)
+- ✅ MVP3 Phase 2 complete (tags, favorites, user ownership)
 - ✅ Gold Economy System complete (earning + spending mechanisms)
 - ⏳ Create 100+ additional card entries (target 150-200 total)
 - ⏳ Source/generate more card images (Wikidata Commons)
 - ⏳ Balance Gold earning/spending rates based on metrics
-- ⏳ Design collection milestone rewards system
 
 ---
 
@@ -971,13 +989,14 @@ Start free, scale only when users validate the product.
 
 ### **Semaines 5-6: Polish & Ownership Layer**
 
-5. **Collection - Tags & Ownership (MVP3 Phase 2)** ✅ **Système complet** (2026-10-24)
+5. **Collection - Tags & Ownership (MVP3 Phase 2)** ✅ **Système complet** (2026-10-24/25)
    - [x] Backend pack opening RNG ✅
    - [x] **Tags System** complet ✅
      - [x] Tag CRUD (create, read, update, delete) ✅
      - [x] Add/remove tags to/from cards (max 4 per card) ✅
+     - [x] Reuse existing tags across multiple cards ✅ (2026-10-25)
      - [x] Color-coded tags (12 preset colors) ✅
-     - [x] Tag filtering in collection ✅
+     - [x] Tag filtering (only shows tags with ≥1 card) ✅ (2026-10-25)
      - [x] Tag management UI with delete functionality ✅
    - [x] **Favorites System** complet ✅
      - [x] Star/unstar cards (persisted per user) ✅
@@ -986,7 +1005,10 @@ Start free, scale only when users validate the product.
      - [x] Collection shows ONLY user's cards ✅
      - [x] Statistics reflect user's collection ✅
      - [x] Script to give all cards for testing ✅
-   - [ ] **Next:** Pack opening → UserCard integration
+   - [x] **Documentation** mise à jour ✅ (2026-10-25)
+     - [x] TAGS-SYSTEM-2026-10-24.md (guide complet) ✅
+     - [x] COLLEC/README.md (schemas, routes, architecture) ✅
+   - [ ] **Next (V2):** Pack opening → UserCard integration
    - [ ] Gestion doublons (afficher + option destruction pour fragments)
    - [ ] Rewards collection milestones (25%, 50%, 75%, 100% → bonus Gold/fragments)
    - [ ] Rewards rarity sets (all Common, all Rare, etc.)
@@ -1031,7 +1053,7 @@ Start free, scale only when users validate the product.
 
 ---
 
-**Latest Update:** 2026-10-23
+**Latest Update:** 2026-10-25
 **Status:** 
 - **MVP1 implementation complete** ✅
 - **POST-MVP1 Question Database Pipeline in progress** 🚧
@@ -1060,11 +1082,20 @@ Start free, scale only when users validate the product.
   - Fragment system: Destruction + upgrade ✅
   - UI: Currency display, pack shop, animations ✅
   - Documentation: 38-page guide + frontend guide ✅
-  - Next: MVP3 Phase 2 (user ownership layer)
+- **MVP3 Phase 2 Tags & Personal Collection complete** ✅ (Sessions 2026-10-24/25)
+  - Tags system: Create, reuse, delete, filter (12 colors, 4 max/card) ✅
+  - Favorites: Star/unstar cards with instant feedback ✅
+  - User ownership: Collection shows ONLY user's cards ✅
+  - Tag reuse: Select existing tags for multiple cards ✅ (2026-10-25)
+  - Smart filtering: Hide tags with 0 cards ✅ (2026-10-25)
+  - Documentation: TAGS-SYSTEM-2026-10-24.md + COLLEC/README.md updated ✅
+  - Next: V2 - Pack opening → UserCard integration
 - **Documentation complete:**
   - Content strategy: `brainstorm/stratégie_bdd_quiz.md`
   - Image pipeline: `docs/superpowers/specs/2026-10-14-image-pipeline-cdn-design.md`
   - PVP guidelines: `docs/PVP-GUIDELINES.md`
   - Gold economy: `docs/GOLD/README.md` (38 pages)
   - Frontend economy: `apps/frontend/ECONOMY_GUIDE.md`
+  - Tags system: `docs/COLLEC/TAGS-SYSTEM-2026-10-24.md`
+  - Collection: `docs/COLLEC/README.md` (updated schemas, routes, architecture)
 
