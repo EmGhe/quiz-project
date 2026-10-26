@@ -14,6 +14,7 @@ import { GoldModule } from './modules/gold/gold.module';
 import { FragmentModule } from './modules/fragments/fragment.module';
 import { PackModule } from './modules/packs/pack.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TagsModule } from './modules/tags/tags.module';
     FragmentModule,
     PackModule,
     TagsModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
