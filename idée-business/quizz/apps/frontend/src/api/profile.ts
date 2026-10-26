@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export const profileApi = {
   getProfile: async (): Promise<CompleteProfile> => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`${API_URL}/profile`, {
+    const response = await axios.get(`${API_URL}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -14,7 +14,7 @@ export const profileApi = {
 
   updateProfile: async (data: UpdateProfileData): Promise<UserProfile> => {
     const token = localStorage.getItem('token');
-    const response = await axios.patch(`${API_URL}/profile`, data, {
+    const response = await axios.patch(`${API_URL}/api/profile`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

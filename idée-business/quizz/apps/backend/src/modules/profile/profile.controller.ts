@@ -5,7 +5,7 @@ import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ProfileResponseDto } from './dto/profile-response.dto';
 
-@Controller('profile')
+@Controller('api/profile')
 @UseGuards(JwtAuthGuard)
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
