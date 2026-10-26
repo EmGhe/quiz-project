@@ -214,7 +214,26 @@ model User {
   tags      Tag[]
   cardTags  CardTag[]
 
+  // Profile
+  profile UserProfile?
+
   @@map("users")
+}
+
+model UserProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  currentTitle String   @default("Explorateur")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
 }
 
 model Tag {
