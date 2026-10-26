@@ -89,6 +89,67 @@ components/
 - Centralized \`apiClient\` with Axios
 - Typed API functions (e.g., \`questionsApi.getAll()\`)
 
+### Authentication
+
+**⚠️ IMPORTANT : Le projet utilise l'authentification par cookies HTTP-only, PAS localStorage.**
+
+#### Backend
+- JWT stocké dans un cookie HTTP-only (sécurisé, non accessible en JS)
+- `JwtAuthGuard` vérifie automatiquement le cookie sur les routes protégées
+- Routes protégées : utilisent `@UseGuards(JwtAuthGuard)` et `@CurrentUser()`
+
+#### Frontend
+- **Toujours utiliser `apiClient`** de `src/api/client.ts`
+- `apiClient` est configuré avec `withCredentials: true` pour envoyer les cookies
+- ❌ **NE JAMAIS** utiliser `axios` directement ou chercher un token dans localStorage
+- ✅ **TOUJOURS** importer et utiliser `apiClient`
+
+#### Pattern pour une nouvelle API
+```typescript
+// ✅ BON - apps/frontend/src/api/myfeature.ts
+import { apiClient } from './client';
+
+export const myFeatureApi = {
+  getData: async () => {
+    const response = await apiClient.get('/api/myfeature');
+    return response.data;
+  },
+};
+
+// ❌ MAUVAIS - N'utilise pas axios directement
+import axios from 'axios';
+const token = localStorage.getItem('token'); // ❌ Le token n'est pas là
+```
+
+#### Pattern pour un nouveau module backend
+```typescript
+// Controller
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
+
+@Controller('api/myfeature')  // ⚠️ Toujours préfixer par 'api/'
+@UseGuards(JwtAuthGuard)
+export class MyFeatureController {
+  @Get()
+  async getData(@CurrentUser() userId: string) {
+    // userId est automatiquement extrait du JWT
+    return this.service.getData(userId);
+  }
+}
+
+// Module
+import { Module } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module'; // ⚠️ IMPORTANT
+
+@Module({
+  imports: [AuthModule], // ⚠️ Requis pour JwtAuthGuard
+  controllers: [MyFeatureController],
+  providers: [MyFeatureService],
+})
+export class MyFeatureModule {}
+```
+
 ## Database Schema
 
 See [DATABASE.md](./DATABASE.md) for full schema.
