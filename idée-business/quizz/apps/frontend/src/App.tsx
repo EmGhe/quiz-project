@@ -9,6 +9,7 @@ import ShopPage from '@/pages/ShopPage';
 import PvpMatchmakingPage from '@/pages/PvpMatchmakingPage';
 import PvpMatchPage from '@/pages/PvpMatchPage';
 import PvpResultsPage from '@/pages/PvpResultsPage';
+import ProfilePage from '@/pages/ProfilePage';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuestions from '@/pages/admin/AdminQuestions';
 import AdminQuestionDetail from '@/pages/admin/AdminQuestionDetail';
@@ -63,6 +64,10 @@ function App() {
         <Route
           path="/pvp/results"
           element={user ? <PvpResultsPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/profil"
+          element={user ? <ProfilePage /> : <Navigate to="/login" />}
         />
         <Route
           path="/admin"
