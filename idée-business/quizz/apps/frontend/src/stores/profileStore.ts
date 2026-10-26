@@ -55,10 +55,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
     set({ loading: true, error: null });
     try {
       const updatedProfile = await profileApi.updateProfile(data);
-      set((state) => ({
+      set({
         profile: updatedProfile,
         loading: false,
-      }));
+      });
     } catch (error) {
       set({
         error: 'Erreur lors de la mise à jour',

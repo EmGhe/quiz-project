@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ProfileHeaderProps {
   avatarUrl?: string | null;
   displayName: string | null;

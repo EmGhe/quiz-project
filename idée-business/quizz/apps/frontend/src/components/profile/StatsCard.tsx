@@ -1,4 +1,3 @@
-import React from 'react';
 import { DailyStats, PvPStats, CollectionStats } from '../../types/profile';
 
 interface StatsCardProps {
