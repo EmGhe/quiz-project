@@ -164,6 +164,8 @@ export class ProfileService {
       imageUrl: uc.card.imageUrl,
       rarity: uc.rarity,
       entityLabel: uc.card.entity.label,
+      description: uc.card.entity.description,
+      wikipediaUrl: uc.card.entity.wikipediaUrl,
     }));
   }
 }

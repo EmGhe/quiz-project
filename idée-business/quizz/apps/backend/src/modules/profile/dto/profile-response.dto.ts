@@ -30,6 +30,8 @@ export class ShowcaseCard {
   imageUrl: string;
   rarity: string;
   entityLabel: string;
+  description: string;
+  wikipediaUrl: string | null;
 }
 
 export class ProfileResponseDto {

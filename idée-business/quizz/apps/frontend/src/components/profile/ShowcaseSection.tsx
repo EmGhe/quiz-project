@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { ShowcaseCard } from '../../types/profile';
+import CardModal from './CardModal';
 
 interface ShowcaseSectionProps {
   showcaseCards: ShowcaseCard[];
@@ -12,12 +14,12 @@ const RARITY_BORDERS: Record<string, string> = {
   legendary: 'border-yellow-500',
 };
 
-function ShowcaseCardItem({ card }: { card: ShowcaseCard }) {
+function ShowcaseCardItem({ card, onClick }: { card: ShowcaseCard; onClick: () => void }) {
   const borderClass = RARITY_BORDERS[card.rarity] || 'border-gray-400';
 
   return (
-    <div className="relative group cursor-pointer">
-      <div className={`rounded-lg overflow-hidden border-2 ${borderClass}`}>
+    <div className="relative group cursor-pointer" onClick={onClick}>
+      <div className={`rounded-lg overflow-hidden border-2 ${borderClass} transform transition-transform hover:scale-105`}>
         <img
           src={card.imageUrl}
           alt={card.entityLabel}
@@ -45,6 +47,7 @@ export default function ShowcaseSection({
   showcaseCards,
   maxCards = 10,
 }: ShowcaseSectionProps) {
+  const [selectedCard, setSelectedCard] = useState<ShowcaseCard | null>(null);
   const emptySlots = Math.max(0, maxCards - showcaseCards.length);
 
   return (
@@ -62,7 +65,11 @@ export default function ShowcaseSection({
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {showcaseCards.map((card) => (
-              <ShowcaseCardItem key={card.id} card={card} />
+              <ShowcaseCardItem
+                key={card.id}
+                card={card}
+                onClick={() => setSelectedCard(card)}
+              />
             ))}
             {Array.from({ length: emptySlots }).map((_, i) => (
               <EmptySlot key={`empty-${i}`} />
@@ -74,6 +81,11 @@ export default function ShowcaseSection({
             s'affichent automatiquement
           </p>
         </>
+      )}
+
+      {/* Modal */}
+      {selectedCard && (
+        <CardModal card={selectedCard} onClose={() => setSelectedCard(null)} />
       )}
     </div>
   );
