@@ -732,6 +732,53 @@ MVP1 was built with ~50 template questions for testing. This phase builds the in
 
 ---
 
+## Profile Page (MVP3 Phase 3)
+
+**Goal:** User profile with progression stats and card showcase
+
+**Status:** ✅ Complete (2026-10-26)
+
+**Documentation:** `docs/PROFIL/README.md`
+
+### Completed Features
+
+**Profile Display:**
+- ✅ Header with avatar, username, title ("Explorateur"), PvP badge
+- ✅ Statistics cards (3 sections):
+  - Daily Challenge: streak, record, completion, success rate, gold earned
+  - PvP: rank, division, ELO, wins/losses, winrate, win streak
+  - Collection: total cards, rarity breakdown, favorites count
+- ✅ Showcase vitrine (10 favorite cards grid)
+- ✅ Card detail modal (click card → popup with image, description, Wikipedia link)
+- ✅ Navigation buttons (← Back, View Collection →)
+
+**Technical Implementation:**
+- ✅ Backend: `/api/profile` endpoints (GET/PATCH)
+- ✅ ProfileService: stats calculation from UserStreak, UserElo, UserCard
+- ✅ Frontend: ProfilePage, ProfileHeader, StatsCard, ShowcaseSection, CardModal
+- ✅ Zustand store for profile state management
+- ✅ Responsive design (mobile 2 cols, tablet 3 cols, desktop 5 cols)
+
+**Authentication Pattern:**
+- ✅ Cookie-based auth documented in `docs/ARCHITECTURE.md`
+- ✅ Backend: `JwtAuthGuard` + `@CurrentUser()` decorator
+- ✅ Frontend: `apiClient` with `withCredentials: true`
+
+### Success Metrics (To Monitor)
+- Profile visit rate > 40% of active users
+- Favorite cards: average 5-8 per user
+- Showcase engagement: clicks on cards > 30%
+
+### Future Enhancements
+- [ ] Dynamic title system (achievements-based)
+- [ ] Public profiles (`/profil/:userId`)
+- [ ] Edit profile UI (displayName, bio, avatar upload)
+- [ ] Manual showcase selection (drag & drop)
+- [ ] Progression graphs (temporal stats)
+- [ ] Title unlock history
+
+---
+
 ## V2 - Collection Rewards & Profile System
 
 **Goal:** Pack rewards integration + achievements + profile customization
@@ -1058,7 +1105,7 @@ Start free, scale only when users validate the product.
 
 ---
 
-**Latest Update:** 2026-10-25
+**Latest Update:** 2026-10-26
 **Status:** 
 - **MVP1 implementation complete** ✅
 - **POST-MVP1 Question Database Pipeline in progress** 🚧
@@ -1094,6 +1141,12 @@ Start free, scale only when users validate the product.
   - Tag reuse: Select existing tags for multiple cards ✅ (2026-10-25)
   - Smart filtering: Hide tags with 0 cards ✅ (2026-10-25)
   - Documentation: TAGS-SYSTEM-2026-10-24.md + COLLEC/README.md updated ✅
+- **Profile Page complete** ✅ (Session 2026-10-26)
+  - Profile page with stats (Daily, PvP, Collection) ✅
+  - Showcase vitrine with 10 favorite cards ✅
+  - Card detail modal (image, description, Wikipedia link) ✅
+  - Cookie-based auth documented in ARCHITECTURE.md ✅
+  - Documentation: PROFIL/README.md ✅
   - Next: V2 - Pack opening → UserCard integration
 - **Documentation complete:**
   - Content strategy: `brainstorm/stratégie_bdd_quiz.md`
