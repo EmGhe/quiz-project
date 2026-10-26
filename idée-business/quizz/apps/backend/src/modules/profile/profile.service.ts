@@ -6,6 +6,53 @@ import { DailyStats, PvPStats, CollectionStats, ShowcaseCard } from './dto/profi
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
+  async getOrCreateProfile(userId: string) {
+    let profile = await this.prisma.userProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      profile = await this.prisma.userProfile.create({
+        data: { userId },
+      });
+    }
+
+    return profile;
+  }
+
+  async getCompleteProfile(userId: string) {
+    const profile = await this.getOrCreateProfile(userId);
+
+    const [dailyStats, pvpStats, collectionStats, showcaseCards] = await Promise.all([
+      this.calculateDailyStats(userId),
+      this.calculatePvPStats(userId),
+      this.calculateCollectionStats(userId),
+      this.getShowcaseCards(userId),
+    ]);
+
+    return {
+      profile: {
+        id: profile.id,
+        userId: profile.userId,
+        displayName: profile.displayName,
+        bio: profile.bio,
+        avatarUrl: profile.avatarUrl,
+        currentTitle: profile.currentTitle,
+      },
+      dailyStats,
+      pvpStats,
+      collectionStats,
+      showcaseCards,
+    };
+  }
+
+  async updateProfile(userId: string, data: { displayName?: string; bio?: string; avatarUrl?: string }) {
+    return this.prisma.userProfile.update({
+      where: { userId },
+      data,
+    });
+  }
+
   private async calculateDailyStats(userId: string): Promise<DailyStats> {
     const streak = await this.prisma.userStreak.findUnique({
       where: { userId },
